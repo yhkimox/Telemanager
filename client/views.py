@@ -58,6 +58,15 @@ def upload_excel(request):
 
         for index, row in df.iterrows():
             
+            name = str(row['name'])
+            number = row['number']
+            
+            # 기존에 손님 데이터와 중복되는 데이터인지 확인
+            existing_client = Client.objects.filter(name=name, number=number).first()
+            
+            if existing_client:
+                continue
+            
             # raw_birth_date 에는 마스킹 전 생년월일
             raw_birth_date = row.get('birth_date', None)
             
@@ -83,9 +92,9 @@ def upload_excel(request):
             
             
             Client.objects.create(
-                name = row['name'], 
+                name = name,
                 location = row['location'],
-                number = row['number'],
+                number = number,
                 birth_date = masked_birth_date,
                 age = age,
                 gender = normalized_gender,

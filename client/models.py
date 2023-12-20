@@ -11,4 +11,5 @@ class Client(models.Model):
 	age = models.IntegerField(null= True, blank=True)
 	gender = models.CharField(max_length=10, choices=[('Male', 'Male'), ('Female', 'Female')], null=True, blank=True)  # (실제 값, 보여지는 값)
  
+ 
 	
