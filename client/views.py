@@ -27,13 +27,23 @@ def upload_excel(request):
         tmgoal = request.POST.get('tmgoal')
         request.session['tmgoal'] = tmgoal
         df = pd.read_excel(excel_file)
+        
+        # birth_date 같은 경우 문자열로 변환
+        df['birth_date'] = df['birth_date'].astype(str)
+        
         print(df.columns)
 
         for index, row in df.iterrows():
+            
+            raw_birth_date = row.get('birth_date', None)
+            masked_birth_date = raw_birth_date[:8] + 'XX'
+            
+            
             Client.objects.create(
                 name = row['name'], 
                 location = row['location'],
                 number = row['number'],
+                birth_date = masked_birth_date,
             )
             
         

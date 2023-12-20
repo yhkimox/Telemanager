@@ -40,6 +40,7 @@
             <th>이름</th>
             <th>지역</th>
             <th>전화번호</th>
+            <th>생년월일</th>
         </tr>
     </thead>
     <tbody>
@@ -48,6 +49,7 @@
                 <td>{{ client.name }}</td>
                 <td>{{ client.location }}</td>
                 <td>{{ client.number }}</td>
+                <td>{{ client.birth_date}}</td>
                 <td>
                     <a href="{% url 'client:edit_client' client.id %}">수정하기</a> | 
                     <a href="{% url 'client:delete_client' client.id %}">삭제하기</a>
