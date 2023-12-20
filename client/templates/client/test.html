@@ -1,0 +1,8 @@
+{% block title %} 고객 목록 보기{% endblock %}
+{% block content %}
+    <h1>고객 목록 보기</h1>
+    {% for client in client_list %}
+        <a href="#"> {{client.name}} {{client.location}} {{client.number}}</a><br>
+    {% endfor %}
+{% endblock %}
+
