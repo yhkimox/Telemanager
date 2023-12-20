@@ -83,7 +83,11 @@
     </div>
 {% endif %}
 
-
+{% if tmgoal %}
+    <p>마케팅 목적 : {{ tmgoal }}</p>
+{% else %}
+    <p>tmgoal이 없습니다.</p>
+{% endif %}
 
 </body>
 </html>

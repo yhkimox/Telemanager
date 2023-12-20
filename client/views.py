@@ -12,11 +12,20 @@ class ClientListView(ListView):
     context_object_name = 'client_list'  # 템플릿에서 사용할 컨텍스트 변수 이름
     paginate_by = 5  # 한 페이지에 표시할 객체 수
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)  # 컨텍스트 데이터 가져옴
+
+       
+        context['tmgoal'] = self.request.session.get('tmgoal', None)
+
+        return context
+    
     
 def upload_excel(request):
     if request.method == 'POST':
         excel_file = request.FILES['excel_file']
-        
+        tmgoal = request.POST.get('tmgoal')
+        request.session['tmgoal'] = tmgoal
         df = pd.read_excel(excel_file)
         print(df.columns)
 
