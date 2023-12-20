@@ -5,6 +5,7 @@ import pandas as pd
 from .models import Client
 from .forms import ClientForm  # 고객 모델 폼
 from django.urls import reverse
+from datetime import datetime
 
 class ClientListView(ListView):
     model = Client
@@ -19,6 +20,17 @@ class ClientListView(ListView):
         context['tmgoal'] = self.request.session.get('tmgoal', None)
 
         return context
+
+
+def normalize_gender(gender_str):
+    # 성별을 Male, Female로 변환
+    
+    if gender_str in ['남성', '남', '남자', 'm', 'M']:
+        return 'Male'
+    elif gender_str in ['여성', '여', '여자', 'f', 'F']:
+        return 'Female'
+    else:
+        return None  
     
     
 def upload_excel(request):
@@ -35,8 +47,28 @@ def upload_excel(request):
 
         for index, row in df.iterrows():
             
+            # raw_birth_date 에는 마스킹 전 생년월일
             raw_birth_date = row.get('birth_date', None)
+            
+            # 생년월일이 엑셀로 들어올 경우, age 계산
+            if raw_birth_date:
+                birth_date = datetime.strptime(raw_birth_date, '%Y-%m-%d')
+                today = datetime.today()
+                age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+            
+            # 생년월일이 없을 경우,     
+            else:  
+                age = None
+            
+            # 생년월일 마스킹        
             masked_birth_date = raw_birth_date[:8] + 'XX'
+            
+            
+            # 정규화 전 성별
+            raw_gender = row.get('gender', None)
+            
+            # 성별 변환
+            normalized_gender = normalize_gender(raw_gender)
             
             
             Client.objects.create(
@@ -44,6 +76,8 @@ def upload_excel(request):
                 location = row['location'],
                 number = row['number'],
                 birth_date = masked_birth_date,
+                age = age,
+                gender = normalized_gender,
             )
             
         
