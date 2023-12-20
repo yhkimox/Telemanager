@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>고객 정보 수정</title>
+</head>
+<body>
+
+<h2>고객 정보 수정</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}  
+    <button type="submit">완료</button>
+    <button><a href="{% url 'client:list' %}">취소</a></button>
+</form>
+
+</body>
+</html>
