@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpRequest
-from django.views.generic import ListView
+from django.views.generic import ListView, View
 import pandas as pd
 from .models import Client
 from .forms import ClientForm  # 고객 모델 폼
@@ -11,7 +11,7 @@ class ClientListView(ListView):
     model = Client
     template_name = 'client/client_list.html'  
     context_object_name = 'client_list'  # 템플릿에서 사용할 컨텍스트 변수 이름
-    paginate_by = 5  # 한 페이지에 표시할 객체 수
+    paginate_by = 10  # 한 페이지에 표시할 객체 수
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)  # 컨텍스트 데이터 가져옴
@@ -20,6 +20,17 @@ class ClientListView(ListView):
         context['tmgoal'] = self.request.session.get('tmgoal', None)
 
         return context
+    
+    def post(self, request, *args, **kwargs):
+        selected_ids = request.POST.getlist('client_ids')  
+        Client.objects.filter(id__in=selected_ids).delete()  
+        return redirect(reverse('client:list'))  
+
+class DeleteSelectedClientsView(View):
+    def post(self, request):
+        selected_ids = request.POST.getlist('client_ids')  
+        Client.objects.filter(id__in=selected_ids).delete()  
+        return redirect(reverse('client:list'))  
 
 
 def normalize_gender(gender_str):
