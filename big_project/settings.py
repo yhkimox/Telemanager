@@ -128,3 +128,12 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+AUTH_USER_MODEL = "auth.User"
+AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.ModelBackend"]
+LOGIN_URL = "/account/login/"
+LOGIN_REDIRECT_URL = "/account/"
+LOGOUT_REDIRECT_URL = None
+# The number of seconds a password reset link is valid for (default: 3 days).
+PASSWORD_RESET_TIMEOUT = 60 * 60 * 24 * 3
