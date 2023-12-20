@@ -4,3 +4,6 @@ import os
 
 def index(request):
     return render(request, 'account/index.html')
+
+def signup(request):
+    return render(request, 'account/signup.html')

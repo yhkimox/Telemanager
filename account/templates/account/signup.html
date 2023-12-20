@@ -42,7 +42,7 @@
 <br><br>
 <!-- Form -->
 <div class="col align-center">
-  <h3>Login</h3>
+  <h3>회원가입</h3>
   <br>
   <div class="inner">
       <form method="post" action="#">
@@ -51,27 +51,23 @@
               <input type="text" name="name" id="name" value="" placeholder="Name"><div data-lastpass-icon-root="true" style="position: relative !important; height: 0px !important; width: 0px !important; float: left !important;"></div></div>
             <div class="3u$ 12u$(small)">
               <input type="email" name="email" id="email" value="" placeholder="PassWord"></div>
+            <div class="3u$ 12u$(small)">
+                <input type="email" name="email" id="email" value="" placeholder="PassWord check"></div>
+            <div class="3u$ 12u$(small)">
+                <input type="email" name="email" id="email" value="" placeholder="Email"></div>
             </div>
             
-            <a href='signup.html'>회원이 아니신가요?</a>
+            <br>
             <!-- login -->
             <div class="12u$">
-              <ul class="actions"><li><input type="submit" value="Login"></li>
+              <ul class="actions"><li><input type="submit" value="Submit" ></li>
               </ul></div>
     </div>
 </div>
   </form>
 
 
-  <script>
-    document.getElementById('myForm').addEventListener('submit', function (event) {
-        // 폼이 제출될 때 실행될 코드
-        event.preventDefault(); // 기본 동작(폼 제출)을 막음
 
-        // 원하는 동작을 수행
-        window.location.href = views.index;
-    });
-</script>
 
   
 
