@@ -46,6 +46,7 @@
                     <th>생년월일</th>
                     <th>나이</th>
                     <th>성별</th>
+                    <th>이메일</th>
                     <th>고객관리</th>
                 </tr>
             </thead>
@@ -59,6 +60,7 @@
                         <td>{{ client.birth_date }}</td>
                         <td>{{ client.age }}</td>
                         <td>{{ client.gender }}</td>
+                        <td>{{ client.email }}</td>
                         <td>
                             <a href="{% url 'client:edit_client' client.id %}">수정하기</a> | 
                             <a href="{% url 'client:delete_client' client.id %}">삭제하기</a>
@@ -70,6 +72,7 @@
     
         <br><br>
         <button type="submit">선택된 고객 삭제</button>
+        <button><a href="{% url 'client:upload' %}">고객 정보 업로드</a></button>
     </form>
 <br><br>
 
@@ -131,10 +134,7 @@
                 if (!confirmed) {
                     event.preventDefault(); // 폼 제출 중지
                 }
-            } else {
-                alert('삭제할 고객을 선택해주세요.');
-                event.preventDefault(); // 폼 제출 중지
-            }
+            } 
         });
     });
 </script>

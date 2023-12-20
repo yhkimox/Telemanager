@@ -10,6 +10,8 @@ class Client(models.Model):
 	birth_date = models.CharField(max_length=10, null=True, blank=True)  # YYYY-MM_DD 형식 
 	age = models.IntegerField(null= True, blank=True)
 	gender = models.CharField(max_length=10, choices=[('Male', 'Male'), ('Female', 'Female')], null=True, blank=True)  # (실제 값, 보여지는 값)
+	email = models.EmailField(max_length=254, null=True, blank=True) 
+ 
  
  
 	

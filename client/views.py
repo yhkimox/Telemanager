@@ -60,9 +60,11 @@ def upload_excel(request):
             
             name = str(row['name'])
             number = row['number']
+            email = row['email']
+            print(email)
             
             # 기존에 손님 데이터와 중복되는 데이터인지 확인
-            existing_client = Client.objects.filter(name=name, number=number).first()
+            existing_client = Client.objects.filter(name=name, number=number, email=email).first()
             
             if existing_client:
                 continue
@@ -81,7 +83,7 @@ def upload_excel(request):
                 age = None
             
             # 생년월일 마스킹        
-            masked_birth_date = raw_birth_date[:8] + 'XX'
+            masked_birth_date = raw_birth_date[:5] + 'XX-XX'
             
             
             # 정규화 전 성별
@@ -98,6 +100,7 @@ def upload_excel(request):
                 birth_date = masked_birth_date,
                 age = age,
                 gender = normalized_gender,
+                email = email,
             )
             
         
