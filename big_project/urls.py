@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.conf import settings
 from django.conf.urls.static import static
 
+app_name = 'big_project'
 
 def index(request):
     return render(request, 'index.html')

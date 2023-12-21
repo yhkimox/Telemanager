@@ -10,8 +10,14 @@ class ClientListView(ListView):
     model = Client
     template_name = 'client/client_list.html'  
     context_object_name = 'client_list'  # 템플릿에서 사용할 컨텍스트 변수 이름
-    paginate_by = 5  # 한 페이지에 표시할 객체 수
-    
+    paginate_by = 10  # 한 페이지에 표시할 객체 수
+
+class ClientListView2(ListView):
+    model = Client
+    template_name = 'client/db.html'  
+    context_object_name = 'db'  # 템플릿에서 사용할 컨텍스트 변수 이름
+    paginate_by = 20  # 한 페이지에 표시할 객체 수
+
     
 def upload_excel(request):
     if request.method == 'POST':
@@ -27,8 +33,26 @@ def upload_excel(request):
                 number = row['number'],
             )
             
-        
         return redirect('client:list')
+    
+    return render(request, 'client/upload.html')
+
+
+def upload_excel2(request):
+    if request.method == 'POST':
+        excel_file = request.FILES['excel_file']
+        
+        df = pd.read_excel(excel_file)
+        print(df.columns)
+
+        for index, row in df.iterrows():
+            Client.objects.create(
+                name = row['name'], 
+                location = row['location'],
+                number = row['number'],
+            )
+            
+        return redirect('client:db')
     
     return render(request, 'client/upload.html')
 
@@ -61,4 +85,8 @@ def test(request):
     client_list = Client.objects.filter(name__icontains='민')
     
     return render(request,'client/test.html',{'client_list': client_list})
+
+
+def db(request):
+    return render(request, 'client/db.html')
 

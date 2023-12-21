@@ -1,5 +1,5 @@
 from django.shortcuts import render
 
 # Create your views here.
-def LoginView():
-    pass
+def chat(request):
+    return render(request, 'chatbot/chat.html')
