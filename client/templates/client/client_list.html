@@ -61,33 +61,60 @@
 </head>
 <body>
 
+
 <h2>고객 목록</h2>
 
-<table border="1"> 
-    <thead>
-        <tr>
-            <th>이름</th>
-            <th>지역</th>
-            <th>전화번호</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for client in client_list %}
+<form method="post" action="{% url 'client:delete_selected' %}">
+    {% csrf_token %}
+    <table border="1"> 
+        <thead>
             <tr>
-                <td>{{ client.name }}</td>
-                <td>{{ client.location }}</td>
-                <td>{{ client.number }}</td>
-                <td><a href="{% url 'client:edit_client' client.id %}">수정하기</a></td>
-                <td>
-                    <a href="{% url 'client:delete_client' client.id %}">삭제하기</a> | 
-                    
-                </td>
+                <th>
 
+                    <div>
+                        <input type="checkbox" id="select-all">
+                        <label for="select-all"></label>
+                    </div>
+                </th>
+                <th>이름</th>
+                <th>주소</th>
+                <th>전화번호</th>
+                <th>생년월일</th>
+                <th>나이</th>
+                <th>성별</th>
+                <th>이메일</th>
+                <th>고객관리</th>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for client in client_list %}
+                <tr>
+                    <td> 
+                        <div>
+                            <input type="checkbox" id="copy_{{ client.id }}" name="client_ids" value="{{ client.id }}">
+                            <label for="copy_{{ client.id }}"></label>
+                        </div>
+                    </td>
+                    <td>{{ client.name }}</td>
+                    <td>{{ client.location }}</td>
+                    <td>{{ client.number }}</td>
+                    <td>{{ client.birth_date }}</td>
+                    <td>{{ client.age }}</td>
+                    <td>{{ client.gender }}</td>
+                    <td>{{ client.email }}</td>
+                    <td>
+                        <a href="{% url 'client:edit_client' client.id %}">수정하기</a> | 
+                        <a href="{% url 'client:delete_client' client.id %}">삭제하기</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
+    <br><br>
+    <button type="submit">선택된 고객 삭제</button>
+    <button><a href="{% url 'client:upload' %}">고객 정보 업로드</a></button>
+</form>
 <br><br>
 
 {% if is_paginated %}
@@ -114,6 +141,44 @@
     </div>
 {% endif %}
 
+{% if tmgoal %}
+    <p>마케팅 목적 : {{ tmgoal }}</p>
+{% else %}
+    <p>tmgoal이 없습니다.</p>
+{% endif %}
+
+
+<!-- 전체 선택하는 버튼, 선택된 고객 삭제 버튼 클릭 시 경고창 뜨게 구현-->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        const selectAllCheckbox = document.getElementById('select-all');   //select-all 읽기
+
+        
+        selectAllCheckbox.addEventListener('change', function() {  // selectAll 체크박스의 상태가 변경될 때마다 실행
+            
+            const checkboxes = document.querySelectorAll('input[name="client_ids"]');  //모든 체크 된 요소 가져오기
+
+            // selectAll 체크박스의 상태에 따라 모든 체크박스의 상태 변경
+            checkboxes.forEach(function(checkbox) {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+        });
+
+        //확인 메시지 표시
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(event) {
+            const checkedCount = document.querySelectorAll('input[name="client_ids"]:checked').length;
+
+            if (checkedCount > 0) {
+                const confirmed = confirm('정말 선택된 고객을 삭제하시겠습니까?');
+                if (!confirmed) {
+                    event.preventDefault(); // 폼 제출 중지
+                }
+            } 
+        });
+    });
+</script>
 
 </body>
 </html>
