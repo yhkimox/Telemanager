@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<!--index.html-->
+<!--profile.html-->
 {% extends 'base.html' %}
 {% load static %}
 {% block static %}
@@ -20,8 +20,12 @@
         <a href="#main" class="button big scrolly">Learn More</a>
     </div>
 </section>
+    <h1> 내정보 </h1>
 
-
-
-
+    <ul>
+        <li> name : {{user}}</li>
+        <li> email : {{user.email}}</li>
+        <li>{{user.date_joined}}</li>
+    </ul>
+    <a href="{% url 'account:profile_update' %}">[내 정보 수정하기]</a>
 {% endblock %}

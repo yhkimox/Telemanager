@@ -12,6 +12,7 @@ urlpatterns = [
     path('upload/',views.upload_excel, name='upload'),
     path('edit/<int:client_id>/', views.edit_client, name='edit_client'),
     path('delete/<int:client_id>/', views.delete_client, name='delete_client'),
+    path('delete_selected/', views.DeleteSelectedClientsView.as_view(), name='delete_selected')
 ]
 
 
