@@ -6,8 +6,13 @@ from .models import Client
 from .forms import ClientForm  # 고객 모델 폼
 from django.urls import reverse
 from datetime import datetime
+import os
+import zipfile
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-class ClientListView(ListView):
+
+class ClientListView(LoginRequiredMixin, ListView):
     model = Client
     template_name = 'client/client_list.html'  
     context_object_name = 'client_list'  # 템플릿에서 사용할 컨텍스트 변수 이름
@@ -25,16 +30,12 @@ class ClientListView(ListView):
         selected_ids = request.POST.getlist('client_ids')  
         Client.objects.filter(id__in=selected_ids).delete()  
         return redirect(reverse('client:list'))  
-
-class ClientListView2(ListView):
-    model = Client
-    template_name = 'client/db.html'  
-    context_object_name = 'db'  # 템플릿에서 사용할 컨텍스트 변수 이름
-    paginate_by = 20  # 한 페이지에 표시할 객체 수
-
-
     
-    
+    def get_queryset(self):
+        return Client.objects.filter(user=self.request.user)
+
+
+
 
 class DeleteSelectedClientsView(View):
     def post(self, request):
@@ -103,13 +104,18 @@ def upload_excel(request):
             # 성별 변환
             normalized_gender = normalize_gender(raw_gender)
             
+            temp_date = datetime.now()
+            
+            user = request.user
             
             Client.objects.create(
+                user = user,
                 name = name,
                 location = row['location'],
                 number = number,
                 birth_date = masked_birth_date,
                 age = age,
+                tm_date = temp_date,
                 gender = normalized_gender,
                 email = email,
             )
@@ -138,7 +144,7 @@ def upload_excel2(request):
     return render(request, 'client/upload.html')
 
 def edit_client(request, client_id):
-    client = get_object_or_404(Client, id=client_id)
+    client = get_object_or_404(Client, id=client_id, user=request.user)
     
     if request.method == 'POST':
         form = ClientForm(request.POST, instance=client)
@@ -150,8 +156,9 @@ def edit_client(request, client_id):
     
     return render(request, 'client/edit_client.html', {'form': form, 'client': client})
 
+@login_required
 def delete_client(request, client_id):
-    client = get_object_or_404(Client, id=client_id)
+    client = get_object_or_404(Client, id=client_id, user=request.user)
     
     if request.method == 'POST':
         client.delete()
@@ -165,7 +172,10 @@ def test(request):
     
     client_list = Client.objects.filter(name__icontains='민')
     
-    return render(request,'client/test.html',{'client_list': client_list})
+    return render(request,'client/test.html', {'client_list': client_list})
+
+
+
 
 
 def db(request):

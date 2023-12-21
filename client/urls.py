@@ -2,7 +2,7 @@ from django.urls import path, reverse, reverse_lazy
 from django.views.generic import TemplateView, ListView, CreateView, DetailView, UpdateView, DeleteView
 from . import views
 from .models import *
-from .views import ClientListView, ClientListView2
+from .views import ClientListView
 from django.shortcuts import render
 
 
@@ -12,7 +12,6 @@ def index(request):
     return render(request, 'index.html')
 
 urlpatterns = [
-    path('', ClientListView2.as_view(), name='db'),
     path('list/', ClientListView.as_view(), name = 'list'),
     path('test/', views.test, name='test'),
     path('upload/', views.upload_excel, name='upload'),

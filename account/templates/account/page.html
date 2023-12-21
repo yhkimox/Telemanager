@@ -4,6 +4,23 @@
         <li><a href="{% url 'account:login' %}?next={{request.path}}">로그인</a></li>
     {% else %}
         <li><a href="">{{user}}님!</a> </li> 
+        <li><a href="{%  url 'account:profile' %}">내정보</a></li>
         <li><a href="{%  url 'account:logout' %}?next={{request.path}}">로그 아웃</a></li>
     {% endif %}
  </ul>
+ <div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %} 
+
+            {% block content %}
+            {% endblock %}
+        </div>            
+    </div>
+</div>

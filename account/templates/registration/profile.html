@@ -1,0 +1,10 @@
+{% block content %}
+    <h1> 내정보 </h1>
+
+    <ul>
+        <li> name : {{user}}</li>
+        <li> email : {{user.email}}</li>
+        <li>{{user.date_joined}}</li>
+    </ul>
+    <a href="{% url 'account:profile_update' %}">[내 정보 수정하기]</a>
+{% endblock %}
