@@ -3,10 +3,11 @@ from django.contrib.auth.forms import UserCreationForm
 from django.conf import settings
 from .forms import SignupForm
 from django.http import HttpResponse
+from django.contrib.auth import logout
 # Create your views here.
 
 def index(request):
-    return render(request, 'account/page.html')
+    return render(request, 'registration/login.html')
 
 def signup(request):
     if request.method == 'POST':
@@ -17,4 +18,9 @@ def signup(request):
     else:
         form = SignupForm()
             
-    return render(request, 'registration/signup.html',{'form':form})
+    return render(request, 'registration/login.html', {'form':form})
+
+
+def logout(request):
+    logout(request)
+    return redirect('index')  # 로그아웃 후 리다이렉션할 페이지의 이름 또는 경로

@@ -14,7 +14,7 @@
 
     <!-- 헤더 -->
     <header id="header" class="alt">
-        <div class="logo"><a href="/">Tele<span style="color: black;">Manager</span></a></div>
+        <div class="logo"><a href="/">Tele<span>Manager</span></a></div>
         <a href="#menu">메뉴</a>
     </header>
 
@@ -22,9 +22,21 @@
     <nav id="menu">
         <ul class="links">
             <li><a href="/">Home</a></li>
-            <li><a href="generic.html">일반</a></li>
-            <li><a href="elements.html">요소</a></li>
-            <li><a href="/account/">Sign in</a></li>
+            {% if not user.is_authenticated %}
+            <li><a href='/account/'>Login</a></li>
+            {% else %}
+            <li><a href='/account/'>내 정보</a></li>
+            <form method="post" action="{% url 'account:logout' %}">
+                {% csrf_token %}
+                <li><a type="submit">Logout</a></li>
+                <button type="submit">Logout</button>
+            </form>
+            {% endif %}
+            <li><a href='/client/'>고객관리</a></li>
+            <li><a href='/chatbot/'>고객마케팅</a></li>
+            <li><a href='/post/'>게시판</a></li>
+            <li><a href="generic.html">*일반</a></li>
+            <li><a href="elements.html">*요소</a></li>
         </ul>
     </nav>
 
