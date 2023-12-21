@@ -6,6 +6,8 @@ from .models import Client
 from .forms import ClientForm  # 고객 모델 폼
 from django.urls import reverse
 from datetime import datetime
+import os
+import zipfile
 
 class ClientListView(ListView):
     model = Client
@@ -92,6 +94,7 @@ def upload_excel(request):
             # 성별 변환
             normalized_gender = normalize_gender(raw_gender)
             
+            temp_date = datetime.now()
             
             Client.objects.create(
                 name = name,
@@ -99,6 +102,7 @@ def upload_excel(request):
                 number = number,
                 birth_date = masked_birth_date,
                 age = age,
+                tm_date = temp_date,
                 gender = normalized_gender,
                 email = email,
             )
@@ -136,5 +140,8 @@ def test(request):
     
     client_list = Client.objects.filter(name__icontains='민')
     
-    return render(request,'client/test.html',{'client_list': client_list})
+    return render(request,'client/test.html', {'client_list': client_list})
+
+
+
 
