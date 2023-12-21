@@ -6,8 +6,13 @@ from .models import Client
 from .forms import ClientForm  # 고객 모델 폼
 from django.urls import reverse
 from datetime import datetime
+import os
+import zipfile
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-class ClientListView(ListView):
+
+class ClientListView(LoginRequiredMixin, ListView):
     model = Client
     template_name = 'client/client_list.html'  
     context_object_name = 'client_list'  # 템플릿에서 사용할 컨텍스트 변수 이름
@@ -25,8 +30,12 @@ class ClientListView(ListView):
         selected_ids = request.POST.getlist('client_ids')  
         Client.objects.filter(id__in=selected_ids).delete()  
         return redirect(reverse('client:list'))  
+    
+    def get_queryset(self):
+        return Client.objects.filter(user=self.request.user)
+    
 
-class DeleteSelectedClientsView(View):
+class DeleteSelectedClientsView(LoginRequiredMixin, View):
     def post(self, request):
         selected_ids = request.POST.getlist('client_ids')  
         Client.objects.filter(id__in=selected_ids).delete()  
@@ -43,7 +52,7 @@ def normalize_gender(gender_str):
     else:
         return None  
     
-    
+@login_required
 def upload_excel(request):
     if request.method == 'POST':
         excel_file = request.FILES['excel_file']
@@ -92,13 +101,18 @@ def upload_excel(request):
             # 성별 변환
             normalized_gender = normalize_gender(raw_gender)
             
+            temp_date = datetime.now()
+            
+            user = request.user
             
             Client.objects.create(
+                user = user,
                 name = name,
                 location = row['location'],
                 number = number,
                 birth_date = masked_birth_date,
                 age = age,
+                tm_date = temp_date,
                 gender = normalized_gender,
                 email = email,
             )
@@ -108,8 +122,9 @@ def upload_excel(request):
     
     return render(request, 'client/upload.html')
 
+@login_required
 def edit_client(request, client_id):
-    client = get_object_or_404(Client, id=client_id)
+    client = get_object_or_404(Client, id=client_id, user=request.user)
     
     if request.method == 'POST':
         form = ClientForm(request.POST, instance=client)
@@ -121,8 +136,9 @@ def edit_client(request, client_id):
     
     return render(request, 'client/edit_client.html', {'form': form, 'client': client})
 
+@login_required
 def delete_client(request, client_id):
-    client = get_object_or_404(Client, id=client_id)
+    client = get_object_or_404(Client, id=client_id, user=request.user)
     
     if request.method == 'POST':
         client.delete()
@@ -136,5 +152,8 @@ def test(request):
     
     client_list = Client.objects.filter(name__icontains='민')
     
-    return render(request,'client/test.html',{'client_list': client_list})
+    return render(request,'client/test.html', {'client_list': client_list})
+
+
+
 

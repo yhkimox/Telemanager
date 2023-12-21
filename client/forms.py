@@ -6,3 +6,5 @@ class ClientForm(forms.ModelForm):
         model = Client
         fields = ['name', 'location', 'number']  
 
+
+

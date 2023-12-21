@@ -32,6 +32,16 @@
 </head>
 <body>
 
+    <ul class="nav navbar-nav navbar-right">
+        {% if not user.is_authenticated %}
+            <li><a href="{% url 'account:signup' %}">회원 가입 </a> </li>
+            <li><a href="{% url 'account:login' %}?next={{request.path}}">로그인</a></li>
+        {% else %}
+            <li><a href="">{{user}}님!</a> </li> 
+            <li><a href="{%  url 'account:logout' %}?next={{request.path}}">로그 아웃</a></li>
+        {% endif %}
+     </ul>
+     
     <h2>고객 목록</h2>
 
     <form method="post" action="{% url 'client:delete_selected' %}">
@@ -47,6 +57,9 @@
                     <th>나이</th>
                     <th>성별</th>
                     <th>이메일</th>
+                    <th>TM 목적</th>
+                    <th>상담날짜</th>
+                    <th>감성</th>
                     <th>고객관리</th>
                 </tr>
             </thead>
@@ -61,6 +74,9 @@
                         <td>{{ client.age }}</td>
                         <td>{{ client.gender }}</td>
                         <td>{{ client.email }}</td>
+                        <td>{{ client.tm_date|date:"Y. m. d P" }}</td>
+                        <td>추가해야함</td>
+                        <td>O/X</td>
                         <td>
                             <a href="{% url 'client:edit_client' client.id %}">수정하기</a> | 
                             <a href="{% url 'client:delete_client' client.id %}">삭제하기</a>
@@ -71,12 +87,8 @@
         </table>
     
         <br><br>
-        <button type="submit">선택된 고객 삭제</button>
-        <button><a href="{% url 'client:upload' %}">고객 정보 업로드</a></button>
-    </form>
-<br><br>
 
-{% if is_paginated %}
+    {% if is_paginated %}
     <div class="pagination">
         <span class="page-links">
             {% if page_obj.has_previous %}
@@ -99,6 +111,15 @@
         </span>
     </div>
 {% endif %}
+
+
+        <br><br>
+        <button type="submit">선택된 고객 삭제</button>
+        <button><a href="{% url 'client:upload' %}">고객 정보 업로드</a></button>
+    </form>
+<br><br>
+
+
 
 {% if tmgoal %}
     <p>마케팅 목적 : {{ tmgoal }}</p>
