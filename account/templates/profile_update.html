@@ -1,0 +1,11 @@
+{% block content %}
+    <h1>내 정보 수정</h1>
+    <form method="post" action="{% url 'account:profile_update' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">저장</button>
+    </form>
+    <hr>
+    <a href="{% url 'account:password_change' %}">암호 변경하기</a>
+    <a href="{% url 'account:profile' %}">취소</a>
+{% endblock %}

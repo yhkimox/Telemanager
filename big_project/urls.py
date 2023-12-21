@@ -5,7 +5,7 @@ from django.urls import path, include
 from django.shortcuts import render
 from django.conf import settings
 from django.conf.urls.static import static
-
+from django.contrib.auth import views as auth_views
 def index(request):
     return render(request, 'index.html')
 
@@ -15,7 +15,7 @@ urlpatterns = [
     path('account/', include('account.urls')),
     path('chatbot/', include('chatbot.urls')),
     path('client/', include('client.urls')),
-    path('index.html', index, name='index'),  # /index.html에 대한 URL 패턴 추가
+    path('index.html/', index, name='index'),  # /index.html에 대한 URL 패턴 추가
 ]
 
 if settings.DEBUG:
