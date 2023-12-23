@@ -2,6 +2,7 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django import forms
 from .models import Profile
 from django.contrib.auth.models import User
+from .models import UserFile
 
 class SignupForm(UserCreationForm):
     
@@ -24,4 +25,13 @@ class ProfileUpdateForm(UserChangeForm):
         self.fields['password'].widget = forms.HiddenInput()
         self.fields['password'].required = False
         
+
+class UserFileForm(forms.ModelForm):
+    class Meta:
+        model = UserFile
+        fields = ['description', 'file']
         
+class UserFileForm2(forms.ModelForm):  # 삭제할 때 사용
+    class Meta:
+        model = UserFile
+        fields = ['description']

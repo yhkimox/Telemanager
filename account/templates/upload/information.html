@@ -3,22 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>고객 정보 업로드</title>
+    <title>회사 데이터 업로드</title>
 </head>
 <body>
 
-<h2>고객 정보 업로드</h2>
+<h2>파일 업로드</h2>
 
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    <input type="file" name="excel_file" accept=".xlsx, .xls" required>
+    <label for="description">파일 설명:</label><br>
+    <textarea id="description" name="description" rows="4" cols="50"></textarea>
     <br><br>
-
-     <label for="tmgoal">마케팅 목적</label><br>
-
-     <input type="text" name="tmgoal" id="tmgoal" required>
-     <br><br>
-
+    <input type="file" name="file" required>
+    <br><br>
     <input type="submit" value="Upload">
     <button><a href="{% url 'client:list' %}">취소</a></button>
 </form>
