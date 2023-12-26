@@ -16,6 +16,7 @@ from django.views.generic import ListView, View
 from django.urls import reverse
 import os
 
+
 def index(request):
     return render(request, 'registration/login.html')
 

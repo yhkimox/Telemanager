@@ -9,7 +9,8 @@ class UserFile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.TextField(blank=True)
     upload_date = models.DateTimeField(auto_now_add=True)
-    file = models.FileField(upload_to='user_files/')
+    file = models.FileField(upload_to='company_data_files/')
+    #embedding_file = models.FileField(upload_to='embedding_files/', default=True, null=True)
 
     def __str__(self):
         return self.file.name

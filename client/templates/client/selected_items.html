@@ -1,0 +1,106 @@
+<form method="post" action="{% url 'client:start_tm' %}">
+    {% csrf_token %}
+    <h2>TM message</h2>
+    <input type="text" name="input_data" id="textInput" placeholder="TM 목적 입력.">
+    <input type="submit" value="저장하기">
+
+    <br>
+ 
+
+<h2>선택된 고객 목록</h2>
+
+<table border="1"> 
+    <thead>
+        <tr>
+            <th><input type="checkbox" id="select-all"></th>
+            <th>이름</th>
+            <th>주소</th>
+            <th>전화번호</th>
+            <th>생년월일</th>
+            <th>나이</th>
+            <th>성별</th>
+            <th>이메일</th>
+            <th>상담날짜</th>
+            <th>TM 목적</th>
+            <th>감성</th>
+            <th>고객관리</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for client in selectedClients %}
+            <tr>
+                <td><input type="checkbox" name="client_ids" value="{{ client.id }}"></td>
+                <td>{{ client.name }}</td>
+                <td>{{ client.location }}</td>
+                <td>{{ client.number }}</td>
+                <td>{{ client.birth_date }}</td>
+                <td>{{ client.age }}</td>
+                <td>{{ client.gender }}</td>
+                <td>{{ client.email }}</td>
+                <td>{{ client.tm_date|date:"Y. m. d P" }}</td>
+                <td>추가해야함</td>
+                <td>O/X</td>
+                <td>
+                    <a href="{% url 'client:edit_client' client.id %}">수정하기</a> | 
+                    <a href="{% url 'client:delete_client' client.id %}">삭제하기</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<h2>선택된 파일 목록</h2>
+<table border="1"> 
+    <thead>
+        <tr>
+            <th><input type="checkbox" id="select-all2"></th>
+            <th>파일 이름</th>
+            <th>업로드 날짜</th>
+            <th>설명</th>
+            <th>파일관리</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for file in selectedFiles %}
+            <tr>
+                <td><input type="checkbox" name="file_ids" value="{{ file.id }}"></td>
+                <td>{{ file.file.name|cut:"user_files/" }}</td>
+                <td>{{ file.upload_date }}</td>
+                <td>{{ file.description }}</td>
+                <td>
+                    <a href="{% url 'account:edit_file' file.id %}">수정하기</a> | 
+                    <a href="{% url 'account:delete_file' file.id %}">삭제하기</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
+</form>
+
+<button><a href="{% url 'client:list'  %}">뒤로가기</a></button>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    const outboundButton = document.querySelector('button > a[href="{% url 'client:start_tm' %}"]');
+    outboundButton.addEventListener('click', function(event) {
+        event.preventDefault(); 
+
+
+        const selectedClientIds = Array.from(document.querySelectorAll('input[name="client_ids"]:checked')).map(checkbox => checkbox.value);
+        const selectedFileIds = Array.from(document.querySelectorAll('input[name="file_ids"]:checked')).map(checkbox => checkbox.value);
+
+        const urlParams = new URLSearchParams();
+        urlParams.append('selected_clients', selectedClientIds.join(','));
+        urlParams.append('selected_files', selectedFileIds.join(','));
+
+        // 새로운 URL로 이동
+        window.location.href = "{% url 'client:start_tm' %}?" + urlParams.toString();
+    });
+});
+
+</script>
