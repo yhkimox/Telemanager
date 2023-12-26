@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpRequest
 from django.views.generic import ListView, View
 import pandas as pd
-from .models import Client
+from .models import Client, Marketing
 from .forms import ClientForm  # 고객 모델 폼
 from django.urls import reverse
 from datetime import datetime
@@ -10,6 +10,7 @@ import os
 import zipfile
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+import logging # 디버그 로그 확인
 
 
 class ClientListView(LoginRequiredMixin, ListView):
@@ -18,10 +19,8 @@ class ClientListView(LoginRequiredMixin, ListView):
     context_object_name = 'client_list'  # 템플릿에서 사용할 컨텍스트 변수 이름
     paginate_by = 10  # 한 페이지에 표시할 객체 수
     
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs): # 2
         context = super().get_context_data(**kwargs)  # 컨텍스트 데이터 가져옴
-
-        
         context['tmgoal'] = self.request.session.get('tmgoal', None)
 
         return context
@@ -31,10 +30,40 @@ class ClientListView(LoginRequiredMixin, ListView):
         Client.objects.filter(id__in=selected_ids).delete()  
         return redirect(reverse('client:list'))  
     
-    def get_queryset(self):
-        return Client.objects.filter(user=self.request.user)
+    def get_queryset(self): # 1 엑셀 데이터는 계속 저장되어 왔는데 이게 출력이 안되는 것일 뿐...
+        user = self.request.user
+        #print(f"Current User ID: {user.id}")
+        queryset = Client.objects.filter(user=self.request.user).order_by('-tm_date')  # '-tm_date'는 내림차순 정렬을 의미
+        #print(f"Queryset length: {queryset.count()}")
+        #print(f"Queryset data: {queryset.values()}")
+        return queryset
 
 
+# 수정사항 - 마케팅 정보 저장
+class MarketingListView(LoginRequiredMixin, ListView):
+    model = Client
+    template_name = 'client/client_list.html'  
+    context_object_name = 'file_list'  # 템플릿에서 사용할 컨텍스트 변수 이름
+    paginate_by = 10  # 한 페이지에 표시할 객체 수
+    
+    def get_context_data(self, **kwargs): # 2
+        context = super().get_context_data(**kwargs)  # 컨텍스트 데이터 가져옴
+        context['tmgoal'] = self.request.session.get('tmgoal', None)
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        selected_ids = request.POST.getlist('file_ids')  
+        Client.objects.filter(id__in=selected_ids).delete()  
+        return redirect(reverse('client:list'))  
+    
+    def get_queryset(self): # 1 엑셀 데이터는 계속 저장되어 왔는데 이게 출력이 안되는 것일 뿐...
+        user = self.request.user
+        #print(f"Current User ID: {user.id}")
+        queryset = Client.objects.filter(user=self.request.user).order_by('-tm_date')  # '-tm_date'는 내림차순 정렬을 의미
+        #print(f"Queryset length: {queryset.count()}")
+        #print(f"Queryset data: {queryset.values()}")
+        return queryset
 
 
 class DeleteSelectedClientsView(View):
@@ -56,7 +85,7 @@ def normalize_gender(gender_str):
     
 
     
-def upload_excel(request):
+def upload_excel(request): # 이상 없음.
     if request.method == 'POST':
         excel_file = request.FILES['excel_file']
         tmgoal = request.POST.get('tmgoal')
@@ -69,7 +98,6 @@ def upload_excel(request):
         print(df.columns)
 
         for index, row in df.iterrows():
-            
             name = str(row['name'])
             number = row['number']
             email = row['email']
@@ -77,7 +105,6 @@ def upload_excel(request):
             
             # 기존에 손님 데이터와 중복되는 데이터인지 확인
             existing_client = Client.objects.filter(name=name, number=number, email=email).first()
-            
             if existing_client:
                 continue
             
@@ -106,8 +133,11 @@ def upload_excel(request):
             
             temp_date = datetime.now()
             
-            user = request.user
-            
+            user = request.user # 문제는 원래 저장되어 있던 데이터여서 새로 안된거일 뿐이었다. 데이터베이스를 초기화하는 코드가 약간 필요할듯 하다.
+            #if user.is_authenticated:
+            #    print(f"User ID: {user.pk}")
+            #else:
+            #    print("User is not authenticated.")
             Client.objects.create(
                 user = user,
                 name = name,
@@ -119,29 +149,12 @@ def upload_excel(request):
                 gender = normalized_gender,
                 email = email,
             )
-            
+        print(f"Client {Client.id} created successfully.")  # 디버깅 메시지 잘뜬다.
         return redirect('client:list')
     
-    return render(request, 'client/upload.html')
-
-
-def upload_excel2(request):
-    if request.method == 'POST':
-        excel_file = request.FILES['excel_file']
-        
-        df = pd.read_excel(excel_file)
-        print(df.columns)
-
-        for index, row in df.iterrows():
-            Client.objects.create(
-                name = row['name'], 
-                location = row['location'],
-                number = row['number'],
-            )
-            
-        return redirect('client:db')
     
     return render(request, 'client/upload.html')
+
 
 def edit_client(request, client_id):
     client = get_object_or_404(Client, id=client_id, user=request.user)
@@ -175,9 +188,5 @@ def test(request):
     return render(request,'client/test.html', {'client_list': client_list})
 
 
-
-
-
-def db(request):
-    return render(request, 'client/db.html')
-
+def open_modal(request):
+    return render(request, 'client/modal_content.html')

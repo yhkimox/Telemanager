@@ -8,6 +8,15 @@
 	Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)
 */
 
+
+
+/*hj*/
+.centered {
+    text-align: center;
+}
+
+
+
 /* Reset */
 
 	html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
@@ -2873,6 +2882,7 @@
 		border-color: rgba(0, 0, 0, 0.1);
 	}
 
+	
 /* Wrapper */
 
 	.wrapper {
@@ -3801,7 +3811,7 @@
 			background-color: #000;
 			height: 100%;
 			left: 0;
-			opacity: 0.65;
+			opacity: 0.5;
 			position: absolute;
 			top: 0;
 			width: 100%;
@@ -3864,7 +3874,7 @@
 		}
 
 		body.is-loading #banner:before {
-			opacity: 1;
+			opacity: 0.8;
 		}
 
 /* Footer */

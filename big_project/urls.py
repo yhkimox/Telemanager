@@ -25,6 +25,7 @@ urlpatterns = [
     path('account/', include('account.urls')),
     path('chatbot/', include('chatbot.urls')),
     path('client/', include('client.urls')),
+    path('post/', include('post.urls')),
     path('index.html', index, name='index'),
     path('generic.html', generic, name='generic'),
     path('elements.html', elements, name='elements'),

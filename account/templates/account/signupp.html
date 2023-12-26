@@ -1,0 +1,80 @@
+<!DOCTYPE HTML>
+<!--generic.html-->
+{% extends 'base.html' %}
+{% load static %}
+{% block static %}
+    <!-- 외부 CSS 파일에 대한 링크 -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+{% endblock %}
+
+{% block content %}
+
+
+<style>
+  /* 기본 스타일 */
+  .row.uniform {
+      text-align: center;
+  }
+
+  .row.uniform > div {
+      display: inline-block;
+      margin-right: 540px;
+      margin-left: 540px;
+  }
+
+  /* 작은 화면일 때 미디어 쿼리 */
+  @media screen and (max-width: 940px) {
+      .row.uniform > div {
+          display: block;
+          margin: 0 auto;
+      }
+  }
+</style>
+
+
+<!-- Banner --><section id="banner"><div class="inner">
+    <header><h1>TeleManager</h1>
+        <p>Outbound TM Automation Service for Enterprises</p>
+      </header><a href="#main" class="button big scrolly">Learn More</a>
+    </div>
+  </section><div id="main" class="container">
+<hr>
+<br><br>
+<!-- Form -->
+<div class="col align-center">
+  <h3>회원가입</h3>
+  <br>
+  <div class="inner">
+      <form method="post" action="#">
+          <div class="row uniform">
+            <div class="3u$ 12u$(small)">
+              <input type="text" name="name" id="name" value="" placeholder="Name"><div data-lastpass-icon-root="true" style="position: relative !important; height: 0px !important; width: 0px !important; float: left !important;"></div></div>
+            <div class="3u$ 12u$(small)">
+              <input type="email" name="email" id="email" value="" placeholder="PassWord"></div>
+            <div class="3u$ 12u$(small)">
+                <input type="email" name="email" id="email" value="" placeholder="PassWord check"></div>
+            <div class="3u$ 12u$(small)">
+                <input type="email" name="email" id="email" value="" placeholder="Email"></div>
+            </div>
+            
+            <br>
+            <!-- login -->
+            <div class="12u$">
+              <ul class="actions"><li><input type="submit" value="Submit" ></li>
+              </ul></div>
+    </div>
+</div>
+  </form>
+
+
+
+
+  
+
+
+
+
+
+
+
+{% endblock %}

@@ -1,5 +1,3 @@
-<!DOCTYPE HTML>
-<!--chat.html-->
 {% extends 'base.html' %}
 {% load static %}
 
@@ -16,16 +14,96 @@
         <header>
             <h1>TeleManager</h1>
             <p>Outbound TM Automation Service for Enterprises</p>
-
         </header>
         <a href="/" class="button big scrolly">구현 중</a>
     </div>
 </section>
 
 
+<style>
+    .upload-form-container {
+        display: flex;
+        justify-content: center; /* space-between; */
+        gap: 10%;
+    }
+
+    .upload-form {
+        width: 45%; /* 두 업로드 폼의 너비를 조절할 수 있습니다. */
+        margin-right: 5%; /* 각 업로드 폼의 우측 마진을 추가하여 간격을 조절합니다. */
+    }
+
+    /* 마지막 업로드 폼에는 마진을 추가하지 않습니다. */
+    .upload-form:last-child {
+        margin-right: 0;
+    }
+</style>
 
 
+<!-- 추가된 JavaScript 코드 -->
+<script language="javascript">
+document.addEventListener("DOMContentLoaded", function() {
+    // 초기에 알파 버튼만 보이게 설정
+    showButton('알파');
+});
 
+function showButton(val) {
+    var alphaButton = document.getElementById('알파');
+    var betaButton = document.getElementById('베타');
+    var gammaButton = document.getElementById('감마');
+    var message = document.getElementById('message');
+    var uploadForm = document.getElementById('upload-form');
+    var uploadForm2 = document.getElementById('upload-form-2');
+
+    if (val === '알파') {
+        alphaButton.style.display = 'block';
+        betaButton.style.display = 'none';
+        gammaButton.style.display = 'none';
+        message.innerHTML = '';
+        uploadForm.style.display = 'none';
+        uploadForm2.style.display = 'none';
+    } else if (val === '베타') {
+        alphaButton.style.display = 'none';
+        betaButton.style.display = 'block';
+        gammaButton.style.display = 'none';
+        message.innerHTML = '';
+        uploadForm.style.display = 'block';
+        uploadForm2.style.display = 'block';
+    } else if (val === '감마') {
+        alphaButton.style.display = 'none';
+        betaButton.style.display = 'none';
+        gammaButton.style.display = 'block';
+        message.innerHTML = '';
+        uploadForm.style.display = 'none';
+        uploadForm2.style.display = 'none';
+    }
+}
+</script>
+
+<!-- 버튼들 -->
+<button id="알파" onclick="showButton('베타');">a</button>
+<button id="베타" style="display: none;" onclick="showButton('감마');">b</button>
+<button id="감마" style="display: none;" onclick="showButton('알파');">c</button>
+
+<!-- 메시지 표시 영역 -->
+<div id="message"></div>
+
+<!-- 업로드 폼 -->
+<div class="upload-form-container">
+    <form id="upload-form" method="post" enctype="multipart/form-data" action="{% url 'client:upload' %}" style="display: none;">
+        {% csrf_token %}
+        <label for="excel_file">Excel 파일 업로드:</label>
+        <input type="file" name="excel_file" accept=".xlsx, .xls">
+        <button type="submit">업로드</button>
+    </form>
+
+    <!-- 두 번째 업로드 폼 -->
+    <form id="upload-form-2" method="post" enctype="multipart/form-data" action="{% url 'client:upload' %}" style="display: none;">
+        {% csrf_token %}
+        <label for="excel_file_2">두 번째 파일 업로드:</label>
+        <input type="file" name="excel_file_2" accept=".xlsx, .xls">
+        <button type="submit">업로드</button>
+    </form>
+</div>
 
 
 {% endblock %}

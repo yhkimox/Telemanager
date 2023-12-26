@@ -5,14 +5,16 @@ from .forms import SignupForm
 from django.contrib.auth.views import PasswordChangeView
 from django.urls import reverse_lazy
 from django.http import HttpResponse
+from django.contrib.auth import logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import ProfileUpdateForm
 
 
 # Create your views here.
-def page(request):
-    return render(request, 'account/page.html')
+
+def index(request):
+    return render(request, 'registration/login.html')
 
 def signup(request):
     if request.method == 'POST':
@@ -23,7 +25,7 @@ def signup(request):
     else:
         form = SignupForm()
             
-    return render(request, 'registration/signup.html',{'form':form})
+    return render(request, 'registration/login.html',{'form':form})
     
 
 def profile_update(request):
@@ -44,3 +46,4 @@ class MyPasswordChangeView(PasswordChangeView):
     def form_valid(self, form):
         messages.info(self.request, '암호 변경을 완료했습니다.')
         return super().form_valid(form)
+    

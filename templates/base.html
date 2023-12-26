@@ -21,12 +21,23 @@
     <!-- 내비게이션 -->
     <nav id="menu">
         <ul class="links">
-            <li><a href="/">홈</a></li>
-            <li><a href="/account/signup/">로그인</a></li>
-            <li><a href="/client/list/">고객 정보</a></li> <!-- http://127.0.0.1:8000/account/signup/ 로 들어가야함. -->
-            <li><a href="/chatbot/">챗봇 상담</a></li>
-            <li><a href="/generic.html">일반</a></li>
-            <li><a href="/elements.html">요소</a></li>
+            <li><a href="/">Home</a></li>
+            {% if not user.is_authenticated %}
+            <li><a href='/account/'>Login</a></li>
+            {% else %}
+            <li><a href='{%  url 'account:profile' %}'>내 정보</a></li>
+            <form method="post" action="{% url 'account:logout' %}">
+                {% csrf_token %}
+                <li><a type="submit">Logout</a></li>
+                <button type="submit">Logout</button>
+            </form>
+            {% endif %}
+            <li><a href='/client/list/'>고객관리</a></li>
+            <li><a href='/chatbot/'>고객마케팅</a></li>
+            <li><a href='/post/'>게시판</a></li>
+            <li><a href="generic.html">*일반</a></li>
+            <li><a href="elements.html">*요소</a></li>
+
         </ul>
     </nav>
 
@@ -36,15 +47,12 @@
     <footer id="footer">
         <div class="copyright">
             <ul class="icons">
-                <li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
-                <li><a href="#" class="icon fa-facebook"><span class="label">Facebook</span></a></li>
-                <li><a href="#" class="icon fa-instagram"><span class="label">Instagram</span></a></li>
-                <li><a href="#" class="icon fa-snapchat"><span class="label">Snapchat</span></a></li>
-            </ul>
+                <li><a href="https://github.com/TeleManager" class="icon fa-github"><span class="label">Github</span></a></li>
+                </ul>
         </div>
     </footer>
     <div class="copyright">
-        Site made with: <a href="https://templated.co/">TEMPLATED.CO</a>
+        Site made with: <a>Team 11</a>
     </div>
 
     <!-- 스크립트 -->
