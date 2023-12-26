@@ -1,3 +1,2 @@
 from django.contrib import admin
-
-# Register your models here.
+# 게시글(Post) Model을 불러옵니다
