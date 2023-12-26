@@ -1,19 +1,19 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, resolve_url, get_object_or_404
+from django.contrib.auth.forms import UserCreationForm,PasswordResetForm, SetPasswordForm
 from django.contrib.auth.forms import UserCreationForm
 from django.conf import settings
 from .forms import SignupForm
-from django.contrib.auth.views import PasswordChangeView
+from django.contrib.auth.views import PasswordChangeView,PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django.contrib.auth import logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import ProfileUpdateForm
-
+from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.template.loader import render_to_string
 from django.http import JsonResponse
-
-
 from .forms import UserFileForm, UserFileForm2
 from .models import UserFile  
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -54,6 +54,17 @@ class MyPasswordChangeView(PasswordChangeView):
     def form_valid(self, form):
         messages.info(self.request, '암호 변경을 완료했습니다.')
         return super().form_valid(form)
+  
+class UserPasswordResetView(PasswordResetView):
+    template_name = 'registration/password_reset.html' #템플릿을 변경하려면 이와같은 형식으로 입력
+    success_url = reverse_lazy('account:password_reset_done')
+    form_class = PasswordResetForm
+    
+    def form_valid(self, form):
+        if User.objects.filter(email=self.request.POST.get("email")).exists():
+            return super().form_valid(form)
+        else:
+            return render(self.request, 'registration/password_reset_done_fail.html')
 
 
     def get(self, request, *args, **kwargs):
@@ -113,4 +124,3 @@ class DeleteSelectedFilesView(LoginRequiredMixin, View):
         selected_ids = request.POST.getlist('file_ids')  
         UserFile.objects.filter(id__in=selected_ids).delete()  
         return redirect(reverse('client:list'))  
-
