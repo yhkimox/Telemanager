@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
+from account.views import UserPasswordResetCompleteView, UserPasswordResetDoneView, UserPasswordResetConfirmView
 
 
 
@@ -28,6 +29,9 @@ urlpatterns = [
     path('index.html', index, name='index'),
     path('generic.html', generic, name='generic'),
     path('elements.html', elements, name='elements'),
+    # path('password_reset_done/', UserPasswordResetDoneView.as_view(), name="password_reset_done"),
+    path('password_reset_confirm/<uidb64>/<token>/', UserPasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('password_reset_complete/', UserPasswordResetCompleteView.as_view(), name='password_reset_complete'),
 ]
 
 if settings.DEBUG:
