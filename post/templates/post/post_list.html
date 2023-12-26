@@ -1,0 +1,9 @@
+<!-- post/templates/post/post_list.html -->
+
+<h1>Post List</h1>
+
+{% for post in posts %}
+  <p><a href="{% url 'post:post_detail' pk=post.pk %}">{{ post.title }}</a></p>
+{% endfor %}
+
+<a href="{% url 'post:post_new' %}">New Post</a>
