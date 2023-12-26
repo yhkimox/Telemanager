@@ -103,6 +103,34 @@
     max-width: 720px; /* 내용이 너무 넓어지지 않도록 최대 너비를 설정합니다. 필요에 따라 조절하세요. */
   }
 
+
+  .custom-table-wrapper {
+	/* 가운데 정렬과 여백 조절을 위한 스타일 */
+	text-align: center;
+	margin: 0 auto; /* 가운데 정렬을 위한 auto 마진 */
+	padding: 20px;
+	max-width: 1300px;
+}
+
+/* 테이블 스타일 */
+.custom-table-wrapper table {
+	width: 100%; /* 테이블이 부모 요소에 꽉 차도록 */
+	border-collapse: collapse;
+	margin-top: 40px; /* 테이블 위 여백 조절 */
+}
+
+.custom-table-wrapper table, .custom-table-wrapper th, .custom-table-wrapper td {
+	padding: 8px; /* 셀 안 여백 조절 */
+	text-align: center; /* 가운데 정렬 */
+}
+.custom-search {
+	margin: 0 150px; /* 좌우 여백 조절 */
+}
+
+
+
+
+
   /* 모달 스타일 */
 .modal {
     display: none; /* 기본적으로 숨겨진 상태로 설정 */
