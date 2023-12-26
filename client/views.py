@@ -10,19 +10,36 @@ import os
 import zipfile
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from account.models import UserFile
+from pytz import UTC
+from django.core.paginator import Paginator
 
 
 class ClientListView(LoginRequiredMixin, ListView):
     model = Client
     template_name = 'client/client_list.html'  
-    context_object_name = 'client_list'  # 템플릿에서 사용할 컨텍스트 변수 이름
-    paginate_by = 10  # 한 페이지에 표시할 객체 수
+    
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)  # 컨텍스트 데이터 가져옴
+        
+        client_list = Client.objects.filter(user = self.request.user)
+        file_list = UserFile.objects.filter(user = self.request.user)
 
-       
+        client_paginator = Paginator(client_list, 5)
+        file_paginator = Paginator(file_list, 5)
+    
+        client_page_number = self.request.GET.get('client_page')
+        file_page_number = self.request.GET.get('file_page')
+        
+            
+        client_obj = client_paginator.get_page(client_page_number)
+        file_obj = file_paginator.get_page(file_page_number)
+        
+        
         context['tmgoal'] = self.request.session.get('tmgoal', None)
+        context['client_obj'] = client_obj
+        context['file_obj'] = file_obj
 
         return context
     
@@ -60,22 +77,19 @@ def upload_excel(request):
         request.session['tmgoal'] = tmgoal
         df = pd.read_excel(excel_file)
         
-        # birth_date 같은 경우 문자열로 변환
-        df['birth_date'] = df['birth_date'].astype(str)
-        
         print(df.columns)
 
         for index, row in df.iterrows():
-            
+            user = request.user
             name = str(row['name'])
             number = row['number']
             email = row['email']
-            print(email)
-            
+            print(name, number, email)
             # 기존에 손님 데이터와 중복되는 데이터인지 확인
-            existing_client = Client.objects.filter(name=name, number=number, email=email).first()
+            existing_client = Client.objects.filter(name=name, number=number, email=email, user= user).first()
             
-            if existing_client:
+            if existing_client is not None:
+                print(existing_client.name)
                 continue
             
             # raw_birth_date 에는 마스킹 전 생년월일
@@ -83,17 +97,15 @@ def upload_excel(request):
             
             # 생년월일이 엑셀로 들어올 경우, age 계산
             if raw_birth_date:
-                birth_date = datetime.strptime(raw_birth_date, '%Y-%m-%d')
+                birth_date = raw_birth_date.to_pydatetime()  # Timestamp 객체를 datetime 객체로 변환
                 today = datetime.today()
                 age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
             
-            # 생년월일이 없을 경우,     
+                # 생년월일 마스킹        
+                masked_birth_date = raw_birth_date.strftime('%Y-%m-%d')[:5] + 'XX-XX'
             else:  
                 age = None
-            
-            # 생년월일 마스킹        
-            masked_birth_date = raw_birth_date[:5] + 'XX-XX'
-            
+                masked_birth_date = None
             
             # 정규화 전 성별
             raw_gender = row.get('gender', None)
@@ -101,22 +113,21 @@ def upload_excel(request):
             # 성별 변환
             normalized_gender = normalize_gender(raw_gender)
             
-            temp_date = datetime.now()
+            temp_date = UTC.localize(datetime.now())
             
-            user = request.user
             
             Client.objects.create(
-                user = user,
-                name = name,
-                location = row['location'],
-                number = number,
-                birth_date = masked_birth_date,
-                age = age,
-                tm_date = temp_date,
-                gender = normalized_gender,
-                email = email,
+                user=user,
+                name=name,
+                location=row['location'],
+                number=number,
+                birth_date=masked_birth_date,
+                age=age,
+                tm_date=temp_date,
+                gender=normalized_gender,
+                email=email,
             )
-            
+        print(tmgoal)
         
         return redirect('client:list')
     

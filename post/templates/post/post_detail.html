@@ -1,7 +1,7 @@
+<!-- post/templates/post/post_detail.html -->
+
 <h1>{{ post.title }}</h1>
+<p>{{ post.content }}</p>
 
-<p>
-    {{ post.content }}
-</p>
-
-<small>{{ post.updated_at }}</small>
+<a href="{% url 'post:post_list' %}">Back to Post List</a>
+<a href="{% url 'post:post_delete' pk=post.pk %}">Delete Post</a>

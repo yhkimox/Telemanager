@@ -29,9 +29,11 @@ urlpatterns = [
     path('profile_update/', views.profile_update, name='profile_update'),
     path('password_change/', views.MyPasswordChangeView.as_view(), name='password_change'),
     path('password_reset/', views.UserPasswordResetView.as_view(), name="password_reset"),
-    path('password_reset_done/', views.UserPasswordResetDoneView.as_view(), name="password_reset_done"),
-    # path('password_reset_confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-    # path('password_reset_complete/', views.UserPasswordResetCompleteView.as_view(), name='password_reset_complete'),
+    path('list/', views.file_list, name='file_list'),  
+    path('upload/', views.file_upload, name='file_upload'),
+    path('edit/<int:file_id>/', views.edit_file, name='edit_file'),
+    path('delete/<int:file_id>/', views.delete_file, name='delete_file'),
+    path('delete_selected/', views.DeleteSelectedFilesView.as_view(), name='delete_selected'),
 ]
 
 if settings.DEBUG:
