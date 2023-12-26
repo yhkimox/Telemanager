@@ -2,11 +2,10 @@ from django.urls import path, reverse, reverse_lazy
 from . import views
 from .models import *
 from django.contrib.auth import views as auth_views
-
 from django.shortcuts import render
 from django.conf import settings
 from django.conf.urls.static import static
-
+from django.urls import path
 from django.contrib import admin
 from django.urls import path, include
 
@@ -26,7 +25,6 @@ urlpatterns = [
 
     path('generic.html', generic, name='generic'),
     path('elements.html', elements, name='elements'),
-    
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),
     path('list/', views.post_list, name='post_list'),
