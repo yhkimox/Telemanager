@@ -127,6 +127,7 @@ def upload_excel(request):
                 gender=normalized_gender,
                 email=email,
             )
+        print(tmgoal)
         
         return redirect('client:list')
     
