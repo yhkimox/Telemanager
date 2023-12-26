@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회사 데이터 업로드</title>
+</head>
+<body>
+
+<h2>파일 업로드</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label for="description">파일 설명:</label><br>
+    <textarea id="description" name="description" rows="4" cols="50"></textarea>
+    <br><br>
+    <input type="file" name="file" required>
+    <br><br>
+    <input type="submit" value="Upload">
+    <button><a href="{% url 'client:list' %}">취소</a></button>
+</form>
+
+</body>
+</html>
