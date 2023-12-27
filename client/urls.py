@@ -24,7 +24,6 @@ urlpatterns = [
 
     path('delete_selected/', views.DeleteSelectedClientsView.as_view(), name='delete_selected'),
     #path('customer/', customer, name='customer'),
-    path('open_modal/', views.open_modal, name='open_modal'),
 ]
 
 

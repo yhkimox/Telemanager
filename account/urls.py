@@ -32,6 +32,11 @@ urlpatterns = [
     path('profile/', TemplateView.as_view(template_name='registration/profile.html'), name='profile' ),
     path('profile_update/', views.profile_update, name='profile_update'),
     path('password_change/', views.MyPasswordChangeView.as_view(), name='password_change'),
+    path('list/', views.file_list, name='file_list'),  
+    path('upload/', views.file_upload, name='file_upload'),
+    path('edit/<int:file_id>/', views.edit_file, name='edit_file'),
+    path('delete/<int:file_id>/', views.delete_file, name='delete_file'),
+    path('delete_selected/', views.DeleteSelectedFilesView.as_view(), name='delete_selected'),
 ]
 
 if settings.DEBUG:
