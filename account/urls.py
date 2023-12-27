@@ -9,6 +9,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from .views import UserPasswordResetView
 
 app_name = 'account'
 
@@ -29,6 +30,7 @@ urlpatterns = [
     path('profile_update/', views.profile_update, name='profile_update'),
     path('password_change/', views.MyPasswordChangeView.as_view(), name='password_change'),
     path('password_reset/', views.UserPasswordResetView.as_view(), name="password_reset"),
+    path('password_reset_done/', auth_views.PasswordResetDoneView.as_view(), name="password_reset_done"),
     path('list/', views.file_list, name='file_list'),  
     path('upload/', views.file_upload, name='file_upload'),
     path('edit/<int:file_id>/', views.edit_file, name='edit_file'),

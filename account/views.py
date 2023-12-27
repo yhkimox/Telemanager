@@ -1,9 +1,8 @@
 from django.shortcuts import render, redirect, resolve_url, get_object_or_404
-from django.contrib.auth.forms import UserCreationForm,PasswordResetForm, SetPasswordForm
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm,PasswordResetForm
 from django.conf import settings
 from .forms import SignupForm
-from django.contrib.auth.views import PasswordChangeView,PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
+from django.contrib.auth.views import PasswordChangeView,PasswordResetView, PasswordResetDoneView
 from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django.contrib.auth import logout
@@ -12,15 +11,14 @@ from django.contrib.auth.decorators import login_required
 from .forms import ProfileUpdateForm
 from django.template.loader import render_to_string
 from django.http import JsonResponse
-
-
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from django.template.loader import render_to_string
 from django.http import JsonResponse
-
 from .forms import CompanyFileForm, CompanyFileForm2
 from .models import CompanyFile 
+from .forms import UserFileForm, UserFileForm2
+from .models import UserFile  
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, View
 from django.urls import reverse
@@ -66,7 +64,8 @@ class MyPasswordChangeView(PasswordChangeView):
     def form_valid(self, form):
         messages.info(self.request, '암호 변경을 완료했습니다.')
         return super().form_valid(form)
-  
+
+# 비밀번호 찾기
 class UserPasswordResetView(PasswordResetView):
     template_name = 'registration/password_reset.html' #템플릿을 변경하려면 이와같은 형식으로 입력
     success_url = reverse_lazy('account:password_reset_done')
@@ -78,17 +77,14 @@ class UserPasswordResetView(PasswordResetView):
         else:
             return render(self.request, 'registration/password_reset_done_fail.html')
 
-
-    def get(self, request, *args, **kwargs):
-        # 암호 변경 폼을 문자열로 렌더링
-        form_html = render_to_string(self.template_name, {'form': self.get_form()})
-        return JsonResponse({'form_html': form_html}, safe=False)
-
-
-    def get(self, request, *args, **kwargs):
-        # 암호 변경 폼을 문자열로 렌더링
-        form_html = render_to_string(self.template_name, {'form': self.get_form()})
-        return JsonResponse({'form_html': form_html}, safe=False)
+# class UserPasswordResetDoneView(PasswordResetDoneView):
+#     template_name = 'registration/password_reset_done.html'
+    
+    
+    # def get(self, request, *args, **kwargs):
+    #     # 암호 변경 폼을 문자열로 렌더링
+    #     form_html = render_to_string(self.template_name, {'form': self.get_form()})
+    #     return JsonResponse({'form_html': form_html}, safe=False)
 
 @login_required
 def file_upload(request):
