@@ -100,6 +100,27 @@ def file_upload(request):
                 user_file.user = request.user
                 user_file.file = uploaded_file  # 파일 객체를 모델 필드에 할당합니다.
                 
+                ##################################################
+                # hugging face 임베딩 저장
+                model_name = "jhgan/ko-sroberta-multitask"
+                model_kwargs = {'device': 'cpu'}
+                encode_kwargs = {'normalize_embeddings': False}
+
+                hf = HuggingFaceEmbeddings(
+                    model_name=model_name,
+                    model_kwargs=model_kwargs,
+                    encode_kwargs=encode_kwargs
+                )
+                
+                ###################################################
+                # embedding vector 저장
+                vectordb_hf = Chroma.from_documents(
+                    documents=texts,
+                    embedding=hf, persist_directory="/chroma_db_hf")
+                vectordb_hf.persist()
+                ##################################################
+                
+                
                 user_file.save()
                 return redirect('client:list')
             else:
