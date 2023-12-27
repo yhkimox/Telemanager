@@ -128,7 +128,16 @@
 }
 
 
+.margin-form-container {
+	margin-left: 120px;  /* 왼쪽 여백 설정 */
+	margin-right: 120px; /* 오른쪽 여백 설정 */
+	margin-top: 20px;   /* 상단 여백 설정 */
+	margin-bottom: 20px; /* 하단 여백 설정 */
+}
 
+.margin-form-container button {
+	margin-right: 10px; /* 완료 버튼과 취소 버튼 사이 여백 설정 */    
+}
 
 
   /* 모달 스타일 */

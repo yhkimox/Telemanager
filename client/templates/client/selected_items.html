@@ -1,13 +1,54 @@
-<form method="post" action="{% url 'client:start_tm' %}">
-    {% csrf_token %}
-    <h2>TM message</h2>
-    <input type="text" name="input_data" id="textInput" placeholder="TM 목적 입력.">
-    <input type="submit" value="저장하기">
+<!DOCTYPE HTML>
+<!--generic.html-->
+{% extends 'base.html' %}
+{% load static %}
 
-    <br>
- 
+{% block static %}
+    <!-- 외부 CSS 파일에 대한 링크 -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+{% endblock %}
 
-<h2>선택된 고객 목록</h2>
+{% block content %}
+<style>
+    
+    .input-left {
+        display: flex;
+        flex-direction: row; /* 요소들을 가로로 나란히 배치합니다 */
+        align-items: center; /* 요소들을 세로로 가운데 정렬합니다 */
+        margin-right: 10px; /* 오른쪽 마진을 추가하여 input 요소 사이에 간격을 조절합니다 */
+    }
+    
+</style>
+
+<!-- Banner -->
+<section id="banner">
+    <div class="inner">
+        <header>
+            <h1>TeleManager</h1>
+            <p>Outbound TM Automation Service for Enterprises</p>
+        </header>
+        <a href="#main" class="button big scrolly">Learn More</a>
+    </div>
+</section>
+
+<div id="main" class="container">
+    <hr><br><br>
+
+
+    <form method="post" action="{% url 'client:start_tm' %}" class="form-container">
+        {% csrf_token %}
+        <h2 class='centered'>TM message</h2>
+        <br><br>
+        <span>어떤 목적의 마케팅을 보내드릴까요?</span>
+    
+        <div class='input-left'>
+        <input type="text" name="input_data" id="textInput" class="input-left" placeholder="TM 목적 입력">
+        <input type="submit" value="Send">
+        </div>
+        <br><br><br>
+        
+
+<h3>선택된 고객 목록</h3>
 
 <table border="1"> 
     <thead>
@@ -41,8 +82,7 @@
                 <td>추가해야함</td>
                 <td>O/X</td>
                 <td>
-                    <a href="{% url 'client:edit_client' client.id %}">수정하기</a> | 
-                    <a href="{% url 'client:delete_client' client.id %}">삭제하기</a>
+                    <a href="{% url 'client:edit_client' client.id %}">수정</a> 
                 </td>
             </tr>
         {% endfor %}
@@ -50,7 +90,7 @@
 </table>
 
 
-<h2>선택된 파일 목록</h2>
+<h3>선택된 파일 목록</h3>
 <table border="1"> 
     <thead>
         <tr>
@@ -69,8 +109,7 @@
                 <td>{{ file.upload_date }}</td>
                 <td>{{ file.description }}</td>
                 <td>
-                    <a href="{% url 'account:edit_file' file.id %}">수정하기</a> | 
-                    <a href="{% url 'account:delete_file' file.id %}">삭제하기</a>
+                    <a href="{% url 'account:edit_file' file.id %}">수정</a> 
                 </td>
             </tr>
         {% endfor %}
@@ -81,7 +120,10 @@
 
 </form>
 
-<button><a href="{% url 'client:list'  %}">뒤로가기</a></button>
+<button><a href="{% url 'client:list'  %}" style='color:white'>뒤로가기</a></button>
+
+
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -103,4 +145,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+
+
 </script>
+
+{% endblock %}

@@ -1,7 +1,8 @@
 <!DOCTYPE HTML>
-<!--index.html-->
+<!--generic.html-->
 {% extends 'base.html' %}
 {% load static %}
+
 {% block static %}
     <!-- 외부 CSS 파일에 대한 링크 -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
@@ -9,7 +10,7 @@
 
 {% block content %}
 
-<!-- 배너 -->
+<!-- Banner -->
 <section id="banner">
     <div class="inner">
         <header>
@@ -19,6 +20,9 @@
         <a href="#main" class="button big scrolly">Learn More</a>
     </div>
 </section>
+
+<div id="main" class="container">
+    <hr><br><br>
 
 
     <h1>Welcome to the Home Page</h1>
@@ -42,6 +46,10 @@
     <a href="{% url 'post:post_detail' post.id %}">{{ post.title }}</a>
 </h1>
 <span>{{ post.updated_at }}</span>
+
+
+
+</div>
 {% endfor %}
 
 {% endblock %}

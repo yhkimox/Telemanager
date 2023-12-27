@@ -1,4 +1,30 @@
 <!DOCTYPE html>
+<!--edit_client.html-->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block static %}
+    <!-- 외부 CSS 파일에 대한 링크 -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Banner -->
+<section id="banner">
+    <div class="inner">
+        <header>
+            <h1>TeleManager</h1>
+            <p>Outbound TM Automation Service for Enterprises</p>
+        </header>
+        <a href="#main" class="button big scrolly">Learn More</a>
+    </div>
+</section>
+
+<div id="main" class="container">
+    <hr><br><br>
+
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7,14 +33,18 @@
 </head>
 <body>
 
-<h2>고객 정보 수정</h2>
+<h3 class='centered'>고객 정보 수정</h3><br>
 
-<form method="post">
+<form method="post" class="margin-form-container">
     {% csrf_token %}
     {{ form.as_p }}  
     <button type="submit">완료</button>
-    <button><a href="{% url 'client:list' %}">취소</a></button>
+    <button><a href="{% url 'client:list' %}" style='color:white'>취소</a></button>
 </form>
 
 </body>
+</div>
 </html>
+
+
+{% endblock %}
