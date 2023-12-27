@@ -9,7 +9,6 @@
 
 {% block content %}
 
-
 <!-- 배너 -->
 <section id="banner">
     <div class="inner">
@@ -21,7 +20,29 @@
     </div>
 </section>
 
+<body>
+    <h1>Welcome to the Home Page</h1>
+    <p>This is a simple home page for your Django application.</p>
+    <p>Feel free to customize it according to your needs.</p>
+
+    <h2>Quick Links</h2>
+    <ul>
+        <li><a href="{% url 'post:post_list' %}">Go to Post List</a></li>
+        <li><a href="{% url 'post:post_new' %}">Create a New Post</a></li>
+    </ul>
+</body>
 
 
+<h1>post list page</h1>
+
+<hr>
+
+{% for post in post_list %}
+<h1>
+
+    <a href="{% url 'post:post_detail' post.id %}">{{ post.title }}</a>
+</h1>
+<span>{{ post.updated_at }}</span>
+{% endfor %}
 
 {% endblock %}
