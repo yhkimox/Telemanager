@@ -32,6 +32,7 @@ from langchain.vectorstores import Chroma
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders.csv_loader import CSVLoader
+import csv
 
 def index(request):
     return render(request, 'registration/login.html')
@@ -95,46 +96,27 @@ def file_upload(request):
     if request.method == 'POST':
         form = CompanyFileForm(request.POST, request.FILES)
         if form.is_valid():
-            uploaded_file = request.FILES['file']  # 업로드된 파일을 가져옵니다.
+            uploaded_file = request.FILES['file']
+            user_id = request.user.id
+            combined_name = f"{user_id}_{uploaded_file.name}"
+            
+            # 데이터베이스에서 파일 이름과 사용자 ID로 중복 확인
+            if CompanyFile.objects.filter(file=combined_name, user=request.user).exists():
+                messages.warning(request, '동일한 파일 이름이 이미 존재합니다.')
+                return redirect('client:list')
+
             fs = FileSystemStorage(location='media/company_data_files/')
             
             # 파일의 이름이 이미 존재하는지 확인합니다.
-            if not fs.exists(uploaded_file.name):
+            if not fs.exists(combined_name):
+                fs.save(combined_name, uploaded_file)
                 user_file = form.save(commit=False)
                 user_file.user = request.user
-                user_file.file = uploaded_file  # 파일 객체를 모델 필드에 할당합니다.
-                
-                # loader = CSVLoader(file_path='/content/drive/MyDrive/langchain/card.csv', source_column='카드명')
-                loader = CSVLoader(file_path='/content/drive/MyDrive/langchain/card.csv')
-                data = loader.load()
-                
-                text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-                texts = text_splitter.split_documents(data)
-                ##################################################
-                # hugging face 임베딩 저장
-                model_name = "jhgan/ko-sroberta-multitask"
-                model_kwargs = {'device': 'cpu'}
-                encode_kwargs = {'normalize_embeddings': False}
-
-                hf = HuggingFaceEmbeddings(
-                    model_name=model_name,
-                    model_kwargs=model_kwargs,
-                    encode_kwargs=encode_kwargs
-                )
-                
-                ###################################################
-                # embedding vector 저장
-                vectordb_hf = Chroma.from_documents(
-                    documents=texts,
-                    embedding=hf, persist_directory="/chroma_db_hf")
-                vectordb_hf.persist()
-                ##################################################
-                
-                
+                user_file.file = combined_name
                 user_file.save()
+            
                 return redirect('client:list')
             else:
-                # 이미 존재하는 파일 이름이면 여기로 이동
                 messages.warning(request, '동일한 파일 이름이 이미 존재합니다.')
                 return redirect('client:list')  
     else:

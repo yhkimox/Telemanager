@@ -19,7 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv()    # .env 파일 로드
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 MEDIA_URL = '/media/'
 
 # Quick-start development settings - unsuitable for production
@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "client",
     "chatbot",
     "post",
+    'import_export',
 ]
 
 MIDDLEWARE = [

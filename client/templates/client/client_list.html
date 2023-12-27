@@ -295,7 +295,7 @@
                                 <label for="copy_{{ file.id }}"></label>
                             </div>
                         </td>
-                        <td>{{ file.file.name|cut:"user_files/" }}</td>
+                        <td>{{ file.file.name|cut:"_"|slice:"1:" }}</td>
                         <td>{{ file.upload_date }}</td>
                         <td>{{ file.description }}</td>
                         <td>{{ file.embedding_file }} </td>
