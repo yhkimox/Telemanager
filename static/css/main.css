@@ -2041,7 +2041,8 @@
 	input[type="button"],
 	button,
 	.button,
-	#outboundout-button a {
+	#customer-button a,
+	#file-button a {
 		-moz-appearance: none;
 		-webkit-appearance: none;
 		-ms-appearance: none;
@@ -2068,7 +2069,8 @@
 		input[type="button"].icon,
 		button.icon,
 		.button.icon,
-		#outboundout-button a.icon {
+		#customer-button a.icon,
+		#file-button a.icon {
 			padding-left: 1.35em;
 		}
 
@@ -2077,7 +2079,8 @@
 			input[type="button"].icon:before,
 			button.icon:before,
 			.button.icon:before,
-			#outboundout-button a:before {
+			#customer-button a:before,
+			#file-button a:before {
 				margin-right: 0.5em;
 			}
 
@@ -2086,7 +2089,8 @@
 		input[type="button"].fit,
 		button.fit,
 		.button.fit,
-		#outboundout-button a.fit {
+		#customer-button a.fit,
+		#file-button a.fit {
 			display: block;
 			margin: 0 0 1em 0;
 			width: 100%;
@@ -2097,7 +2101,8 @@
 		input[type="button"].small,
 		button.small,
 		.button.small,
-		#outboundout-button a.small {
+		#customer-button a.small,
+		#file-button a.small {
 			font-size: 0.8em;
 		}
 
@@ -2106,7 +2111,8 @@
 		input[type="button"].big,
 		button.big,
 		.button.big,
-		#outboundout-button a.big {
+		#customer-button a.big,
+		#file-button a.big {
 			font-size: 1.35em;
 		}
 
@@ -2119,7 +2125,8 @@
 		button:disabled,
 		.button.disabled,
 		.button:disabled,
-		#outboundout-button a:disabled {
+		#customer-button a:disabled,
+		#file-button a:disabled {
 			-moz-pointer-events: none;
 			-webkit-pointer-events: none;
 			-ms-pointer-events: none;
@@ -2134,7 +2141,8 @@
 			input[type="button"],
 			button,
 			.button,
-			#outboundout-button a {
+			#customer-button a,
+			#file-button a {
 				padding: 0;
 				width: 100%;
 			}
@@ -2146,7 +2154,8 @@
 	input[type="button"],
 	button,
 	.button,
-	#outboundout-button a {
+	#customer-button a,
+	#file-button a {
 		background-color: #3498db;
 		color: #fff !important;
 	}
@@ -2156,7 +2165,8 @@
 		input[type="button"]:hover,
 		button:hover,
 		.button:hover,
-		#outboundout-button a:hover {
+		#customer-button a:hover,
+		#file-button a:hover {
 			background-color: #4aa3df;
 		}
 
@@ -2165,7 +2175,8 @@
 		input[type="button"]:active,
 		button:active,
 		.button:active,
-		#outboundout-button a:active {
+		#customer-button a:active,
+		#file-button a:active {
 			background-color: #258cd1;
 		}
 
@@ -2174,7 +2185,8 @@
 		input[type="button"].alt,
 		button.alt,
 		.button.alt,
-		#outboundout-button a.alt {
+		#customer-button a.alt,
+		#file-button a.alt {
 			background-color: transparent;
 			box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.1);
 			color: #000 !important;
@@ -2185,7 +2197,8 @@
 			input[type="button"].alt:hover,
 			button.alt:hover,
 			.button.alt:hover
-			#outboundout-button a.alt:hover {
+			#customer-button a.alt:hover,
+			#file-button a.alt:hover {
 				background-color: rgba(0, 0, 0, 0.075);
 			}
 
@@ -2194,7 +2207,8 @@
 			input[type="button"].alt:active,
 			button.alt:active,
 			.button.alt:active,
-			#outboundout-button a.alt:active {
+			#customer-button a.alt:active,
+			#file-button a.alt:active {
 				background-color: rgba(0, 0, 0, 0.15);
 			}
 
@@ -2203,7 +2217,8 @@
 			input[type="button"].alt.icon:before,
 			button.alt.icon:before,
 			.button.alt.icon:before,
-			#outboundout-button a.icon:before {
+			#customer-button a.alt.icon:before,
+			#file-button.alt a.icon:before {
 				color: #bfbfbf;
 			}
 
@@ -2212,7 +2227,8 @@
 		input[type="button"].special,
 		button.special,
 		.button.special,
-		#outboundout-button a.special {
+		#customer-button a.special,
+		#file-button a.special {
 			background-color: #fafafa;
 			color: #000 !important;
 		}
@@ -2222,7 +2238,8 @@
 			input[type="button"].special:hover,
 			button.special:hover,
 			.button.special:hover,
-			#outboundout-button a.special:hover {
+			#customer-button a.special:hover,
+			#file-button a.special:hover {
 				background-color: white;
 			}
 
@@ -2231,12 +2248,14 @@
 			input[type="button"].special:active,
 			button.special:active,
 			.button.special:active,
-			#outboundout-button a.special:active {
+			#customer-button a.special:active,
+			#file-button a.special:active {
 				background-color: #ededed;
 			}
 	
 	/* CSS 버튼 */
-	#outboundout-button a {
+	#customer-button a,
+	#file-button a {
 		display: inline-block;
 		margin: 0;
 		text-align: center;
@@ -2251,7 +2270,8 @@
 		box-sizing: border-box; /* 패딩과 테두리를 width에 포함시킵니다. */
 	}
 
-	#outboundout-button a:hover {
+	#customer-button a:hover,
+	#file-button a:hover {
 		background-color: #4aa3df; /* 마우스 오버시 배경색 변경 */
 		border-color: #4aa3df; /* 마우스 오버시 테두리 색상 변경 */
 	}

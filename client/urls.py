@@ -15,12 +15,14 @@ def customer(request):
     return render(request, 'customer.html')
 
 urlpatterns = [
-    path('list/', ClientListView.as_view(), name = 'list'),
-    path('test/', views.test, name='test'),
-    path('upload/', views.upload_excel, name='upload'),
+    path('', ClientListView.as_view(), name = 'list'),
+    path('upload/',views.upload_excel, name='upload'),
     path('edit/<int:client_id>/', views.edit_client, name='edit_client'),
     path('delete/<int:client_id>/', views.delete_client, name='delete_client'),
-    path('index.html', index, name='index'),
+    path('delete_selected/', views.DeleteSelectedClientsView.as_view(), name='delete_selected'),
+    path('selected_items/', views.selected_items, name='selected_items'),
+    path('start_tm/',views.start_tm, name='start_tm'),
+
 
     path('delete_selected/', views.DeleteSelectedClientsView.as_view(), name='delete_selected'),
     #path('customer/', customer, name='customer'),

@@ -14,6 +14,8 @@ from account.models import UserFile
 from pytz import UTC
 from django.core.paginator import Paginator
 
+open_api_key = os.environ.get('OPENAI_API_KEY')
+
 
 class ClientListView(LoginRequiredMixin, ListView):
     model = Client
@@ -172,9 +174,54 @@ def delete_client(request, client_id):
     return render(request, 'client/delete_client.html', {'client': client})
 
 
-### 원하는 정보 찾는 view - test용
-def test(request):
-    
-    client_list = Client.objects.filter(name__icontains='민')
-    
-    return render(request,'client/test.html', {'client_list': client_list})
+def selected_items(request):
+    selected_clients = request.GET.get('selected_clients', '').split(',')
+    selected_files = request.GET.get('selected_files', '').split(',')
+
+    # 빈 문자열을 제거합니다. ( 선택이 안된 경우 )
+    selected_clients = [id for id in selected_clients if id]
+    selected_files = [id for id in selected_files if id]
+
+    # 처음엔 빈 쿼리셋할당
+    clients = Client.objects.none()  
+    files = UserFile.objects.none()  
+
+    if selected_clients:   # 해당 되는 clients 넣어줌
+        clients = Client.objects.filter(id__in=selected_clients)
+
+    if selected_files:     # 해당 되는 files 넣어줌
+        files = UserFile.objects.filter(id__in=selected_files)
+
+    context = {
+        'selectedClients': clients,
+        'selectedFiles': files
+    }
+
+
+    context = {
+        'selectedClients': clients,
+        'selectedFiles': files
+    }
+
+    return render(request, 'client/selected_items.html', context)
+
+def start_tm(request):
+    input_data = ''
+    selected_clients = []
+    selected_files = []
+
+    if request.method == 'POST':
+        input_data = request.POST.get('input_data', '')
+        selected_clients = request.POST.getlist('client_ids')
+        selected_files = request.POST.getlist('file_ids')
+        
+        # 빈 문자열 제거
+        selected_clients = [id for id in selected_clients if id]
+        selected_files = [id for id in selected_files if id]
+
+        clients = Client.objects.filter(id__in=selected_clients)
+        files = UserFile.objects.filter(id__in=selected_files)
+
+        return render(request, 'client/start_tm.html', {'data': input_data, 'selectedClients': clients, 'selectedFiles': files})
+
+    return render(request, 'client/selected_items.html', {'data': input_data, 'selectedClients': selected_clients, 'selectedFiles': selected_files})
