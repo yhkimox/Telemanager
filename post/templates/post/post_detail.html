@@ -5,3 +5,30 @@
 
 <a href="{% url 'post:post_list' %}">Back to Post List</a>
 <a href="{% url 'post:post_delete' pk=post.pk %}">Delete Post</a>
+<a href="{% url 'post:post_edit' pk=post.pk %}">Edit Post</a>
+
+{% comment %} <hr>
+{% for comment in blog.comments.all %}
+<div class="comment">
+    <div class="date">{{ comment.created_at }}</div>
+    <strong>{{ comment.author_name }}</strong>
+    <p>{{ comment.comment_text|linebreaks }}</p>
+</div>
+{% empty %}
+<p>No comments here yet :</p>
+{% endfor %} {% endcomment %}
+
+
+
+
+<h4>댓글 목록</h4>
+    {% for comment in comments %}
+        <p>{{ comment.user }}: {{ comment.content }}</p>
+    {% endfor %}
+
+    <form method="post" action="{% url 'post:post_detail' pk=post.pk %}">
+        {% csrf_token %}
+        {{ form.text.label_tag }}
+        {{ form.text }}
+        <button type="submit">댓글 달기</button>
+    </form>
