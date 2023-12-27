@@ -10,7 +10,7 @@
 
     <!-- 스크립트 -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
+    
     {% block head %}{% endblock %}
 </head>
 <body>
@@ -28,8 +28,14 @@
         {% else %}
         <span class="header-text">
             {{user}}님,
-            <a href="{% url 'account:logout' %}">Logout</a>
-        </span>
+            <span class ="logout-form" method="post" action="{% url 'account:logout' %}">
+                {% csrf_token %}
+                <a type="submit">Logout</a>
+            </span>
+            <!--
+            <a  method='post' action="{% url 'account:logout' %}">Logout</a>
+            -->
+            </span>
         {% endif %}
 
         <a href="#menu">메뉴</a>
@@ -69,7 +75,13 @@
     <div class="copyright">
         Site made with: <a>Team 11</a>
     </div>
-
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 페이지 로드 시에 #main 부분으로 스크롤되도록 설정
+            var mainSection = document.getElementById('main');
+            mainSection.scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
     <script src="{% static 'js/jquery.min.js' %}"></script>
     <script src="{% static 'js/jquery.scrollex.min.js' %}"></script>
     <script src="{% static 'js/jquery.scrolly.min.js' %}"></script>

@@ -79,17 +79,6 @@ class UserPasswordResetView(PasswordResetView):
             return render(self.request, 'registration/password_reset_done_fail.html')
 
 
-    def get(self, request, *args, **kwargs):
-        # 암호 변경 폼을 문자열로 렌더링
-        form_html = render_to_string(self.template_name, {'form': self.get_form()})
-        return JsonResponse({'form_html': form_html}, safe=False)
-
-
-    def get(self, request, *args, **kwargs):
-        # 암호 변경 폼을 문자열로 렌더링
-        form_html = render_to_string(self.template_name, {'form': self.get_form()})
-        return JsonResponse({'form_html': form_html}, safe=False)
-
 @login_required
 def file_upload(request):
     if request.method == 'POST':

@@ -147,6 +147,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+    document.addEventListener('DOMContentLoaded', function() {
+        // 페이지 로드 시에 #main 부분으로 스크롤되도록 설정
+        var mainSection = document.getElementById('main');
+        mainSection.scrollIntoView({ behavior: 'smooth' });
+    });
+
 
 
 </script>
