@@ -28,14 +28,19 @@
 
     <div class="custom-table-wrapper">
           <h2>게시판</h2>
-            <form method="post" action="#"  class="custom-search">
+          <form action="" method="get">
+            {% csrf_token %}
+            <input type="text" name="keyword" value="{{q|default:''}}" >
+            <input type="submit" value="Search">
+          </form>
+            {% comment %} <form method="post" action="#"  class="custom-search">
               <div class="row uniform">
                 <div class="9u 12u$(small)">
                   <input type="text" name="query" id="query" value="" placeholder="Query"></div>
                 <div class="3u$ 12u$(small)">
                   <input type="submit" value="Search" class="fit"></div>
               </div>
-            </form>
+            </form> {% endcomment %}
           
            
             <table>
@@ -54,7 +59,7 @@
                   <td>{{ forloop.counter }}</td>
                   <td><a href="{% url 'post:post_detail' pk=post.pk %}">{{ post.title }}</a></td>
                   <td>{{ post.author.username }}</td>
-                  <td>{{ post.created_at }}</td>
+                  <td>{{ post.created }}</td>
                   <!-- 다른 필드들에 대한 데이터도 추가할 수 있음 -->
                 </tr>
               {% endfor %}
