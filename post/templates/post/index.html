@@ -9,7 +9,6 @@
 
 {% block content %}
 
-
 <!-- 배너 -->
 <section id="banner">
     <div class="inner">
@@ -33,6 +32,16 @@
     </ul>
 
 
+<h1>post list page</h1>
 
+<hr>
+
+{% for post in post_list %}
+<h1>
+
+    <a href="{% url 'post:post_detail' post.id %}">{{ post.title }}</a>
+</h1>
+<span>{{ post.updated_at }}</span>
+{% endfor %}
 
 {% endblock %}

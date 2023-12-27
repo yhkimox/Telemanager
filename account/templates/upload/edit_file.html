@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>파일 정보 수정</title>
+</head>
+<body>
+
+<h2>파일 정보 수정</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <label for="description">파일 설명:</label><br>
+    <textarea id="description" name="description" rows="4" cols="50">{{ file.description }}</textarea> 
+    <br>
+    <button type="submit">완료</button>
+    <button><a href="{% url 'client:list' %}">취소</a></button>
+</form>
+
+</body>
+</html>

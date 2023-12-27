@@ -4,11 +4,9 @@ from .models import *
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 from . import views
-
 from django.shortcuts import render
 from django.conf import settings
 from django.conf.urls.static import static
-
 from django.contrib import admin
 from django.urls import path, include
 
@@ -22,16 +20,20 @@ def elements(request):
 
 
 urlpatterns = [
-
     path('generic.html', generic, name='generic'),
     path('elements.html', elements, name='elements'),
-    
     path('', auth_views.LoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('signup/', views.signup, name='signup'),
     path('profile/', TemplateView.as_view(template_name='registration/profile.html'), name='profile' ),
     path('profile_update/', views.profile_update, name='profile_update'),
     path('password_change/', views.MyPasswordChangeView.as_view(), name='password_change'),
+    path('password_reset/', views.UserPasswordResetView.as_view(), name="password_reset"),
+    path('list/', views.file_list, name='file_list'),  
+    path('upload/', views.file_upload, name='file_upload'),
+    path('edit/<int:file_id>/', views.edit_file, name='edit_file'),
+    path('delete/<int:file_id>/', views.delete_file, name='delete_file'),
+    path('delete_selected/', views.DeleteSelectedFilesView.as_view(), name='delete_selected'),
 ]
 
 if settings.DEBUG:
