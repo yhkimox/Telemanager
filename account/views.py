@@ -28,6 +28,8 @@ import os
 from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
 
+from langchain.vectorstores import Chroma
+from langchain.embeddings import HuggingFaceEmbeddings
 
 def index(request):
     return render(request, 'registration/login.html')
