@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpRequest
 from django.views.generic import ListView, View
 import pandas as pd
-from .models import Client
+from .models import Client, Marketing
 from .forms import ClientForm  # 고객 모델 폼
 from django.urls import reverse
 from datetime import datetime
@@ -22,7 +22,7 @@ class ClientListView(LoginRequiredMixin, ListView):
     template_name = 'client/client_list.html'  
     
     
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs): # 2
         context = super().get_context_data(**kwargs)  # 컨텍스트 데이터 가져옴
         
         client_list = Client.objects.filter(user = self.request.user)
@@ -44,17 +44,23 @@ class ClientListView(LoginRequiredMixin, ListView):
         context['file_obj'] = file_obj
 
         return context
-    
+
     def post(self, request, *args, **kwargs):
         selected_ids = request.POST.getlist('client_ids')  
         Client.objects.filter(id__in=selected_ids).delete()  
         return redirect(reverse('client:list'))  
     
-    def get_queryset(self):
-        return Client.objects.filter(user=self.request.user)
-    
+    def get_queryset(self): 
+        user = self.request.user
+        print(f"Current User ID: {user.id}")
+        queryset = Client.objects.filter(user=self.request.user).order_by('-tm_date')  # '-tm_date'는 내림차순 정렬을 의미
+        print(f"Queryset length: {queryset.count()}")
+        #print(f"Queryset data: {queryset.values()}")
+        return queryset
 
-class DeleteSelectedClientsView(LoginRequiredMixin, View):
+
+
+class DeleteSelectedClientsView(View):
     def post(self, request):
         selected_ids = request.POST.getlist('client_ids')  
         Client.objects.filter(id__in=selected_ids).delete()  
@@ -65,14 +71,15 @@ def normalize_gender(gender_str):
     # 성별을 Male, Female로 변환
     
     if gender_str in ['남성', '남', '남자', 'm', 'M']:
-        return 'Male'
+        return '남'
     elif gender_str in ['여성', '여', '여자', 'f', 'F']:
-        return 'Female'
+        return '여'
     else:
         return None  
     
-@login_required
-def upload_excel(request):
+
+    
+def upload_excel(request): # 이상 없음.
     if request.method == 'POST':
         excel_file = request.FILES['excel_file']
         tmgoal = request.POST.get('tmgoal')
@@ -117,6 +124,11 @@ def upload_excel(request):
             
             temp_date = UTC.localize(datetime.now())
             
+            user = request.user # 문제는 원래 저장되어 있던 데이터여서 새로 안된거일 뿐이었다. 데이터베이스를 초기화하는 코드가 약간 필요할듯 하다.
+            #if user.is_authenticated:
+            #    print(f"User ID: {user.pk}")
+            #else:
+            #    print("User is not authenticated.")
             
             Client.objects.create(
                 user=user,
@@ -129,13 +141,15 @@ def upload_excel(request):
                 gender=normalized_gender,
                 email=email,
             )
+        print(f"Client {Client.id} created successfully.")  # 디버깅 메시지 잘뜬다.
         print(tmgoal)
         
         return redirect('client:list')
     
+    
     return render(request, 'client/upload.html')
 
-@login_required
+
 def edit_client(request, client_id):
     client = get_object_or_404(Client, id=client_id, user=request.user)
     
