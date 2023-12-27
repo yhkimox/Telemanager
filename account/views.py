@@ -31,6 +31,7 @@ from django.contrib import messages
 from langchain.vectorstores import Chroma
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.document_loaders.csv_loader import CSVLoader
 
 def index(request):
     return render(request, 'registration/login.html')
