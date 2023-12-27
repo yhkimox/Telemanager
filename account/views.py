@@ -17,8 +17,7 @@ from django.template.loader import render_to_string
 from django.http import JsonResponse
 from .forms import CompanyFileForm, CompanyFileForm2
 from .models import CompanyFile 
-from .forms import UserFileForm, UserFileForm2
-from .models import UserFile  
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, View
 from django.urls import reverse
@@ -72,11 +71,16 @@ class UserPasswordResetView(PasswordResetView):
     form_class = PasswordResetForm
     
     def form_valid(self, form):
-        if User.objects.filter(email=self.request.POST.get("email")).exists():
+        email = self.request.POST.get("email")
+        if User.objects.filter(email=email).exists():
             return super().form_valid(form)
         else:
-            return render(self.request, 'registration/password_reset_done_fail.html')
-
+            return JsonResponse({'email_not_exists': True})
+    
+    def form_invalid(self, form):
+        response = super().form_invalid(form)
+        # 존재하지 않는 이메일인 경우에 대한 처리
+        return JsonResponse({'email_not_exists': True})
 
 @login_required
 def file_upload(request):
