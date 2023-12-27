@@ -17,8 +17,6 @@ from django.template.loader import render_to_string
 from django.http import JsonResponse
 from .forms import CompanyFileForm, CompanyFileForm2
 from .models import CompanyFile 
-from .forms import UserFileForm, UserFileForm2
-from .models import UserFile  
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, View
 from django.urls import reverse
@@ -31,6 +29,7 @@ from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders.csv_loader import CSVLoader
 import csv
+
 
 def index(request):
     return render(request, 'registration/login.html')
@@ -110,7 +109,41 @@ def file_upload(request):
                 user_file.user = request.user
                 user_file.file = combined_name
                 user_file.save()
-            
+                
+                ##################################################
+                # print(user_file)
+                loader = CSVLoader(file_path = f'./media/company_data_files/{combined_name}', encoding='utf-8')
+                data = loader.load()
+                
+                text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+                texts = text_splitter.split_documents(data)
+                
+                # hugging face 임베딩 저장
+                model_name = "jhgan/ko-sroberta-multitask"
+                model_kwargs = {'device': 'cpu'}
+                encode_kwargs = {'normalize_embeddings': False}
+
+                hf = HuggingFaceEmbeddings(
+                    model_name=model_name,
+                    model_kwargs=model_kwargs,
+                    encode_kwargs=encode_kwargs
+                )
+                # 폴더 만들기
+                fold_name = combined_name.split(".")[0]
+                try:
+                    os.makedirs(f'./media/embedding_files/{fold_name}')
+                    print("폴더 생성 완료")
+                except:
+                    print("폴더 존재 or 에러")
+                    pass
+                
+                # embedding vector 저장
+                vectordb_hf = Chroma.from_documents(
+                    documents=texts,
+                    embedding=hf, persist_directory=f"./media/embedding_files/{fold_name}")
+                vectordb_hf.persist()
+                ##################################################
+                
                 return redirect('client:list')
             else:
                 messages.warning(request, '동일한 파일 이름이 이미 존재합니다.')
