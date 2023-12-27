@@ -6,14 +6,7 @@ from django.shortcuts import render
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
-<<<<<<< HEAD
-
-
-app_name = 'big_project'
-
-=======
  
->>>>>>> 1814d68f2aa6f2503a0821acd20f0f0b4b283d74
 def index(request):
     return render(request, 'index.html')
  
