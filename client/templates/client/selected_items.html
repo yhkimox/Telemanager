@@ -98,6 +98,7 @@
             <th>파일 이름</th>
             <th>업로드 날짜</th>
             <th>설명</th>
+            <th>임베딩 파일</th>
             <th>파일관리</th>
         </tr>
     </thead>
@@ -108,6 +109,7 @@
                 <td>{{ file.file.name|cut:"user_files/" }}</td>
                 <td>{{ file.upload_date }}</td>
                 <td>{{ file.description }}</td>
+                <td>{{ file.embedding_file }} </td>
                 <td>
                     <a href="{% url 'account:edit_file' file.id %}">수정</a> 
                 </td>

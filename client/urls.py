@@ -3,8 +3,16 @@ from django.views.generic import TemplateView, ListView, CreateView, DetailView,
 from . import views
 from .models import *
 from .views import ClientListView
+from django.shortcuts import render
+
 
 app_name = 'client'
+
+def index(request):
+    return render(request, 'index.html')
+
+def customer(request):
+    return render(request, 'customer.html')
 
 urlpatterns = [
     path('', ClientListView.as_view(), name = 'list'),
@@ -16,6 +24,8 @@ urlpatterns = [
     path('start_tm/',views.start_tm, name='start_tm'),
 
 
+    path('delete_selected/', views.DeleteSelectedClientsView.as_view(), name='delete_selected'),
+    #path('customer/', customer, name='customer'),
 ]
 
 
