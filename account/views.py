@@ -30,6 +30,7 @@ from django.contrib import messages
 
 from langchain.vectorstores import Chroma
 from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 def index(request):
     return render(request, 'registration/login.html')
@@ -102,6 +103,12 @@ def file_upload(request):
                 user_file.user = request.user
                 user_file.file = uploaded_file  # 파일 객체를 모델 필드에 할당합니다.
                 
+                # loader = CSVLoader(file_path='/content/drive/MyDrive/langchain/card.csv', source_column='카드명')
+                loader = CSVLoader(file_path='/content/drive/MyDrive/langchain/card.csv')
+                data = loader.load()
+                
+                text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+                texts = text_splitter.split_documents(data)
                 ##################################################
                 # hugging face 임베딩 저장
                 model_name = "jhgan/ko-sroberta-multitask"
