@@ -24,6 +24,7 @@ class ProfileUpdateForm(UserChangeForm):
         super().__init__(*args, **kwargs)
         self.fields['password'].widget = forms.HiddenInput()
         self.fields['password'].required = False
+
         
 
 class UserFileForm(forms.ModelForm):
@@ -35,3 +36,4 @@ class UserFileForm2(forms.ModelForm):  # 삭제할 때 사용
     class Meta:
         model = UserFile
         fields = ['description']
+

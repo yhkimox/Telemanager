@@ -2,6 +2,7 @@
 <!--generic.html-->
 {% extends 'base.html' %}
 {% load static %}
+
 {% block static %}
     <!-- 외부 CSS 파일에 대한 링크 -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
@@ -9,20 +10,19 @@
 
 {% block content %}
 
-
 <!-- login -->
 <style>
     /* 기본 스타일 */
     .row.uniform {
         text-align: center;
     }
-  
+
     .row.uniform > div {
         display: inline-block;
         margin-right: 540px;
         margin-left: 540px;
     }
-  
+
     /* 작은 화면일 때 미디어 쿼리 */
     @media screen and (max-width: 940px) {
         .row.uniform > div {
@@ -30,39 +30,40 @@
             margin: 0 auto;
         }
     }
-  </style>
+</style>
 
-
-<!-- Banner --><section id="banner"><div class="inner">
-    <header><h1>TeleManager</h1>
-        <p>Outbound TM Automation Service for Enterprises</p>
-      </header><a href="#main" class="button big scrolly">Learn More</a>
+<!-- Banner -->
+<section id="banner">
+    <div class="inner">
+        <header>
+            <h1>TeleManager</h1>
+            <p>Outbound TM Automation Service for Enterprises</p>
+        </header>
+        <a href="#main" class="button big scrolly">Learn More</a>
     </div>
-  </section><div id="main" class="container">
-<hr>
-<br><br>
+</section>
 
+<div id="main" class="container">
+    <hr><br><br>
 
-
-<!-- Form -->
-<div class="col align-center">
-  <h3>Login</h3>
-  <br>
-  <div class="inner">
-      <form method="post" action="#">
-          <div class="row uniform">
-                {% csrf_token %}
-                <table>
-                    {{ form.as_table}}
-                </table>
-            </div>
-           
+    <!-- Form -->
+    <div class="col align-center">
+        <div class="inner">
+            <h3>Login</h3>
+            <br>
+            <form method="post" action="#">
+                <div class="row uniform">
+                    {% csrf_token %}
+                    <table>
+                        {{ form.as_table }}
+                    </table>
+                </div>
                 <a href='{% url 'account:signup' %}'>회원이 아니신가요?</a>
                 <br><br>
-                <ul class="actions" href="{% url 'index' %}"><li><input type="submit" value="Login"></li>
-                </form>
-                
+                <ul class="actions" href="{% url 'index' %}">
+                    <li><input type="submit" value="Login"></li>
+                </ul>
+            </form>
         </div>
     </div>
-
 {% endblock %}
