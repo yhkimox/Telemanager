@@ -79,6 +79,7 @@ button.upload-button:hover, button.action-button:hover {
 </style>
 
 </head>
+
 <body>
 
     <ul class="nav navbar-nav navbar-right">
@@ -151,8 +152,7 @@ button.upload-button:hover, button.action-button:hover {
                         <td>추가해야함</td>
                         <td>O/X</td>
                         <td>
-                            <a href="{% url 'client:edit_client' client.id %}">수정하기</a> | 
-                            <a href="{% url 'client:delete_client' client.id %}">삭제하기</a>
+                            <a href="{% url 'client:edit_client' client.id %}">수정하기</a> 
                         </td>
                     </tr>
                 {% endfor %}

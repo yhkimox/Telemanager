@@ -41,8 +41,7 @@
                 <td>추가해야함</td>
                 <td>O/X</td>
                 <td>
-                    <a href="{% url 'client:edit_client' client.id %}">수정하기</a> | 
-                    <a href="{% url 'client:delete_client' client.id %}">삭제하기</a>
+                    <a href="{% url 'client:edit_client' client.id %}">수정하기</a> 
                 </td>
             </tr>
         {% endfor %}
@@ -71,7 +70,7 @@
                 <td>{{ file.description }}</td>
                 <td>{{ file.embedding_file }} </td>
                 <td>
-                    <a href="{% url 'account:edit_file' file.id %}">수정하기</a> | 
+                    <a href="{% url 'account:edit_file' file.id %}">수정하기</a> |
                     <a href="{% url 'account:delete_file' file.id %}">삭제하기</a>
                 </td>
             </tr>
