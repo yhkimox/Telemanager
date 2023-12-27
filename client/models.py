@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.contrib.auth.models import User
 # Create your models here.
 
 
@@ -15,3 +16,8 @@ class Client(models.Model):
 	email = models.EmailField(max_length=254, null=True, blank=True)     # 고객 이메일 저장
  
  
+class Marketing(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    location = models.CharField(max_length=255)
+    
