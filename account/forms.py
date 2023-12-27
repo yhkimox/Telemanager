@@ -2,7 +2,7 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django import forms
 from .models import Profile
 from django.contrib.auth.models import User
-from .models import UserFile
+from .models import CompanyFile
 
 class SignupForm(UserCreationForm):
     
@@ -27,13 +27,13 @@ class ProfileUpdateForm(UserChangeForm):
 
         
 
-class UserFileForm(forms.ModelForm):
+class CompanyFileForm(forms.ModelForm):
     class Meta:
-        model = UserFile
+        model = CompanyFile
         fields = ['description', 'file']
         
-class UserFileForm2(forms.ModelForm):  # 삭제할 때 사용
+class CompanyFileForm2(forms.ModelForm):  # 삭제할 때 사용
     class Meta:
-        model = UserFile
+        model = CompanyFile
         fields = ['description']
 

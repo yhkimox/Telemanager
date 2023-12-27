@@ -30,3 +30,7 @@
 #     model_kwargs=model_kwargs,
 #     encode_kwargs=encode_kwargs
 # )
+
+# vectordb_hf = Chroma(persist_directory="chroma_db_hf", embedding_function=hf)
+
+# print(vectordb_hf)

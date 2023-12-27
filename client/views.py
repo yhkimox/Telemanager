@@ -10,7 +10,7 @@ import os
 import zipfile
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from account.models import UserFile
+from account.models import CompanyFile
 from pytz import UTC
 from django.core.paginator import Paginator
 
@@ -26,7 +26,7 @@ class ClientListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)  # 컨텍스트 데이터 가져옴
         
         client_list = Client.objects.filter(user = self.request.user)
-        file_list = UserFile.objects.filter(user = self.request.user)
+        file_list = CompanyFile.objects.filter(user = self.request.user)
 
         client_paginator = Paginator(client_list, 5)
         file_paginator = Paginator(file_list, 5)
@@ -184,13 +184,13 @@ def selected_items(request):
 
     # 처음엔 빈 쿼리셋할당
     clients = Client.objects.none()  
-    files = UserFile.objects.none()  
+    files = CompanyFile.objects.none()  
 
     if selected_clients:   # 해당 되는 clients 넣어줌
         clients = Client.objects.filter(id__in=selected_clients)
 
     if selected_files:     # 해당 되는 files 넣어줌
-        files = UserFile.objects.filter(id__in=selected_files)
+        files = CompanyFile.objects.filter(id__in=selected_files)
 
     context = {
         'selectedClients': clients,
@@ -220,7 +220,7 @@ def start_tm(request):
         selected_files = [id for id in selected_files if id]
 
         clients = Client.objects.filter(id__in=selected_clients)
-        files = UserFile.objects.filter(id__in=selected_files)
+        files = CompanyFile.objects.filter(id__in=selected_files)
 
         return render(request, 'client/start_tm.html', {'data': input_data, 'selectedClients': clients, 'selectedFiles': files})
 
