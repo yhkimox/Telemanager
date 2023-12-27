@@ -82,7 +82,7 @@
                 <td>추가해야함</td>
                 <td>O/X</td>
                 <td>
-                    <a href="{% url 'client:edit_client' client.id %}">수정</a> 
+                    <a href="{% url 'client:edit_client' client.id %}">수정하기</a> 
                 </td>
             </tr>
         {% endfor %}
@@ -106,12 +106,13 @@
         {% for file in selectedFiles %}
             <tr>
                 <td><input type="checkbox" name="file_ids" value="{{ file.id }}"></td>
-                <td>{{ file.file.name|cut:"user_files/" }}</td>
+                <td>{{ file.file.name|cut:"_"|slice:"1:" }}</td>
                 <td>{{ file.upload_date }}</td>
                 <td>{{ file.description }}</td>
                 <td>{{ file.embedding_file }} </td>
                 <td>
-                    <a href="{% url 'account:edit_file' file.id %}">수정</a> 
+                    <a href="{% url 'account:edit_file' file.id %}">수정하기</a> |
+                    <a href="{% url 'account:delete_file' file.id %}">삭제하기</a>
                 </td>
             </tr>
         {% endfor %}
