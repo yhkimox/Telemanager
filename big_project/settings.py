@@ -154,3 +154,6 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'djflsrhdwn8@naver.com'
 EMAIL_HOST_PASSWORD = 'Mj010320!!'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
