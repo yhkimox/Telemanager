@@ -30,12 +30,28 @@
     <title>고객 목록</title>
 
     <style>
-        .pagination a.previous {
-            width: 50px;  /* 예시 값, 필요에 따라 조정하세요 */
-            height: 32px; /* 예시 값, 필요에 따라 조정하세요 */
+        .my-button-link {
             display: inline-block;
+            padding: 10px 30px; /* 텍스트 주변 여백 조절 */
+            text-decoration: none;
+            white-space: nowrap;
+            
+            /* 버튼을 아래로 내리는 부분 수정 */
+            line-height: 18px; /* 텍스트 높이에 맞춤 */
+        
+            /* 버튼 크기를 변경하는 부분 */
+            width: 166px; /* 원하는 크기로 조절하세요. */
+            height: 38px; /* 원하는 크기로 조절하세요. */
+            
+            /* 텍스트 배경 블럭 정중앙에 맞추기 */
+            vertical-align: middle;
+    
+            /* 텍스트를 위쪽으로 이동 */
+            margin-top: -3px;
         }
-        .pagination a {
+
+        
+        .pagination {
         display: inline-block;
         width: 50px;  /* 페이지 번호의 고정 너비 설정, 필요에 따라 조정 가능 */
         height: 32px; /* 예시 값, 필요에 따라 조정하세요 */
@@ -46,106 +62,97 @@
         border-radius: 5px;  /* 둥근 모서리 설정, 필요에 따라 조정 가능 */
         }
 
-    .pagination .page-current {
-        width: auto;  /* 현재 페이지 번호의 너비를 자동으로 설정 */
-        margin: 0 5px;  /* 다른 페이지 번호와의 간격 설정 */
-        padding: 5px 10px;  /* 내용의 여백 설정 */
-        background-color: #f5f5f5;  /* 현재 페이지 번호의 배경색 설정, 필요에 따라 조정 가능 */
-    }
+        .pagination .page-current {
+            width: auto;  /* 현재 페이지 번호의 너비를 자동으로 설정 */
+            margin: 0 5px;  /* 다른 페이지 번호와의 간격 설정 */
+            padding: 5px 10px;  /* 내용의 여백 설정 */
+            background-color: #f5f5f5;  /* 현재 페이지 번호의 배경색 설정, 필요에 따라 조정 가능 */
+        }
 
 
+        
 
-    /* 아래 부터는 모달에 관한 css 입니다 */
 
-    .mockup {
-        display: none;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 50%;
-        height: 60vh; /* 화면 세로의 60%를 높이로 설정 */
-        background-color: #fff;
-        border: 1px solid #ccc;
-        padding: 40px 0; /* 상하 여백 40px, 좌우 여백 0으로 설정 */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        display: flex;
-        flex-direction: column; /* 내부 컨텐츠를 세로로 배열하기 위한 설정 */
-        justify-content: center;
-        align-items: center;
-    }
+        /* 아래 부터는 모달에 관한 css 입니다 */
 
-    .button-container {
-        display: flex;
-        justify-content: center;
-        align-items: center; /* 수직 중앙 정렬을 위해 추가 */
-        gap: 10px; /* 버튼 사이의 간격을 조절합니다. 필요에 따라 조절 가능 */
-        margin-top: 8%;
-    }
+        .mockup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50%;
+            height: 60vh; /* 화면 세로의 60%를 높이로 설정 */
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 40px 0; /* 상하 여백 40px, 좌우 여백 0으로 설정 */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column; /* 내부 컨텐츠를 세로로 배열하기 위한 설정 */
+            justify-content: center;
+            align-items: center;
+        }
 
-    button.upload-button, button.action-button {
-        padding: 15px 25px;  
-        font-size: 16px;
-        width: 30%;
-        margin: 3% 5%; 
-        border: none;
-        background-color: #ddd;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        box-sizing: border-box;
-    }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center; /* 수직 중앙 정렬을 위해 추가 */
+            gap: 10px; /* 버튼 사이의 간격을 조절합니다. 필요에 따라 조절 가능 */
+            margin-top: 8%;
+        }
 
-    button.upload-button:hover, button.action-button:hover {
-        background-color: #ccc;
-    }
+        button.upload-button, button.action-button {
+            padding: 15px 25px;  
+            font-size: 16px;
+            width: 30%;
+            margin: 3% 5%; 
+            border: none;
+            background-color: #ddd;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-sizing: border-box;
+        }
 
-    /* 이것은 엑셀 표에 관련된 css */
-    .table-container, .table-file {
-        display: flex;
-        justify-content: center;
-        width: 100%; /* 원하는 최소 가로 길이로 설정 */
-    }
+        button.upload-button:hover, button.action-button:hover {
+            background-color: #ccc;
+        }
 
-    table {
-        /* Add any additional styling for your table here */
-        border-collapse: collapse;
-        width: 1000px;
-    }
+        /* 이것은 엑셀 표에 관련된 css */
+        .table-container, .table-file {
+            display: flex;
+            justify-content: center;
+            width: 100%; /* 원하는 최소 가로 길이로 설정 */
+        }
 
-    th, td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: left;
-    }
+        table {
+            /* Add any additional styling for your table here */
+            border-collapse: collapse;
+            width: 1000px;
+        }
 
-    th {
-        background-color: #f2f2f2;
-    }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
 
-    #customer, #filelist {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: 0;
-    }
+        th {
+            background-color: #f2f2f2;
+        }
 
-    /* 위의 고객 정보 업로드, 회사 파일 업로드 버튼 */
-    button a {
-        color: white; /* 텍스트 색상을 흰색으로 지정 */
-        text-decoration: none; /* 링크에 기본적으로 적용되는 밑줄 제거 */
-    }
+        #customer, #filelist {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
 
-    button:hover a {
-        /* 버튼에 호버 시 적용되는 스타일 */
-        color: #ffffff; /* 원하는 호버 시 텍스트 색상으로 변경 */
-    }
-
-    /* 목록 간 선 스타일링 */
-    .list-separator {
-        border-top: 2px solid #ccc;  /* 원하는 색상과 두께로 설정 */
-        margin-top: 20px;  /* 선 위 여백 조절, 필요에 따라 조정 가능 */
-        margin-bottom: 20px;  /* 선 아래 여백 조절, 필요에 따라 조정 가능 */
-    }
+        /* 목록 간 선 스타일링 */
+        .list-separator {
+            border-top: 2px solid #ccc;  /* 원하는 색상과 두께로 설정 */
+            margin-top: 20px;  /* 선 위 여백 조절, 필요에 따라 조정 가능 */
+            margin-bottom: 20px;  /* 선 아래 여백 조절, 필요에 따라 조정 가능 */
+        }
 
 
     </style>
@@ -153,16 +160,6 @@
 
 
 <body> <!-- 수정사항 -->
-
-    <ul class="nav navbar-nav navbar-right">
-        {% if not user.is_authenticated %}
-            <li><a href="{% url 'account:signup' %}">회원 가입 </a> </li>
-            <li><a href="{% url 'account:login' %}?next={{request.path}}">로그인</a></li>
-        {% else %}
-            <li><a href="">{{user}}님!</a> </li> 
-            <li><a href="{%  url 'account:logout' %}?next={{request.path}}">로그 아웃</a></li>
-        {% endif %}
-    </ul>
 
      
 {% block customer_info %}
@@ -190,6 +187,7 @@
         </div>
 
     </div> {% endcomment %}
+
 
 
 
@@ -239,13 +237,13 @@
             </tbody>
         </table>
         
-        <div style="display: flex; justify-content: center;" class="pagination">
+        <div style="display: flex; justify-content: center;">
             <span class="page-links">
         
                 {% if client_obj.has_previous %}
-                    <a href="?client_page={{ client_obj.previous_page_number }}" class="previous">이전</a>
+                    <a href="?client_page={{ client_obj.previous_page_number }}" class="pagination">이전</a>
                 {% else %}
-                    <a href="?client_page={{ client_obj.paginator.num_pages }}" class="next">이전</a>
+                    <a href="?client_page={{ client_obj.paginator.num_pages }}" class="pagination">이전</a>
                 {% endif %}
 
                 <span class="page-current">
@@ -253,12 +251,12 @@
                 </span>
         
                 {% if client_obj.has_next %}
-                    <a href="?client_page={{ client_obj.next_page_number }}" class="next">다음</a>
+                    <a href="?client_page={{ client_obj.next_page_number }}" class="pagination">다음</a>
                 {% else %}
-                    <a href="?client_page={{ 1 }}" class="next">다음</a>
+                    <a href="?client_page={{ 1 }}" class="pagination">다음</a>
                 {% endif %}
 
-                <button id="customer-button"><a href="{% url 'client:upload' %}">고객 정보 업로드</a></button>
+                <a href="{% url 'client:upload' %}" class="my-button-link">고객 정보 업로드</a>
                 <button type="submit">선택된 고객 삭제</button>
 
             </span>
@@ -306,13 +304,13 @@
             </tbody>
         </table>
 
-        <div style="display: flex; justify-content: center;" class="pagination">
+        <div style="display: flex; justify-content: center;">
             <span class="page-links">
         
                 {% if file_obj.has_previous %}
-                    <a href="?file_page={{ file_obj.previous_page_number }}" class="previous">이전</a>
+                    <a href="?file_page={{ file_obj.previous_page_number }}" class="pagination">이전</a>
                 {% else %}
-                    <a href="?file_page={{ file_obj.paginator.num_pages }}" class="next">이전</a>
+                    <a href="?file_page={{ file_obj.paginator.num_pages }}" class="pagination">이전</a>
                 {% endif %}
 
                 <span class="page-current">
@@ -320,12 +318,12 @@
                 </span>
         
                 {% if file_obj.has_next %}
-                    <a href="?file_page={{ file_obj.next_page_number }}" class="next">다음</a>
+                    <a href="?file_page={{ file_obj.next_page_number }}" class="pagination">다음</a>
                 {% else %}
-                    <a href="?file_page={{ 1 }}" class="next">다음</a>
+                    <a href="?file_page={{ 1 }}" class="pagination">다음</a>
                 {% endif %}
-                
-                <button id="file-button"><a href="{% url 'account:file_upload' %}">회사 파일 업로드</a></button>
+                <!-- 경로: big_project\account\templates\upload\information.html -->
+                <a href="{% url 'account:file_upload' %}" class="my-button-link">회사 파일 업로드</a>
                 <button type="submit">선택된 파일 삭제</button>
             </span>
         </div> 
@@ -336,13 +334,13 @@
     <br><br>
 
     {% if is_paginated %}
-    <div class="pagination">
+    <div>
         <span class="page-links">
             {% if page_obj.has_previous %}
-                <a href="?page={{ page_obj.previous_page_number }}" class="previous">이전</a>
+                <a href="?page={{ page_obj.previous_page_number }}" class="pagination">이전</a>
             {% else %}
                 <!-- 맨 처음 페이지일 때, 이전 버튼이 마지막으로  -->
-                <a href="?page={{ page_obj.paginator.num_pages }}" class="previous">이전</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination">이전</a>
             {% endif %}
 
             <span class="page-current">
@@ -350,20 +348,20 @@
             </span>
 
             {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}"  class="previous">다음</a>
+                <a href="?page={{ page_obj.next_page_number }}" class="pagination">다음</a>
             {% else %}
                 <!-- 맨 처음 페이지일 때, 다음 버튼이 첫 페이지로 -->
-                <a href="?page=1" class="previous">다음</a>
+                <a href="?page=1" class="pagination">다음</a>
             {% endif %}
         </span>
     </div>
     {% endif %}
 </div>
 <div style="display: flex; justify-content: center;">
-    <button style="display: flex; align-items: center; margin: 0;">
-        <a href="{% url 'client:selected_items' %}">아웃바운드 나가기</a>
-    </button>
+    <a href="{% url 'client:selected_items' %}" class="my-button-link" style="width: 180px;">아웃바운드 나가기</a>
 </div>
+
+
 {% endblock %}
 
 
@@ -371,10 +369,10 @@
 
 <!-- 전체 선택하는 버튼, 선택된 고객 삭제 버튼 클릭 시 경고창 뜨게 구현-->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-    
+    document.addEventListener('DOMContentLoaded', function() { // 고객 정보 올리는 파트 체크박스 전체 선택 및 삭제 기능
+
         const selectAllCheckbox = document.getElementById('select-all');   //select-all 읽기
-    
+
         selectAllCheckbox.addEventListener('change', function() {  // selectAll 체크박스의 상태가 변경될 때마다 실행
             const checkboxes = document.querySelectorAll('input[name="client_ids"]');  //모든 체크 된 요소 가져오기
     
@@ -383,9 +381,10 @@
                 checkbox.checked = selectAllCheckbox.checked;
             });
         });
-    
+
         // 고객 삭제 버튼에 대한 이벤트 리스너
         const deleteButton = document.querySelector('button[type="submit"]');
+
         deleteButton.addEventListener('click', function(event) {
             const checkedCount = document.querySelectorAll('input[name="client_ids"]:checked').length;
     
@@ -396,11 +395,12 @@
                 }
             }
         });
+
     
 
 });
 
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() { // 회사 파일 올리는 파트 체크박스 전체 선택 및 삭제 기능
         
         const selectAllCheckbox = document.getElementById('select-all2');   //select-all 읽기
 
@@ -429,7 +429,7 @@
         });
     });
 
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {//선택한 파일들을 프롬프트로 이동시키는 코드
 
         const outboundButton = document.querySelector('button > a[href="{% url 'client:selected_items' %}"]');
         outboundButton.addEventListener('click', function(event) {
@@ -451,6 +451,7 @@
 </script>
 
 
+<!-- 모달 관련 스크립트 -->
 <script>
     function openMockup() {
         const mockup = document.getElementById('mockup');
@@ -460,6 +461,14 @@
     function closeMockup() {
         const mockup = document.getElementById('mockup');
         mockup.style.display = 'none';
+    }
+
+    // 모달 외부 클릭 시 닫기
+    window.onclick = function(event) {
+        var modal = document.getElementById("myModal");
+        if (event.target == modal) {
+            closeModal();
+        }
     }
 
     // 페이지 로드 시 목업 숨기기
@@ -510,6 +519,14 @@
         adjustTableWidth();
     });
 </script>
+
+
+<script>
+    document.querySelector('.my-button').addEventListener('click', function() {
+        window.location.href = "{% url 'client:upload' %}";
+    });
+</script>
+
 
 
 

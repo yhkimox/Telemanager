@@ -74,11 +74,11 @@
     chatInput.addEventListener('keypress', (event) => {
         if (event.key === 'Enter') {
             const message = chatInput.value;
-            // 여기서 실제로는 챗봇에게 입력된 메시지를 전송하고, 챗봇의 응답을 받아와야 합니다.
-            // 이 예시에서는 사용자의 입력만 화면에 표시합니다.
             const chatMessage = document.createElement('div');
             chatMessage.className = 'chat-message';
             chatMessage.textContent = `사용자: ${message}`;
+
+            // 기존 메시지 끝에 새로운 메시지를 추가
             chatContainer.appendChild(chatMessage);
 
             chatInput.value = ''; // 입력창 초기화
