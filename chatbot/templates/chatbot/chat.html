@@ -62,6 +62,7 @@
                 const chatInput = document.getElementById('chat-input');
                 const chatContainer = document.getElementById('chatbot-container');
 
+
                 chatInput.addEventListener('keypress', (event) => {
                     if (event.key === 'Enter') {
                         const message = chatInput.value;
@@ -72,6 +73,7 @@
                         chatMessage.textContent = `사용자: ${message}`;
                         chatContainer.appendChild(chatMessage);
 
+
                         chatInput.value = ''; // 입력창 초기화
                         chatInput.focus(); // 입력창에 포커스 유지
                     }
@@ -79,36 +81,4 @@
             </script>
         </div>
     </div>
-</section>
-
-<!-- Chatbot 컨테이너 -->
-<div id="chatbot-container">
-    <!-- 채팅 메시지 -->
-    <div class="chat-message">안녕하세요! 챗봇에게 메시지를 입력하세요.</div>
-
-    <!-- 채팅 입력창 -->
-    <input type="text" id="chat-input" placeholder="채팅 입력...">
-</div>
-
-<!-- Chatbot 스크립트 -->
-<script>
-    const chatInput = document.getElementById('chat-input');
-    const chatContainer = document.getElementById('chatbot-container');
-
-    chatInput.addEventListener('keypress', (event) => {
-        if (event.key === 'Enter') {
-            const message = chatInput.value;
-            const chatMessage = document.createElement('div');
-            chatMessage.className = 'chat-message';
-            chatMessage.textContent = `사용자: ${message}`;
-
-            // 기존 메시지 끝에 새로운 메시지를 추가
-            chatContainer.appendChild(chatMessage);
-
-            chatInput.value = ''; // 입력창 초기화
-            chatInput.focus(); // 입력창에 포커스 유지
-        }
-    });
-</script>
-
 {% endblock %}

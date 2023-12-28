@@ -8,14 +8,38 @@
 {% endblock %}
 
 {% block content %}
+<style>
+    /* 추가한 스타일 */
+    .post_content {
+        width: 100%; /* 원하는 너비로 조절 */
+        margin: 0px auto; /* 가운데 정렬을 위한 여백 설정 */
+        padding: 10px; /* 주변에 여백을 주고 싶다면 padding을 추가하세요 */
+        font-size: 18px; /* 원하는 글자 크기로 조절 */
+        line-height: 1.6; /* 줄 간격 설정 */
+        display: block; /* 텍스트를 왼쪽 위에서부터 시작하게 만들기 */
+        border: 1px solid #000000; /* 테두리 추가, 원하는 색상 및 두께로 조절하세요 */
+        box-sizing: border-box; /* 테두리 두께를 포함하여 전체 크기를 계산하도록 설정 */
+        background-color: #eeeeee; /* 밝은 청회색 배경색 추가, 원하는 색상으로 조절하세요 */
+        border-radius: 5px; /* 텍스트 상자를 조금 둥글게 만들기, 원하는 정도로 조절하세요 */
+    }
+</style>
+
+
 <!--main-->
 <div id="main" class="container">
     <hr>
     <br><br>
 
     <h1>{{ post.title }}</h1>
-    <p>{{ post.content }}</p>
+    <div>
+        <a> {{ post.author.username }}  | </a>
+        <a> {{ post.created }} </a>
+    </div>
 
+
+    <p class='post_content'>{{ post.content }}</p>
+
+    
     <a href="/post/">Back to Post List</a>
     <a href="{% url 'post:post_delete' pk=post.pk %}">Delete Post</a>
     <a href="{% url 'post:post_edit' pk=post.pk %}">Edit Post</a>
@@ -38,11 +62,12 @@
             <div class="card" id="contain2">
                 <div class="card-body">
                     <i class="fas fa-user-circle" id="peopleicon"></i>
-                    <p2 class="writer"> {{ comment.user }}</p2>
+                    <p2 class="writer"> {{ comment.user }}  | </p2>
+                    <p2 class="coment_update"> {{ comment.updated }} </p2>
                     <br>
                     <p2 class="coment_content"> {{ comment.content }}</p2>
                     <br>
-                    <p2 class="coment_update"> {{ comment.updated }} </p2>
+
                 </div>
             </div>
         </div>
