@@ -6,10 +6,6 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 
 def index(request):
-    return render(request, 'post/index.html')
-
-
-def post_list(request):
     posts = Post.objects.all()
     return render(request, 'post/post_list.html', {'posts': posts})
 
