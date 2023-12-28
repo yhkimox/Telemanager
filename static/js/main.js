@@ -145,48 +145,6 @@
 })(jQuery);
 
 //hj
-// for modal
-// 모달 열기 함수
-function openModal() {
-    document.getElementById('myModal').style.display = 'block';
-}
-
-// 모달 닫기 함수
-function closeModal() {
-    document.getElementById('myModal').style.display = 'none';
-}
-
-// 모달 외부 클릭 시 닫기
-window.onclick = function(event) {
-    if (event.target.className === 'modal') {
-        closeModal();
-    }
-};
-
-// 모달 닫기 버튼 클릭 시 닫기
-document.getElementById('closeModalBtn').addEventListener('click', closeModal);
-
-// 모달 열기
-function openModal() {
-    // Ajax를 사용하여 암호 변경 폼을 불러옴
-    $.ajax({
-        type: 'GET',
-        url: '{% url "account:password_change" %}',
-        success: function(data) {
-            // 모달에 폼 내용 추가
-            $('#myModal .modal-body').html(data);
-            // 모달 열기
-            $('#myModal').modal('show');
-        }
-    });
-}
-
-$(document).ready(function () {
-    // 저장 버튼 클릭 시 alert 표시
-    $('#submitBtn').click(function () {
-        alert('저장되었습니다.');
-    });
-});
 
 
 

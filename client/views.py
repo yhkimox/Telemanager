@@ -191,16 +191,11 @@ def selected_items(request):
 
     if selected_files:     # 해당 되는 files 넣어줌
         files = CompanyFile.objects.filter(id__in=selected_files)
+        
 
     context = {
         'selectedClients': clients,
-        'selectedFiles': files
-    }
-
-
-    context = {
-        'selectedClients': clients,
-        'selectedFiles': files
+        'selectedFiles': files,
     }
 
     return render(request, 'client/selected_items.html', context)

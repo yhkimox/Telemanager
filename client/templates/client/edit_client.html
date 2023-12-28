@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<!--edit_client.html-->
+<!-- edit_client.html -->
 {% extends 'base.html' %}
 {% load static %}
 
@@ -9,50 +8,18 @@
 {% endblock %}
 
 {% block content %}
-
-<!-- Banner -->
-<section id="banner">
-    <div class="inner">
-        <header>
-            <h1>TeleManager</h1>
-            <p>Outbound TM Automation Service for Enterprises</p>
-        </header>
-        <a href="#main" class="button big scrolly">Learn More</a>
-    </div>
-</section>
-
+<!--main-->
 <div id="main" class="container">
-    <hr><br><br>
+    <hr>
+    <br><br>
 
+    <h3 class='centered'>고객 정보 수정</h3><br>
 
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>고객 정보 수정</title>
-</head>
-<body>
-
-<h3 class='centered'>고객 정보 수정</h3><br>
-
-<form method="post" class="margin-form-container">
-    {% csrf_token %}
-    {{ form.as_p }}  
-    <button type="submit">완료</button>
-    <button><a href="{% url 'client:list' %}" style='color:white'>취소</a></button>
-</form>
-
-</body>
+    <form method="post" class="margin-form-container">
+        {% csrf_token %}
+        {{ form.as_p }}  
+        <button type="submit">완료</button>
+        <button><a href="{% url 'client:list' %}" style='color:white'>취소</a></button>
+    </form>
 </div>
-</html>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // 페이지 로드 시에 #main 부분으로 스크롤되도록 설정
-        var mainSection = document.getElementById('main');
-        mainSection.scrollIntoView({ behavior: 'smooth' });
-    });
-</script>
-
-
 {% endblock %}

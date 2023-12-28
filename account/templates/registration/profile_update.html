@@ -1,50 +1,37 @@
+<!-- profile_update.html -->
 {% extends 'base.html' %}
 {% load static %}
-{% load bootstrap4 %}  <!-- Bootstrap 태그 로드 -->
- 
+
 {% block static %}
     <!-- 외부 CSS 파일에 대한 링크 -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
-    {% bootstrap_css %}  <!-- Bootstrap CSS 로드 -->
 {% endblock %}
- 
+
 {% block content %}
- 
- 
-<!-- Banner -->
-<section id="banner">
-    <div class="inner">
-        <header>
-            <h1>TeleManager</h1>
-            <p>Outbound TM Automation Service for Enterprises</p>
-        </header>
-        <a href="#main" class="button big scrolly">Learn More</a>
-    </div>
-</section>
- 
+<!--main-->
 <div id="main" class="container">
     <hr>
     <br><br>
+
     <div class="inner">
-    <div class="table-wrapper">
-        <h3>내 정보 수정</h3>
-    </div>
- 
-    <form method="post" action="{% url 'account:profile_update' %}">
-        {% csrf_token %}
-        {{ form.as_p }}
         <div class="table-wrapper">
-            <button type="submit" id="submitBtn">저장</button>
+            <h3>내 정보 수정</h3>
         </div>
-    </form>
-</div>
+
+        <form method="post" action="{% url 'account:profile_update' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="table-wrapper">
+                <button type="submit" id="submitBtn">저장</button>
+            </div>
+        </form>
+    </div>
     <hr>
  
     <!-- 모달 버튼
     <a hx-get="#" hx-target="#myModal" hx-trigger="click">암호 변경하기</a>
     -->
     
- 
     <!-- 모달 창 -->
     <div class="modal fade" id="myModal">
         <div class="modal-dialog">
@@ -64,5 +51,5 @@
     <a href="{% url 'account:password_change' %}">암호 변경하기</a>
    
     <a href="{% url 'account:profile' %}">취소</a>
-   
+</div>
 {% endblock %}
