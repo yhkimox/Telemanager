@@ -3,7 +3,6 @@ from django.contrib.auth.forms import UserCreationForm,PasswordResetForm
 from django.conf import settings
 from .forms import SignupForm
 from django.contrib.auth.views import PasswordChangeView,PasswordResetView, PasswordResetDoneView
-from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django.contrib.auth import logout
 from django.contrib import messages
@@ -23,13 +22,17 @@ from django.urls import reverse
 import os
 from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
-
 from langchain.vectorstores import Chroma
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders.csv_loader import CSVLoader
+<<<<<<< HEAD
+from account.forms import PasswordChangeForm
+from django.urls import reverse_lazy
+=======
 import csv
 
+>>>>>>> 649a2fb1ab5f8c5865b94d2f14523e21eef1d072
 
 def index(request):
     return render(request, 'registration/login.html')
@@ -57,13 +60,19 @@ def profile_update(request):
 
     return render(request, 'registration/profile_update.html', {'form': form})
 
-class MyPasswordChangeView(PasswordChangeView):
-    success_url = reverse_lazy('account:profile')
-    template_name = 'account/password_change_form.html'
 
-    def form_valid(self, form):
-        messages.info(self.request, '암호 변경을 완료했습니다.')
+class PasswordChangeView(PasswordChangeView):
+    success_url = reverse_lazy('account:login')
+    template_name = 'account/password_change_form.html'  
+    form_class = PasswordChangeForm  
+
+    def form_valid(self, form):  
+        form.save()
+        messages.success(self.request, "비밀번호가 성공적으로 변경되었습니다!")
         return super().form_valid(form)
+
+
+
 
 # 비밀번호 찾기
 class UserPasswordResetView(PasswordResetView):
