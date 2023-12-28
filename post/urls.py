@@ -8,8 +8,7 @@ from django.conf.urls.static import static
 from django.urls import path
 from django.contrib import admin
 from django.urls import path, include
-
-from .views import post_list, post_detail, post_new, post_delete
+from .views import *
 
 
 app_name = 'post'
@@ -31,6 +30,9 @@ urlpatterns = [
     path('<int:pk>/', views.post_detail, name='post_detail'),
     path('new/', views.post_new, name='post_new'),
     path('<int:pk>/delete/', views.post_delete, name='post_delete'),
+    path('<int:pk>/edit/', views.post_edit, name='post_edit'),
+    path('<int:pk>/comment/', views.Comment, name='comment'),
+    # path('<int:pk>/comment/<int:comment_id>/edit/',views.comment_edit, name="comment_edit"),
 ]
 
 

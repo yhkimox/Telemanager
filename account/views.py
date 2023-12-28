@@ -1,10 +1,8 @@
 from django.shortcuts import render, redirect, resolve_url, get_object_or_404
-from django.contrib.auth.forms import UserCreationForm,PasswordResetForm, SetPasswordForm
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm,PasswordResetForm
 from django.conf import settings
 from .forms import SignupForm
-from django.contrib.auth.views import PasswordChangeView,PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
-from django.urls import reverse_lazy
+from django.contrib.auth.views import PasswordChangeView,PasswordResetView, PasswordResetDoneView
 from django.http import HttpResponse
 from django.contrib.auth import logout
 from django.contrib import messages
@@ -12,13 +10,10 @@ from django.contrib.auth.decorators import login_required
 from .forms import ProfileUpdateForm
 from django.template.loader import render_to_string
 from django.http import JsonResponse
-
-
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from django.template.loader import render_to_string
 from django.http import JsonResponse
-
 from .forms import CompanyFileForm, CompanyFileForm2
 from .models import CompanyFile 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -27,11 +22,14 @@ from django.urls import reverse
 import os
 from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
-
 from langchain.vectorstores import Chroma
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders.csv_loader import CSVLoader
+from account.forms import PasswordChangeForm
+from django.urls import reverse_lazy
+import csv
+
 
 def index(request):
     return render(request, 'registration/login.html')
@@ -59,14 +57,21 @@ def profile_update(request):
 
     return render(request, 'registration/profile_update.html', {'form': form})
 
-class MyPasswordChangeView(PasswordChangeView):
-    success_url = reverse_lazy('account:profile')
-    template_name = 'account/password_change_form.html'
 
-    def form_valid(self, form):
-        messages.info(self.request, '암호 변경을 완료했습니다.')
+class PasswordChangeView(PasswordChangeView):
+    success_url = reverse_lazy('account:login')
+    template_name = 'account/password_change_form.html'  
+    form_class = PasswordChangeForm  
+
+    def form_valid(self, form):  
+        form.save()
+        messages.success(self.request, "비밀번호가 성공적으로 변경되었습니다!")
         return super().form_valid(form)
-  
+
+
+
+
+# 비밀번호 찾기
 class UserPasswordResetView(PasswordResetView):
     template_name = 'registration/password_reset.html' #템플릿을 변경하려면 이와같은 형식으로 입력
     success_url = reverse_lazy('account:password_reset_done')
@@ -78,39 +83,47 @@ class UserPasswordResetView(PasswordResetView):
         else:
             return render(self.request, 'registration/password_reset_done_fail.html')
 
-
-    def get(self, request, *args, **kwargs):
-        # 암호 변경 폼을 문자열로 렌더링
-        form_html = render_to_string(self.template_name, {'form': self.get_form()})
-        return JsonResponse({'form_html': form_html}, safe=False)
-
-
-    def get(self, request, *args, **kwargs):
-        # 암호 변경 폼을 문자열로 렌더링
-        form_html = render_to_string(self.template_name, {'form': self.get_form()})
-        return JsonResponse({'form_html': form_html}, safe=False)
+# class UserPasswordResetDoneView(PasswordResetDoneView):
+#     template_name = 'registration/password_reset_done.html'
+    
+    
+    # def get(self, request, *args, **kwargs):
+    #     # 암호 변경 폼을 문자열로 렌더링
+    #     form_html = render_to_string(self.template_name, {'form': self.get_form()})
+    #     return JsonResponse({'form_html': form_html}, safe=False)
 
 @login_required
 def file_upload(request):
     if request.method == 'POST':
         form = CompanyFileForm(request.POST, request.FILES)
         if form.is_valid():
-            uploaded_file = request.FILES['file']  # 업로드된 파일을 가져옵니다.
+            uploaded_file = request.FILES['file']
+            user_id = request.user.id
+            combined_name = f"{user_id}_{uploaded_file.name}"
+            
+            # 데이터베이스에서 파일 이름과 사용자 ID로 중복 확인
+            if CompanyFile.objects.filter(file=combined_name, user=request.user).exists():
+                messages.warning(request, '동일한 파일 이름이 이미 존재합니다.')
+                return redirect('client:list')
+
             fs = FileSystemStorage(location='media/company_data_files/')
             
             # 파일의 이름이 이미 존재하는지 확인합니다.
-            if not fs.exists(uploaded_file.name):
+            if not fs.exists(combined_name):
+                fs.save(combined_name, uploaded_file)
                 user_file = form.save(commit=False)
                 user_file.user = request.user
-                user_file.file = uploaded_file  # 파일 객체를 모델 필드에 할당합니다.
+                user_file.file = combined_name
+                user_file.save()
                 
-                # loader = CSVLoader(file_path='/content/drive/MyDrive/langchain/card.csv', source_column='카드명')
-                loader = CSVLoader(file_path='/content/drive/MyDrive/langchain/card.csv')
+                ##################################################
+                # print(user_file)
+                loader = CSVLoader(file_path = f'./media/company_data_files/{combined_name}', encoding='utf-8')
                 data = loader.load()
                 
                 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
                 texts = text_splitter.split_documents(data)
-                ##################################################
+                
                 # hugging face 임베딩 저장
                 model_name = "jhgan/ko-sroberta-multitask"
                 model_kwargs = {'device': 'cpu'}
@@ -121,20 +134,24 @@ def file_upload(request):
                     model_kwargs=model_kwargs,
                     encode_kwargs=encode_kwargs
                 )
+                # 폴더 만들기
+                fold_name = combined_name.split(".")[0]
+                try:
+                    os.makedirs(f'./media/embedding_files/{fold_name}')
+                    print("폴더 생성 완료")
+                except:
+                    print("폴더 존재 or 에러")
+                    pass
                 
-                ###################################################
                 # embedding vector 저장
                 vectordb_hf = Chroma.from_documents(
                     documents=texts,
-                    embedding=hf, persist_directory="/chroma_db_hf")
+                    embedding=hf, persist_directory=f"./media/embedding_files/{fold_name}")
                 vectordb_hf.persist()
                 ##################################################
                 
-                
-                user_file.save()
                 return redirect('client:list')
             else:
-                # 이미 존재하는 파일 이름이면 여기로 이동
                 messages.warning(request, '동일한 파일 이름이 이미 존재합니다.')
                 return redirect('client:list')  
     else:

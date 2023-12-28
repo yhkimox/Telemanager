@@ -159,7 +159,8 @@
 </head>
 
 
-<body> <!-- 수정사항 -->
+<body>
+
 
      
 {% block customer_info %}
@@ -230,7 +231,7 @@
                         <td>추가해야함</td>
                         <td>O/X</td>
                         <td>
-                            <a href="{% url 'client:edit_client' client.id %}">수정</a>
+                            <a href="{% url 'client:edit_client' client.id %}">수정하기</a> 
                         </td>
                     </tr>
                 {% endfor %}
@@ -292,12 +293,12 @@
                                 <label for="copy_{{ file.id }}"></label>
                             </div>
                         </td>
-                        <td>{{ file.file.name|cut:"user_files/" }}</td>
+                        <td>{{ file.file.name|cut:"_"|slice:"1:" }}</td>
                         <td>{{ file.upload_date }}</td>
                         <td>{{ file.description }}</td>
                         <td>{{ file.embedding_file }} </td>
-                        <td>
-                            <a href="{% url 'account:edit_file' file.id %}">수정</a>
+                        <td> <!-- 이동위치 : account/upload/edit_file -->
+                            <a href="{% url 'account:edit_file' file.id %}">수정하기</a>
                         </td>
                     </tr>
                 {% endfor %}
@@ -358,7 +359,7 @@
     {% endif %}
 </div>
 <div style="display: flex; justify-content: center;">
-    <a href="{% url 'client:selected_items' %}" class="my-button-link" style="width: 180px;">아웃바운드 나가기</a>
+    <a href="{% url 'client:selected_items' %}" id="OutboundButton" class="my-button-link" style="width: 180px;">아웃바운드 나가기</a>
 </div>
 
 
@@ -431,8 +432,10 @@
 
     document.addEventListener('DOMContentLoaded', function() {//선택한 파일들을 프롬프트로 이동시키는 코드
 
-        const outboundButton = document.querySelector('button > a[href="{% url 'client:selected_items' %}"]');
-        outboundButton.addEventListener('click', function(event) {
+        //const outboundButton = document.querySelector('button > a[href="{% url 'client:selected_items' %}"]');
+        const outboundButton = document.getElementById("OutboundButton");
+        console.log('실행중 :', outboundButton);
+        outboundButton.addEventListener('click', function(event) { // 에러 하나
             event.preventDefault(); 
     
 
@@ -523,14 +526,6 @@
         adjustTableWidth();
     });
 </script>
-
-
-<script>
-    document.querySelector('.my-button').addEventListener('click', function() {
-        window.location.href = "{% url 'client:upload' %}";
-    });
-</script>
-
 
 
 
