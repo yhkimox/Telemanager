@@ -152,7 +152,8 @@
 </head>
 
 
-<body> <!-- 수정사항 -->
+<body>
+
 
     <ul class="nav navbar-nav navbar-right">
         {% if not user.is_authenticated %}
@@ -232,7 +233,7 @@
                         <td>추가해야함</td>
                         <td>O/X</td>
                         <td>
-                            <a href="{% url 'client:edit_client' client.id %}">수정</a>
+                            <a href="{% url 'client:edit_client' client.id %}">수정하기</a> 
                         </td>
                     </tr>
                 {% endfor %}
@@ -294,7 +295,7 @@
                                 <label for="copy_{{ file.id }}"></label>
                             </div>
                         </td>
-                        <td>{{ file.file.name|cut:"user_files/" }}</td>
+                        <td>{{ file.file.name|cut:"_"|slice:"1:" }}</td>
                         <td>{{ file.upload_date }}</td>
                         <td>{{ file.description }}</td>
                         <td>{{ file.embedding_file }} </td>
