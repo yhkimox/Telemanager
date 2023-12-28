@@ -1,45 +1,46 @@
+[오후 2:17] 김현정
 <!-- selected_items.html -->
 {% extends 'base.html' %}
 {% load static %}
-
+ 
 {% block static %}
     <!-- 외부 CSS 파일에 대한 링크 -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
 {% endblock %}
-
+ 
 {% block content %}
-
+ 
 <style>
-    
+   
     .input-left {
         display: flex;
         flex-direction: row; /* 요소들을 가로로 나란히 배치합니다 */
         align-items: center; /* 요소들을 세로로 가운데 정렬합니다 */
         margin-right: 10px; /* 오른쪽 마진을 추가하여 input 요소 사이에 간격을 조절합니다 */
     }
-    
+   
 </style>
-
+ 
 <!--main-->
 <div id="main" class="container">
     <hr>
     <br><br>
-
+ 
     <form method="post" action="{% url 'client:start_tm' %}" class="form-container">
         {% csrf_token %}
         <h3 class='centered'>TM Message</h3>
         <br><br>
         <span>어떤 목적의 마케팅을 보내드릴까요?</span>
-    
+   
         <div class='input-left'>
             <input type="text" name="input_data" id="textInput" class="input-left" placeholder="TM 목적 입력">
             <input type="submit" value="Send">
         </div>
         <br><br><br>
-
+ 
         <h3 style='font-size: 1rem;'>선택된 고객 목록</h3>
-
-        <table border="1"> 
+ 
+        <table border="1">
             <thead>
                 <tr>
                     <th><input type="checkbox" id="select-all"></th>
@@ -59,9 +60,9 @@
                 {% endfor %}
             </tbody>
         </table>
-
+ 
         <h3 style='font-size: 1rem;'>선택된 파일 목록</h3>
-        <table border="1"> 
+        <table border="1">
             <thead>
                 <tr>
                     <th><input type="checkbox" id="select-all2"></th>
@@ -80,30 +81,31 @@
             </tbody>
         </table>
     </form>
-
+ 
     <button><a href="{% url 'client:list'  %}" style='color:white'>뒤로가기</a></button>
 </div>
-
+ 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-
+ 
         const outboundButton = document.querySelector('button > a[href="{% url 'client:start_tm' %}"]');
         outboundButton.addEventListener('click', function(event) {
-            event.preventDefault(); 
-
+            event.preventDefault();
+ 
             const selectedClientIds = Array.from(document.querySelectorAll('input[name="client_ids"]:checked')).map(checkbox => checkbox.value);
             const selectedFileIds = Array.from(document.querySelectorAll('input[name="file_ids"]:checked')).map(checkbox => checkbox.value);
-
+ 
             const urlParams = new URLSearchParams();
             urlParams.append('selected_clients', selectedClientIds.join(','));
             urlParams.append('selected_files', selectedFileIds.join(','));
-
+ 
             // 새로운 URL로 이동
             window.location.href = "{% url 'client:start_tm' %}?" + urlParams.toString();
         });
     });
-
-
+ 
+ 
 </script>
-
+ 
 {% endblock %}
+ 

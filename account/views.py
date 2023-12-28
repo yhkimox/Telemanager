@@ -19,8 +19,6 @@ from langchain.document_loaders.csv_loader import CSVLoader
 from account.forms import PasswordChangeForm
 import csv
 
-
-
 def index(request):
     return render(request, 'registration/login.html')
 
