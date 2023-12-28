@@ -9,19 +9,19 @@ from django.urls import path
 from django.contrib import admin
 from django.urls import path, include
 from .views import *
-
-
+ 
+ 
 app_name = 'post'
-
+ 
 def generic(request):
     return render(request, '../templates/generic.html')
  
 def elements(request):
     return render(request, '../templates/elements.html')
-
-
+ 
+ 
 urlpatterns = [
-
+ 
     path('generic.html', generic, name='generic'),
     path('elements.html', elements, name='elements'),
     path('admin/', admin.site.urls),
@@ -33,8 +33,8 @@ urlpatterns = [
     path('<int:pk>/comment/', views.Comment, name='comment'),
     # path('<int:pk>/comment/<int:comment_id>/edit/',views.comment_edit, name="comment_edit"),
 ]
-
-
+ 
+ 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
