@@ -14,6 +14,9 @@ def index(request):
 def customer(request):
     return render(request, 'customer.html')
 
+def audio(request):
+    return render(request, 'audio.html')
+
 urlpatterns = [
     path('', ClientListView.as_view(), name = 'list'),
     path('upload/',views.upload_excel, name='upload'),
@@ -25,7 +28,7 @@ urlpatterns = [
 
 
     path('delete_selected/', views.DeleteSelectedClientsView.as_view(), name='delete_selected'),
-    #path('customer/', customer, name='customer'),
+    path('audio/', audio, name='audio'),
 ]
 
 

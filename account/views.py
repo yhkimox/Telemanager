@@ -18,7 +18,6 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders.csv_loader import CSVLoader
 from account.forms import PasswordChangeForm
 import csv
-import shutil
 
 
 def index(request):
