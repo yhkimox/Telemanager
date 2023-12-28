@@ -50,11 +50,6 @@ def post_edit(request, pk):
         'form': form,
     })
 
-# def detail(request, pk):
-#     post_detail = get_object_or_404(Post, pk=pk)
-#     comment_form = CommentForm()
-#     return render(request, 'post/post_detail.html', {'post_detail':post_detail, 'comment_form':comment_form})
-
 def list(request):
     post_list = Post.objects.all()
     search_key = request.GET.get("keyword")
@@ -65,27 +60,6 @@ def list(request):
         
     return render(request, 'post/post_list.html', {'post_all':post_list, 'q':search_key})
 
-
-# def comments_create(request, pk):
-#     if request.user.is_authenticated:
-#         post = get_object_or_404(Post, pk=pk)
-#         comment_form = CommentForm(request.POST)
-#         if comment_form.is_valid():
-#             comment = comment_form.save(commit=False)
-#             comment.post = post
-#             comment.user = request.user
-#             comment.save()
-#         return redirect('post:post_detail', pk)
-#     return redirect('account:login')
-
-
-# def comments_delete(request, pk, comment_pk):
-#     if request.user.is_authenticated:
-#         comment = get_object_or_404(Comment, pk=comment_pk)
-#         if request.user == comment.user:
-#             comment.delete()
-#     return redirect('post:post_detail', pk)
-
 def Comment(request, pk):
     post = get_object_or_404(Post, pk=pk)
     comments = CommentForm(request.POST)
@@ -95,28 +69,3 @@ def Comment(request, pk):
         comments.user = request.user
         comments.save()
     return redirect('post:post_detail', pk=post.pk)
-    
-# def comment_delete(request, post_id, comment_id):
-#     post = get_object_or_404(Post, id=post_id)
-#     comment = get_object_or_404(Comment, id=comment_id)
-#     comment.delete()   
-#     return redirect('post_detail', post_id = post.id)
-
-# def comment_edit(request, post_id, comment_id):
-#     post = Post.objects.get(id=post_id)
-#     comment = get_object_or_404(Comment, id=comment_id)
-
-#     if request.method == 'GET':
-#         form = CommentForm(instance=comment)
-
-#     elif request.method == 'POST':
-#         form = CommentForm(request.POST, instance=comment)
-#         if form.is_valid():
-#             comment = form.save()
-#             return redirect('post:post_detail', post_id=post.id)
-
-#     return render(request, 'post/comment_edit.html',{
-#         'form': form,
-#         'comment': comment,
-#         'post':post,
-#     })
