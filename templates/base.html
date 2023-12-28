@@ -10,9 +10,10 @@
 
     <!-- 스크립트 -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
+    
     {% block head %}{% endblock %}
 </head>
+<title>Telemanager</title>
 <body>
 
     <!-- 헤더 -->
@@ -28,15 +29,16 @@
         {% else %}
         <span class="header-text">
             {{user}}님,
-            <a href="{% url 'account:logout' %}">Logout</a>
-        </span>
+            <span class ="logout-form" method="post" action="{% url 'account:logout' %}">
+                {% csrf_token %}
+                <a type="submit">Logout</a>
+            </span>
+            </span>
         {% endif %}
 
         <a href="#menu">메뉴</a>
     </header>
 
-
-        
     <!-- 내비게이션 -->
     <nav id="menu">
         <ul class="links">
@@ -48,13 +50,24 @@
                 <button type="submit">Logout</button>
             </form>
             <li><a href='/client/'>고객관리</a></li>
+            <li><a href='/chatbot/'>고객마케팅</a></li>
             <li><a href='/chatbot/'>마케팅시현</a></li>
             <li><a href='/post/'>게시판</a></li>
             <li><a href="generic.html">*일반</a></li>
             <li><a href="elements.html">*요소</a></li>
-
         </ul>
     </nav>
+
+    <!-- 배너 -->
+    <section id="banner">
+        <div class="inner">
+            <header>
+                <h1>TeleManager</h1>
+                <p>Outbound TM Automation Service for Enterprises</p>
+            </header>
+            <a href="#main" class="button big scrolly">Learn More</a>
+        </div>
+    </section>
 
     {% block content %}{% endblock %}
 
@@ -63,13 +76,21 @@
         <div class="copyright">
             <ul class="icons">
                 <li><a href="https://github.com/TeleManager" class="icon fa-github"><span class="label">Github</span></a></li>
-                </ul>
+            </ul>
         </div>
     </footer>
     <div class="copyright">
-        Site made with: <a>Team 11</a>
+        Site made with: <a href="#">Team 11</a>
     </div>
-
+    {% if request.path != '/' %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 페이지 로드 시에 #main 부분으로 스크롤되도록 설정
+            var mainSection = document.getElementById('main');
+            mainSection.scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
+    {% endif %}
     <script src="{% static 'js/jquery.min.js' %}"></script>
     <script src="{% static 'js/jquery.scrollex.min.js' %}"></script>
     <script src="{% static 'js/jquery.scrolly.min.js' %}"></script>
