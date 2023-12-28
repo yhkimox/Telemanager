@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% extends 'base.html' %} <!-- 이거 C:\Users\user\Desktop\big_project\templates\base.html으로 연결되는거였네? -->
+{% extends 'base.html' %} 
 
 {% load static %}
 
@@ -9,19 +9,6 @@
 {% endblock %}
 
 {% block content %}
-
-<!-- 배너 -->
-<section id="banner">
-    <div class="inner">
-        <header>
-            <h1>TeleManager</h1>
-            <p>Outbound TM Automation Service for Enterprises</p>
-            
-        </header>
-        <a href="/" class="button big scrolly">챗봇 상담</a>
-    </div>
-</section>
-
 
 <html lang="en">
 <head>
@@ -171,25 +158,6 @@
 <h3 id='customer'>고객 목록</h3>
 <div style="display: flex; justify-content: center;" class="table-container">
     
-    {% comment %} <button onclick="openMockup()">파일 업로드 하기</button>
-
-    <div id="mockup" class="mockup">
-
-        <div class="button-container">
-            <button class="upload-button" onclick="loadContentIntoMockup('{% url 'client:upload' %}')">고객 정보 업로드</button>
-            <button class="action-button" onclick="loadContentIntoMockup('{% url 'account:file_upload' %}')">회사 파일 업로드</button>
-        </div>
-        
-        <br><br>    
-
-        <div class="button-container">
-            <button class="action-button">업로드하기</button>
-            <button class="action-button" onclick="closeMockup()">취소하기</button>
-        </div>
-
-    </div> {% endcomment %}
-
-
 
 
     <form method="post" action="{% url 'client:delete_selected' %}" id='client_form'>
@@ -457,33 +425,6 @@
 
 </script>
 
-
-<!-- 모달 관련 스크립트 -->
-<script>
-    function openMockup() {
-        const mockup = document.getElementById('mockup');
-        mockup.style.display = 'block';
-    }
-    
-    function closeMockup() {
-        const mockup = document.getElementById('mockup');
-        mockup.style.display = 'none';
-    }
-
-    // 모달 외부 클릭 시 닫기
-    window.onclick = function(event) {
-        var modal = document.getElementById("myModal");
-        if (event.target == modal) {
-            closeModal();
-        }
-    }
-
-    // 페이지 로드 시 목업 숨기기
-    document.addEventListener('DOMContentLoaded', function() {
-        const mockup = document.getElementById('mockup');
-        mockup.style.display = 'none';
-    });
-</script>
 
 <script>
     function loadContentIntoMockup(url) {
