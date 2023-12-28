@@ -10,12 +10,6 @@
 
 {% block content %}
 
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>고객 목록</title>
-
     <style>
         .my-button-link {
             display: inline-block;
@@ -57,28 +51,6 @@
         }
 
 
-        
-
-
-        /* 아래 부터는 모달에 관한 css 입니다 */
-
-        .mockup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 50%;
-            height: 60vh; /* 화면 세로의 60%를 높이로 설정 */
-            background-color: #fff;
-            border: 1px solid #ccc;
-            padding: 40px 0; /* 상하 여백 40px, 좌우 여백 0으로 설정 */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column; /* 내부 컨텐츠를 세로로 배열하기 위한 설정 */
-            justify-content: center;
-            align-items: center;
-        }
 
         .button-container {
             display: flex;
@@ -134,31 +106,17 @@
             margin: 0;
         }
 
-        /* 목록 간 선 스타일링 */
-        .list-separator {
-            border-top: 2px solid #ccc;  /* 원하는 색상과 두께로 설정 */
-            margin-top: 20px;  /* 선 위 여백 조절, 필요에 따라 조정 가능 */
-            margin-bottom: 20px;  /* 선 아래 여백 조절, 필요에 따라 조정 가능 */
-        }
-
-
     </style>
-</head>
-
-
-<body>
-
 
      
-{% block customer_info %}
+<!--main-->
+<div id="main" class="container">
+    <hr>
+    <br><br>
 
 
-
-
-<h3 id='customer'>고객 목록</h3>
+<h3 id='customer' class="margin-form-container">고객 목록</h3>
 <div style="display: flex; justify-content: center;" class="table-container">
-    
-
 
     <form method="post" action="{% url 'client:delete_selected' %}" id='client_form'>
         {% csrf_token %}
@@ -199,7 +157,7 @@
                         <td>추가해야함</td>
                         <td>O/X</td>
                         <td>
-                            <a href="{% url 'client:edit_client' client.id %}">수정하기</a> 
+                            <a href="{% url 'client:edit_client' client.id %}">수정</a> 
                         </td>
                     </tr>
                 {% endfor %}
@@ -225,19 +183,18 @@
                     <a href="?client_page={{ 1 }}" class="pagination">다음</a>
                 {% endif %}
 
-                <a href="{% url 'client:upload' %}" class="my-button-link">고객 정보 업로드</a>
+                <a href="{% url 'client:upload' %}" class="my-button-link">파일 업로드</a>
                 <button type="submit">선택된 고객 삭제</button>
 
             </span>
         </div>
     </form>
 </div>
-
-<div class="list-separator"></div> <!-- 선 긋기 용 -->
-
+<hr>
+<br>
 <br>
 
-<h3 id='filelist'>파일 목록</h3>
+<h3 id='filelist'>회사 파일 목록</h3>
 <div style="display: flex; justify-content: center;" class="table-file">
     <form method="post" action="{% url 'account:delete_selected' %}" id='file_form'>
         {% csrf_token %}
@@ -292,7 +249,7 @@
                     <a href="?file_page={{ 1 }}" class="pagination">다음</a>
                 {% endif %}
                 <!-- 경로: big_project\account\templates\upload\information.html -->
-                <a href="{% url 'account:file_upload' %}" class="my-button-link">회사 파일 업로드</a>
+                <a href="{% url 'account:file_upload' %}" class="my-button-link">파일 업로드</a>
                 <button type="submit">선택된 파일 삭제</button>
             </span>
         </div> 
@@ -329,11 +286,6 @@
 <div style="display: flex; justify-content: center;">
     <a href="{% url 'client:selected_items' %}" id="OutboundButton" class="my-button-link" style="width: 180px;">아웃바운드 나가기</a>
 </div>
-
-
-{% endblock %}
-
-
 
 
 <!-- 전체 선택하는 버튼, 선택된 고객 삭제 버튼 클릭 시 경고창 뜨게 구현-->
@@ -423,26 +375,8 @@
         });
     });
 
-</script>
-
-
-<script>
-    function loadContentIntoMockup(url) {
-        fetch(url)
-        .then(response => response.text())
-        .then(data => {
-            const mockupContent = document.getElementById('mockup');
-            mockupContent.innerHTML = data;
-        })
-        .catch(error => {
-            console.error('Error fetching data:', error);
-        });
-    }
-
-</script>
-
 <!-- 화면크기 동적 조정 -->
-<script>
+
     window.addEventListener('resize', function () {
         adjustTableWidth();
     });
@@ -468,16 +402,4 @@
     });
 </script>
 
-
-
-</body>
-</html>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // 페이지 로드 시에 #main 부분으로 스크롤되도록 설정
-        var mainSection = document.getElementById('main');
-        mainSection.scrollIntoView({ behavior: 'smooth' });
-    });
-</script>
 {% endblock %}
