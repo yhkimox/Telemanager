@@ -1,5 +1,4 @@
-<!DOCTYPE HTML>
-<!--generic.html-->
+<!-- login.html -->
 {% extends 'base.html' %}
 {% load static %}
 
@@ -9,40 +8,9 @@
 {% endblock %}
 
 {% block content %}
-
-<!-- login -->
-<style>
-    /* 기본 스타일 */
-    .row.uniform {
-        text-align: center;
-    }
-
-    .row.uniform > div {
-        display: inline-block;
-        margin-right: 540px;
-        margin-left: 540px;
-    }
-
-    /* 작은 화면일 때 미디어 쿼리 */
-    @media screen and (max-width: 940px) {
-        .row.uniform > div {
-            display: block;
-            margin: 0 auto;
-        }
-    }
-</style>
-
-<!-- Banner -->
-<section id="banner">
-    <div class="inner">
-        <header>
-            <h1>TeleManager</h1>
-            <p>Outbound TM Automation Service for Enterprises</p>
-        </header>
-        <a href="#main" class="button big scrolly">Learn More</a>
-    </div>
-</section>
-
+<!--main
+: 제목 h3
+: hr br br-->
 <div id="main" class="container">
     <hr><br><br>
 
@@ -61,10 +29,11 @@
                 <a href="{% url 'account:signup' %}">회원이 아니신가요?</a>
                 <a href="{% url 'account:password_reset' %}">비밀번호 찾기</a>
                 <br><br>
-                <ul class="actions" href="{% url 'index' %}">
+                <ul class="actions">
                     <li><input type="submit" value="Login"></li>
                 </ul>
             </form>
         </div>
     </div>
+</div>
 {% endblock %}

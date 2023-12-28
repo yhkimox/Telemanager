@@ -111,6 +111,10 @@
 	padding: 20px;
 	max-width: 1300px;
 }
+#main.container {
+	padding-left: 30px;
+	padding-right: 30px;
+}
 
 /* 테이블 스타일 */
 .custom-table-wrapper table {
@@ -123,10 +127,19 @@
 	padding: 8px; /* 셀 안 여백 조절 */
 	text-align: center; /* 가운데 정렬 */
 }
-.custom-search {
-	margin: 0 150px; /* 좌우 여백 조절 */
+.custom-table-wrapper {
+	padding: 20px;
 }
 
+.custom-search {
+	display: flex;
+	align-items: center;
+	margin: 0 150px;
+}
+
+.custom-search input {
+	margin-right: 10px;
+}
 
 .margin-form-container {
 	margin-left: 120px;  /* 왼쪽 여백 설정 */
@@ -139,14 +152,7 @@
 	margin-right: 10px; /* 완료 버튼과 취소 버튼 사이 여백 설정 */    
 }
 
-.custom-margin-form-container {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	height: 100vh; /* 화면 높이를 100%로 설정하여 수직 가운데 정렬 */
-	margin: 0; /* Body의 기본 여백 제거 */
-}
+
 
   /* 모달 스타일 */
 .modal {
@@ -3958,7 +3964,7 @@
 		-webkit-justify-content: center;
 		-ms-justify-content: center;
 		justify-content: center;
-		background-image: url(../images/스누피.jpg);
+		background-image: url(../images/banner.jpg);
 		background-position: center;
 		background-size: cover;
 		background-repeat: no-repeat;

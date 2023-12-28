@@ -14,13 +14,21 @@ from account.models import CompanyFile
 from pytz import UTC
 from django.core.paginator import Paginator
 
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
+from langchain.chat_models import ChatOpenAI
+from langchain.chains import RetrievalQAWithSourcesChain
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.vectorstores import Chroma
+from django.http import HttpResponse
 open_api_key = os.environ.get('OPENAI_API_KEY')
-
 
 class ClientListView(LoginRequiredMixin, ListView):
     model = Client
     template_name = 'client/client_list.html'  
-    
     
     def get_context_data(self, **kwargs): # 2
         context = super().get_context_data(**kwargs)  # 컨텍스트 데이터 가져옴
@@ -204,19 +212,103 @@ def start_tm(request):
     input_data = ''
     selected_clients = []
     selected_files = []
-
+    
     if request.method == 'POST':
         input_data = request.POST.get('input_data', '')
-        selected_clients = request.POST.getlist('client_ids')
-        selected_files = request.POST.getlist('file_ids')
+        selected_clients = request.POST.get('selected_clients', '').split(',')
+        selected_files = request.POST.get('selected_files', '').split(',')
         
-        # 빈 문자열 제거
+        # print(input_data)
+        # print(selected_clients)
+        # print(selected_files)
+
+        # 빈 문자열을 제거합니다. ( 선택이 안된 경우 )
         selected_clients = [id for id in selected_clients if id]
         selected_files = [id for id in selected_files if id]
 
-        clients = Client.objects.filter(id__in=selected_clients)
-        files = CompanyFile.objects.filter(id__in=selected_files)
+        # 처음엔 빈 쿼리셋 할당
+        clients = Client.objects.none()  
+        files = CompanyFile.objects.none()  
 
-        return render(request, 'client/start_tm.html', {'data': input_data, 'selectedClients': clients, 'selectedFiles': files})
+        if selected_clients:   # 해당 되는 clients 넣어줌
+            clients = Client.objects.filter(id__in=selected_clients)
 
-    return render(request, 'client/selected_items.html', {'data': input_data, 'selectedClients': selected_clients, 'selectedFiles': selected_files})
+        if selected_files:     # 해당 되는 files 넣어줌
+            files = CompanyFile.objects.filter(id__in=selected_files)
+
+        print(clients)
+        temp = files[0]
+        
+        print(clients[0].name)
+        file_name = files[0].file.name.split('.')[0]
+       
+        url = './media/embedding_files/{}'.format(file_name)
+        
+        print(url)
+
+
+
+    context = {
+        'selectedClients': clients,
+        'selectedFiles': files,
+        'input_data': input_data,  # 추가
+    }
+
+    return render(request, 'client/start_tm.html', context)
+
+    #     llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0, openai_api_key=open_api_key )
+        
+    #     system_template = """다음과 같은 맥락을 사용하여 마지막 질문에 대답하십시오.
+    #     만약 답을 모르면 모른다고만 말하고 답을 지어내려고 하지 마십시오.
+    #     답변은 최대 세 문장으로 하고 가능한 한 간결하게 유지하십시오.
+    #     {summaries}
+    #     질문: {question}
+    #     도움이 되는 답변:"""
+
+    #     messages = [
+    #         SystemMessagePromptTemplate.from_template(system_template),
+    #         HumanMessagePromptTemplate.from_template("{question}")
+    #     ]
+    #     # prompt 내에 변수처럼 쓸 수 있게끔 해두는 장치
+    #     prompt = ChatPromptTemplate.from_messages(messages)
+        
+    #     chain_type_kwargs = {"prompt": prompt}
+
+    #     llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0)  # Modify model_name if you have access to GPT-4
+    #     model_name = "jhgan/ko-sroberta-multitask"
+    #     model_kwargs = {'device': 'cpu'}
+    #     encode_kwargs = {'normalize_embeddings': False}
+        
+    #     hf = HuggingFaceEmbeddings(
+    #         model_name=model_name,
+    #         model_kwargs=model_kwargs,
+    #         encode_kwargs=encode_kwargs,
+    #         # cache_dir=True
+    #     )
+
+    #     vectordb_hf = Chroma(persist_directory="C:/Users/user/Desktop/final_project/big_project/media/embedding_files/1_kcards", embedding_function=hf)
+    #     retriever_hf = vectordb_hf.as_retriever()
+        
+    #     chain = RetrievalQAWithSourcesChain.from_chain_type(
+    #         llm=llm,
+    #         chain_type="stuff",
+    #         retriever = retriever_hf,
+    #         # retriever = retriever,
+    #         return_source_documents=False, # source document를 return
+    #         chain_type_kwargs=chain_type_kwargs # langchain type argument에다가 지정한 prompt를 넣어줌, 별도의 prompt를 넣음
+    #     )
+        
+    #     query = input_data
+    #     result = chain(query)
+    #     print(result['answer'])
+        
+    #     # # 빈 문자열 제거
+    #     # selected_clients = [id for id in selected_clients if id]
+    #     # selected_files = [id for id in selected_files if id]
+
+    #     # clients = Client.objects.filter(id__in=selected_clients)
+    #     # files = CompanyFile.objects.filter(id__in=selected_files)
+
+    #     return render(request, 'client/start_tm.html', {'data': input_data, 'selectedClients': selected_client_ids_str, 'selectedFiles': selected_file_ids_str})
+
+    # return render(request, 'client/selected_items.html', {'data': input_data, 'selectedClients': selected_clients, 'selectedFiles': selected_files})

@@ -1,74 +1,53 @@
-{{data}}
+{{ input_data }}
 
 <h2>선택된 고객 목록</h2>
+<!--main-->
+<div id="main" class="container">
 
-<table border="1"> 
-    <thead>
-        <tr>
-            <th><input type="checkbox" id="select-all"></th>
-            <th>이름</th>
-            <th>주소</th>
-            <th>전화번호</th>
-            <th>생년월일</th>
-            <th>나이</th>
-            <th>성별</th>
-            <th>이메일</th>
-            <th>상담날짜</th>
-            <th>TM 목적</th>
-            <th>감성</th>
-            <th>고객관리</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for client in selectedClients %}
-            <tr>
-                <td><input type="checkbox" name="client_ids" value="{{ client.id }}"></td>
-                <td>{{ client.name }}</td>
-                <td>{{ client.location }}</td>
-                <td>{{ client.number }}</td>
-                <td>{{ client.birth_date }}</td>
-                <td>{{ client.age }}</td>
-                <td>{{ client.gender }}</td>
-                <td>{{ client.email }}</td>
-                <td>{{ client.tm_date|date:"Y. m. d P" }}</td>
-                <td>추가해야함</td>
-                <td>O/X</td>
-                <td>
-                    <a href="{% url 'client:edit_client' client.id %}">수정하기</a> 
-                </td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        <table border="1"> 
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="select-all"></th>
+                    <th>이름</th>
+                    <th>주소</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for client in selectedClients %}
+                    <tr>
+                        <td><input type="checkbox" name="client_ids" value="{{ client.id }}"></td>
+                        <td>{{ client.name }}</td>
+                        <td>{{ client.location }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h3 style='font-size: 1rem;'>선택된 파일 목록</h3>
+        <table border="1"> 
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="select-all2"></th>
+                    <th>파일 이름</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for file in selectedFiles %}
+                    <tr>
+                        <td><input type="checkbox" name="file_ids" value="{{ file.id }}"></td>
+                        <td>{{ file.file.name|cut:"_"|slice:"1:" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
 
-<h2>선택된 파일 목록</h2>
-<table border="1"> 
-    <thead>
-        <tr>
-            <th><input type="checkbox" id="select-all2"></th>
-            <th>파일 이름</th>
-            <th>업로드 날짜</th>
-            <th>설명</th>
-            <th>임베딩 파일</th>
-            <th>파일관리</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for file in selectedFiles %}
-            <tr>
-                <td><input type="checkbox" name="file_ids" value="{{ file.id }}"></td>
-                <td>{{ file.file.name|cut:"_"|slice:"1:" }}</td>
-                <td>{{ file.upload_date }}</td>
-                <td>{{ file.description }}</td>
-                <td>{{ file.embedding_file }} </td>
-                <td>
-                    <a href="{% url 'account:edit_file' file.id %}">수정하기</a> | 
-                    <a href="{% url 'account:delete_file' file.id %}">삭제하기</a>
-                </td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <button onclick="goBack()">뒤로가기</button>
+</div>
 
-<button><a href="{% url 'client:selected_items'  %}">뒤로가기</a></button>
+
+<script>
+    function goBack() {
+        window.history.back();
+    }
+</script>
