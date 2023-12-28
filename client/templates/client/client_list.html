@@ -438,11 +438,15 @@
 
             const selectedClientIds = Array.from(document.querySelectorAll('input[name="client_ids"]:checked')).map(checkbox => checkbox.value);
             const selectedFileIds = Array.from(document.querySelectorAll('input[name="file_ids"]:checked')).map(checkbox => checkbox.value);
+            console.log('Selected Client IDs:', selectedClientIds);
+            console.log('Selected File IDs:', selectedFileIds);
 
             const urlParams = new URLSearchParams();
             urlParams.append('selected_clients', selectedClientIds.join(','));
             urlParams.append('selected_files', selectedFileIds.join(','));
-    
+            
+            const newURL = "{% url 'client:selected_items' %}?" + urlParams.toString();
+            console.log('New URL:', newURL);
             // 새로운 URL로 이동
             window.location.href = "{% url 'client:selected_items' %}?" + urlParams.toString();
         });

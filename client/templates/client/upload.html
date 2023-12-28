@@ -52,10 +52,11 @@
             text-decoration: none; /* 기본 링크 스타일 제거 */
             color: #ffffff; /* 버튼 텍스트 색상 */
             background-color: #3498db; /* 버튼 배경색 */
-            padding: 10px 20px; /* 버튼 내부 여백 */
+            padding: 0px 10px; /* 버튼 내부 여백 */
             border-radius: 5px; /* 버튼 둥근 모서리 */
             width: 86px; /* 버튼들 가로 길이 */ 
             height: 42px; /* 버튼들 세로 길이 */
+            margin-top: 5px; /* 텍스트를 위쪽으로 이동 */
         }
 
         a.button:hover {
@@ -79,7 +80,6 @@
             {% csrf_token %}
             <div>
                 <input type="file" name="excel_file" accept=".xlsx, .xls" required>
-                <br>
                 <span>파일을 선택하세요.</span> <!-- 설명 텍스트 추가 -->
             </div>
 
