@@ -45,7 +45,7 @@
     <hr>
     <br><br>
  
-    <form method="post" action="{% url 'client:start_tm' %}" class="form-container">
+    <form method="post" action="{% url 'client:start_tm' %}" class="form-container" onsubmit="return sendData()">
         {% csrf_token %}
         <h3 class='centered'>TM Message</h3>
         <br><br>
@@ -102,8 +102,10 @@
                 {% endfor %}
             </tbody>
         </table>
- 
+
+
         <h3 style='font-size: 1rem;'>선택된 파일 목록</h3>
+
         <table border="1">
             <thead>
                 <tr>
@@ -137,24 +139,32 @@
         </table>
 
     </form>
- 
-    <button><a href="{% url 'client:list'  %}" style='color:white'>뒤로가기</a></button>
 
-    <button onclick="scheduleGoBack()">10초 후 뒤로가기</button>
-
+    <!-- 로딩용 이미지 -->
     <div id="load" style="display: none;">
         <img src="{% static 'Glowing_ring.gif' %}" alt="loading">
     </div>
+ 
+    <button><a href="{% url 'client:list'  %}" style='color:white'>뒤로가기</a></button>
 </div>
  
 <script>
-
+    //이벤트가 발생하면 문서가 완전히 로드되었을 때 실행되는 이벤트 핸들러입니다. 
+    //주어진 폼(.form-container)에 대한 submit 이벤트를 감지하고, 선택된 고객 및 파일을 확인하고, 
+    //선택된 항목이 없으면 경고를 표시하며 페이지 이동을 막습니다.
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.querySelector('.form-container');
         
         form.addEventListener('submit', function(event) {
             const selectedClientIds = Array.from(document.querySelectorAll('input[name="client_ids"]:checked')).map(checkbox => checkbox.value);
             const selectedFileIds = Array.from(document.querySelectorAll('input[name="file_ids"]:checked')).map(checkbox => checkbox.value);
+            
+            // 선택된 고객 또는 파일이 하나도 없을 경우 경고 표시
+            if (selectedClientIds.length === 0 || selectedFileIds.length === 0) {
+                alert('고객과 파일 모두 선택해 주십시오.');
+                event.preventDefault(); // 기본 이벤트 (페이지 이동) 방지
+                return;
+            }
             
             // 선택된 항목이 있을 때만 hidden input fields를 추가합니다.
             if (selectedClientIds.length > 0) {
@@ -174,19 +184,15 @@
             }
         });
     });
-</script>
 
-<script>
+    //페이지가 로드될 때 실행되는 이벤트 핸들러로, 이름이 "client_ids"인 모든 체크박스를 선택상태로 초기화합니다.
     document.addEventListener('DOMContentLoaded', function() {
         const clientCheckboxes = document.querySelectorAll('input[name="client_ids"]');
         clientCheckboxes.forEach(function(checkbox) {
             checkbox.checked = true;
         });
     });
-
-</script>
-
-<script>
+    //페이지가 로드될 때 실행되는 이벤트 핸들러로, 이름이 "file_ids"인 모든 체크박스를 선택상태로 초기화합니다.
     document.addEventListener('DOMContentLoaded', function() {
         const fileCheckboxes = document.querySelectorAll('input[name="file_ids"]');
         fileCheckboxes.forEach(function(checkbox) {
@@ -195,25 +201,24 @@
     
     });
     
-</script>
-
-<!-- 10초후 작동하는 버튼 -->
-<script>
-    function scheduleGoBack() {
-        // 보여지는 로딩 이미지
+    // 전역변수로 설정
+    let loadingPage;
+    // 로딩 화면 출력 - 이건 된다.
+    async function sendData() {
         const loadingPage = document.getElementById("load");
         loadingPage.style.display = 'block';
-
-        // 10초 후에 뒤로가기
-        setTimeout(() => {
-            window.history.back();
-        }, 10000);  // 10초 대기
-
-        // 로딩 이미지 감추기
-        setTimeout(() => {
-            loadingPage.style.display = 'none';
-        }, 10000);  // 1초 후에 감춤 (원하는 대기 시간으로 조절)
     }
+    // 페이지를 떠날 때의 동작을 정의 - 왜 안되는데?
+    function handleUnload() {
+        // 여기에 원하는 동작을 추가
+        const loadingPage = document.getElementById("load");
+        loadingPage.style.display = 'none';
+    }
+
+    // unload 이벤트가 발생할 때 handleUnload 함수 실행
+    window.addEventListener('unload', handleUnload);
+
+
 </script>
 
 {% endblock %}

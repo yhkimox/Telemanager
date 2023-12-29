@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "chatbot",
     "post",
     'import_export',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
