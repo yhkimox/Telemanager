@@ -114,6 +114,7 @@
     </style>
 
 
+
     <!--main-->
 <div id="main" class="container">
     <hr>
@@ -254,7 +255,7 @@
                 {% else %}
                     <a href="?file_page={{ 1 }}" class="pagination">다음</a>
                 {% endif %}
-                <!-- 경로: big_project\account\templates\upload\information.html -->
+                <!-- 경로: big_project\account\templates\upload\information.html, 주소는 ~~/account/upload -->
                 <a href="{% url 'account:file_upload' %}" class="my-button-link">파일 업로드</a>
                 <button type="submit">선택된 파일 삭제</button>
             </span>
@@ -325,7 +326,7 @@
 
     
 
-});
+    });
 
     document.addEventListener('DOMContentLoaded', function() { // 회사 파일 올리는 파트 체크박스 전체 선택 및 삭제 기능
         
@@ -381,31 +382,6 @@
         });
     });
 
-<!-- 화면크기 동적 조정 -->
-
-    window.addEventListener('resize', function () {
-        adjustTableWidth();
-    });
-
-    function adjustTableWidth() {
-        var tableContainer = document.querySelector('.table-container');
-        var table = document.querySelector('table');
-
-        // 최소 폭 및 초기 설정 폭을 설정하고 필요에 따라 조절 가능
-        var minWidth = 800;
-        var initialWidth = 1200;
-
-        // 현재 화면 폭 가져오기
-        var windowWidth = window.innerWidth;
-
-        // 테이블 폭을 조절
-        table.style.width = (windowWidth >= minWidth) ? '100%' : initialWidth + 'px';
-    }
-
-    // 페이지 로드 시 초기 조절
-    window.addEventListener('load', function () {
-        adjustTableWidth();
-    });
 </script>
 
 {% endblock %}
