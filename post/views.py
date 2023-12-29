@@ -7,7 +7,16 @@ from django.contrib.auth.decorators import login_required
  
 def index(request):
     posts = Post.objects.all()
-    return render(request, 'post/post_list.html', {'posts': posts})
+    search_key = request.GET.get("keyword", "")
+    print(search_key)
+    if search_key:
+        print(search_key)
+        posts = Post.objects.filter(title__icontains=search_key)
+       
+    return render(request, 'post/post_list.html', {'posts':posts, 'q':search_key})
+
+    # posts = Post.objects.all()
+    # return render(request, 'post/post_list.html', {'posts': posts})
  
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -49,15 +58,17 @@ def post_edit(request, pk):
     return render(request, 'post/post_edit.html', {
         'form': form,
     })
-def list(request):
-    post_list = Post.objects.all()
-    search_key = request.GET.get("keyword")
-    print(search_key)
-    if search_key:
-        print(search_key)
-        post_list = Post.objects.filter(title__icontains=search_key)
+    
+# def list(request):
+#     posts = Post.objects.all()
+#     search_key = request.GET.get("keyword")
+#     print(search_key)
+#     if search_key:
+#         print(search_key)
+#         posts = Post.objects.filter(title__icontains=search_key)
        
-    return render(request, 'post/post_list.html', {'post_all':post_list, 'q':search_key})
+#     return render(request, 'post/post_list.html', {'posts':posts, 'q':search_key})
+
 def Comment(request, pk):
     post = get_object_or_404(Post, pk=pk)
     comments = CommentForm(request.POST)
