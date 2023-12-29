@@ -82,15 +82,10 @@
                 {% endfor %}
             </tbody>
         </table>
-<<<<<<< HEAD
 
 
         <h3 style='font-size: 1rem;'>선택된 파일 목록</h3>
 
-=======
- 
-        <h3 style='font-size: 1rem;'>선택된 파일 목록</h3>
->>>>>>> 6a21f83283adeb8f99d7f62c7de96f6e5ca651fa
         <table border="1">
             <thead>
                 <tr>
@@ -136,6 +131,13 @@
         form.addEventListener('submit', function(event) {
             const selectedClientIds = Array.from(document.querySelectorAll('input[name="client_ids"]:checked')).map(checkbox => checkbox.value);
             const selectedFileIds = Array.from(document.querySelectorAll('input[name="file_ids"]:checked')).map(checkbox => checkbox.value);
+            
+            // 선택된 고객 또는 파일이 하나도 없을 경우 경고 표시
+            if (selectedClientIds.length === 0 || selectedFileIds.length === 0) {
+                alert('고객과 파일 모두 선택해 주십시오.');
+                event.preventDefault(); // 기본 이벤트 (페이지 이동) 방지
+                return;
+            }
             
             // 선택된 항목이 있을 때만 hidden input fields를 추가합니다.
             if (selectedClientIds.length > 0) {
