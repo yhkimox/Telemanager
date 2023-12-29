@@ -1,9 +1,14 @@
+
+
 {{ input_data }}
 
-<h2>선택된 고객 목록</h2>
-<!--main-->
-<div id="main" class="container">
 
+<!-- style로 분리해볼려고 했는데 id='chart'에서부터 꼬임. -->
+
+<!--main-->
+<div id="main" class="container" style="display: flex; justify-content: space-between; align-items: flex-start;">
+    <div id='chart' style="width: 200px; margin-right: 10px; padding-right: 20px; border: 1px solid #ccc;">
+        <h3 style='font-size: 1rem;'>선택된 고객 목록</h3>
         <table border="1"> 
             <thead>
                 <tr>
@@ -40,9 +45,18 @@
                 {% endfor %}
             </tbody>
         </table>
+        <br>
+        <button onclick="goBack()">뒤로가기</button>
+    </div>
 
-
-    <button onclick="goBack()">뒤로가기</button>
+    <!-- 채팅 대화창 -->
+    <div id="chat-container" style="width: calc(100% - 230px); position: relative; border: 5px solid #ccc; margin-left: 30px; margin-right: 30px;">
+        <div id="chat-window" class="chat-window" style="height: 500px; overflow-y: auto; margin-left:20px; margin-right:20px; display: flex; flex-direction: column-reverse;"></div>
+        
+        <!-- 채팅 입력창 -->
+        <textarea id="chat-input" class="chat-input" placeholder="채팅을 입력해주세요" style="width: 100%; height: 50px; position: absolute; bottom: -50px; margin-left:0px; margin-right:0px; margin-top: 50px;"></textarea>
+        <button onclick="goBack()" style="position: absolute; bottom: -75px;">뒤로가기</button>
+    </div>
 </div>
 
 
@@ -50,4 +64,34 @@
     function goBack() {
         window.history.back();
     }
+</script>
+
+
+
+<script>
+    function goBack() {
+        window.history.back();
+    }
+
+    const chatInput = document.getElementById('chat-input');
+    const chatWindow = document.getElementById('chat-window');
+
+    chatInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            const userMessage = chatInput.value.trim();
+
+            if (userMessage !== '') {
+                // 사용자의 입력을 채팅창에 표시
+                const userChatMessage = document.createElement('div');
+                userChatMessage.className = 'chat-message';
+                userChatMessage.textContent = `사용자: ${userMessage}`;
+                chatWindow.prepend(userChatMessage); // 맨 위에 추가
+
+                // 입력창 초기화 및 포커스 유지
+                chatInput.value = '';
+                chatInput.focus();
+            }
+        }
+    });
 </script>
