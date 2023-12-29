@@ -17,6 +17,26 @@
         align-items: center; /* 요소들을 세로로 가운데 정렬합니다 */
         margin-right: 10px; /* 오른쪽 마진을 추가하여 input 요소 사이에 간격을 조절합니다 */
     }
+
+    #load {
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        position: fixed;
+        display: block;
+        opacity: 0.8;
+        background: white;
+        z-index: 99;
+        text-align: center;
+    }
+
+    #load > img {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        z-index: 100;
+    }
    
 </style>
  
@@ -82,15 +102,8 @@
                 {% endfor %}
             </tbody>
         </table>
-<<<<<<< HEAD
-
-
-        <h3 style='font-size: 1rem;'>선택된 파일 목록</h3>
-
-=======
  
         <h3 style='font-size: 1rem;'>선택된 파일 목록</h3>
->>>>>>> 6a21f83283adeb8f99d7f62c7de96f6e5ca651fa
         <table border="1">
             <thead>
                 <tr>
@@ -126,6 +139,12 @@
     </form>
  
     <button><a href="{% url 'client:list'  %}" style='color:white'>뒤로가기</a></button>
+
+    <button onclick="scheduleGoBack()">10초 후 뒤로가기</button>
+
+    <div id="load" style="display: none;">
+        <img src="{% static 'Glowing_ring.gif' %}" alt="loading">
+    </div>
 </div>
  
 <script>
@@ -158,12 +177,12 @@
 </script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const clientCheckboxes = document.querySelectorAll('input[name="client_ids"]');
-    clientCheckboxes.forEach(function(checkbox) {
-        checkbox.checked = true;
+    document.addEventListener('DOMContentLoaded', function() {
+        const clientCheckboxes = document.querySelectorAll('input[name="client_ids"]');
+        clientCheckboxes.forEach(function(checkbox) {
+            checkbox.checked = true;
+        });
     });
-});
 
 </script>
 
@@ -176,6 +195,25 @@ document.addEventListener('DOMContentLoaded', function() {
     
     });
     
-    </script>
+</script>
+
+<!-- 10초후 작동하는 버튼 -->
+<script>
+    function scheduleGoBack() {
+        // 보여지는 로딩 이미지
+        const loadingPage = document.getElementById("load");
+        loadingPage.style.display = 'block';
+
+        // 10초 후에 뒤로가기
+        setTimeout(() => {
+            window.history.back();
+        }, 10000);  // 10초 대기
+
+        // 로딩 이미지 감추기
+        setTimeout(() => {
+            loadingPage.style.display = 'none';
+        }, 10000);  // 1초 후에 감춤 (원하는 대기 시간으로 조절)
+    }
+</script>
 
 {% endblock %}
