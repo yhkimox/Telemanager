@@ -10,7 +10,8 @@ import os
 import zipfile
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from account.models import CompanyFile
+from account.models import CompanyFile, Profile
+from chatbot.models import ChatBot
 from pytz import UTC
 from django.core.paginator import Paginator
 
@@ -252,6 +253,7 @@ def start_tm(request):
             # cache_dir=True
             )
         
+        chatbots = [] # 챗봇 리스트 생성
         # 고객 하나씩 접근해서 정보 가져오기
         for c in clients:
             clients_info = [] # 고객 정보가 들어간 리스트
@@ -260,26 +262,29 @@ def start_tm(request):
             excluded_fields = ['user', 'tm_date']
             user_defined_fields = [field.name for field in Client._meta.get_fields() if not field.auto_created]
             client_values = [(field, getattr(c, field)) for field in user_defined_fields if field not in excluded_fields]
-
-            # 값 출력 또는 활용
-            # print(client_values)
-            # print()
             
             # 질문지 생성부분
             ments = make_phrases(client_values, input_data, embeding_file_url, hf, llm)
-            # print(ments)
-            print()
-            print()
-        
-        print("@@@")
-        
-
-
+            print(ments)
+            print(f"{c}의 문구 생성 완료")
+            
+            # 데이터 저장하기
+            chatbot = ChatBot(
+                owner = request.user,
+                client = c,
+                outbound_message=ments,
+                messages=[],
+            )
+            chatbot.save()
+            chatbots.append(chatbot)
+            
+        # print("@@@")
 
     context = {
         'selectedClients': clients,
         'selectedFiles': files,
         'input_data': input_data,  # 추가
+        'chatbots': chatbots,
     }
 
     return render(request, 'client/start_tm.html', context)
@@ -297,8 +302,8 @@ def make_phrases(user_info, purpose, embeding_url, hf, llm):
     {{summaries}}
     질문: {{question}}
     도움이 되는 답변:"""
-    print(system_template)
-    print()
+    # print(system_template)
+    # print()
     messages = [
         SystemMessagePromptTemplate.from_template(system_template),
         HumanMessagePromptTemplate.from_template("{question}")
@@ -322,6 +327,6 @@ def make_phrases(user_info, purpose, embeding_url, hf, llm):
     
     query = purpose  # Provide the input as a dictionary
     result = chain(query)
-    print(result['answer'])
+    # print(result['answer'])
     
     return result
