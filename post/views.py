@@ -78,3 +78,4 @@ def Comment(request, pk):
         comments.user = request.user
         comments.save()
     return redirect('post:post_detail', pk=post.pk)
+
