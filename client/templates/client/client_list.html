@@ -367,18 +367,25 @@
 
             const selectedClientIds = Array.from(document.querySelectorAll('input[name="client_ids"]:checked')).map(checkbox => checkbox.value);
             const selectedFileIds = Array.from(document.querySelectorAll('input[name="file_ids"]:checked')).map(checkbox => checkbox.value);
-            console.log('Selected Client IDs:', selectedClientIds);
-            console.log('Selected File IDs:', selectedFileIds);
+            //console.log('Selected Client IDs:', selectedClientIds);
+            //console.log('Selected File IDs:', selectedFileIds);
 
+            // 선택된 고객 또는 파일이 하나도 없을 경우 경고 표시
+            if (selectedClientIds.length === 0 || selectedFileIds.length === 0) {
+                alert('고객과 파일 모두 선택해 주십시오.');
+                event.preventDefault(); // 기본 이벤트 (페이지 이동) 방지
+                return;
+            }
+
+            // URL 파라미터 설정
             const urlParams = new URLSearchParams();
-            urlParams.append('selected_clients', selectedClientIds.join(','));
-            urlParams.append('selected_files', selectedFileIds.join(','));
-            
-            const newURL = "{% url 'client:selected_items' %}?" + urlParams.toString();
-            console.log('New URL:', newURL);
+            if (selectedClientIds.length > 0) urlParams.append('selected_clients', selectedClientIds.join(','));
+            if (selectedFileIds.length > 0) urlParams.append('selected_files', selectedFileIds.join(','));
+
             // 새로운 URL로 이동
-            window.location.href = "{% url 'client:selected_items' %}?" + urlParams.toString();
-        });
+            const newURL = "{% url 'client:selected_items' %}?" + urlParams.toString();
+            window.location.href = newURL;
+            });
     });
 
 <!-- 화면크기 동적 조정 -->
