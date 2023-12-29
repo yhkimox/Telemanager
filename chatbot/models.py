@@ -3,7 +3,6 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from account.models import Profile
 from client.models import Client
-from django.contrib.postgres.fields import JSONField
 from django.shortcuts import get_object_or_404
 
 
@@ -14,7 +13,7 @@ class ChatBot(models.Model):
     
     outbound_message = models.TextField()   # 아웃바운드 문구
     
-    messages = JSONField()    # 챗봇 내역을 저장하는 필드
+    messages = models.JSONField()    # 챗봇 내역을 저장하는 필드
     
     created_at = models.DateTimeField(auto_now_add=True)   # 만들어진 날짜 저장 필드
     updated_at = models.DateTimeField(auto_now=True)   # 수정된 날짜 저장 필드
