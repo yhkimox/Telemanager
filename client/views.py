@@ -36,6 +36,12 @@ class ClientListView(LoginRequiredMixin, ListView):
         
         client_list = Client.objects.filter(user = self.request.user)
         file_list = CompanyFile.objects.filter(user = self.request.user)
+        
+        search_key = self.request.GET.get("keyword", "")
+        print(search_key)
+        if search_key:
+            print(search_key)
+            client_list = Client.objects.filter(user = self.request.user, name__icontains=search_key)
 
         client_paginator = Paginator(client_list, 5)
         file_paginator = Paginator(file_list, 5)
@@ -51,6 +57,7 @@ class ClientListView(LoginRequiredMixin, ListView):
         context['tmgoal'] = self.request.session.get('tmgoal', None)
         context['client_obj'] = client_obj
         context['file_obj'] = file_obj
+        context['q'] = search_key
 
         return context
 
