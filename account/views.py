@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from .models import CompanyFile
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 import os
 from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
@@ -18,6 +18,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders.csv_loader import CSVLoader
 from account.forms import PasswordChangeForm
 import csv
+
 
 def index(request):
     return render(request, 'registration/login.html')
@@ -179,8 +180,39 @@ def delete_file(request, file_id):
     return render(request, 'upload/delete_file.html', {'file': file})
 
 
+
 class DeleteSelectedFilesView(LoginRequiredMixin, View):
     def post(self, request):
-        selected_ids = request.POST.getlist('file_ids')
-        CompanyFile.objects.filter(id__in=selected_ids).delete()
-        return redirect(reverse('client:list'))
+        selected_ids = request.POST.getlist('file_ids')  
+        #CompanyFile.objects.filter(id__in=selected_ids).delete()  
+        
+        for s_id in selected_ids:
+            CompanyFile.objects.filter()
+            file = CompanyFile.objects.get(id=s_id, user=request.user)
+            
+            
+            file_path = os.path.join('media/company_data_files/', file.file.name)
+            
+            # 파일 삭제
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            
+            
+            #### 임베딩 폴더 삭제 ####
+            
+            folder_name = file.file.name.split(".")[0]  # 파일 이름에서 확장자 제거
+            folder_path = os.path.join(settings.MEDIA_ROOT, 'embedding_files', folder_name)
+        
+            if os.path.exists(folder_path):
+                shutil.rmtree(folder_path)
+                print(f"폴더 {folder_path} 삭제 완료")
+            else:
+                print(f"폴더 {folder_path}가 이미 없습니다.")
+                
+            
+            ## 모델에서 삭제
+            file.delete()    
+                
+                
+        return redirect(reverse('client:list'))  
+

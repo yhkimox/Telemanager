@@ -13,6 +13,7 @@
    
     .input-left {
         display: flex;
+        height: 50px;
         flex-direction: row; /* 요소들을 가로로 나란히 배치합니다 */
         align-items: center; /* 요소들을 세로로 가운데 정렬합니다 */
         margin-right: 10px; /* 오른쪽 마진을 추가하여 input 요소 사이에 간격을 조절합니다 */
@@ -32,7 +33,7 @@
         <span>어떤 목적의 마케팅을 보내드릴까요?</span>
    
         <div class='input-left'>
-            <input type="text" name="input_data" id="textInput" class="input-left" placeholder="TM 목적 입력">
+            <textarea name="input_data" id="textInput" class="input-left" placeholder="TM 목적 입력" rows="4"></textarea>
             <input type="submit" value="Send">
         </div>
         <br><br><br>
@@ -42,68 +43,142 @@
         <table border="1">
             <thead>
                 <tr>
-                    <th><input type="checkbox" id="select-all"></th>
+                    <th><div><input type="checkbox" id="select-all"><label for="select-all"></label></div></th>
                     <th>이름</th>
                     <th>주소</th>
-                    <!-- 나머지 헤더 추가 -->
+                    <th>전화번호</th>
+                    <th>생년월일</th>
+                    <th>나이</th>
+                    <th>성별</th>
+                    <th>이메일</th>
+                    <th>상담날짜</th>
+                    <th>TM 목적</th>
+                    <th>감성</th>
+                    <th>고객관리</th>
                 </tr>
             </thead>
             <tbody>
                 {% for client in selectedClients %}
                     <tr>
-                        <td><input type="checkbox" name="client_ids" value="{{ client.id }}"></td>
+                        <td> 
+                            <div>
+                                <input type="checkbox" id="copy_{{ client.id }}" name="client_ids" value="{{ client.id }}">
+                                <label for="copy_{{ client.id }}"></label>
+                            </div>
+                        </td>
                         <td>{{ client.name }}</td>
                         <td>{{ client.location }}</td>
-                        <!-- 나머지 열 추가 -->
+                        <td>{{ client.number }}</td>
+                        <td>{{ client.birth_date }}</td>
+                        <td>{{ client.age }}</td>
+                        <td>{{ client.gender }}</td>
+                        <td>{{ client.email }}</td>
+                        <td>{{ client.tm_date|date:"Y. m. d P" }}</td>
+                        <td>추가해야함</td>
+                        <td>O/X</td>
+                        <td>
+                            <a href="{% url 'client:edit_client' client.id %}">수정하기</a> 
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
- 
+
+
         <h3 style='font-size: 1rem;'>선택된 파일 목록</h3>
+
         <table border="1">
             <thead>
                 <tr>
-                    <th><input type="checkbox" id="select-all2"></th>
+                    <th><div><input type="checkbox" id="select-all2"><label for="select-all2"></label></div></th>
                     <th>파일 이름</th>
-                    <!-- 나머지 헤더 추가 -->
+                    <th>업로드 날짜</th>
+                    <th>설명</th>
+                    <th>임베딩 파일</th>
+                    <th>파일관리</th>
                 </tr>
             </thead>
             <tbody>
                 {% for file in selectedFiles %}
                     <tr>
-                        <td><input type="checkbox" name="file_ids" value="{{ file.id }}"></td>
+                        <td>
+                            <div>
+                                <input type="checkbox" id="copy_{{ file.id }}" name="file_ids" value="{{ file.id }}">
+                                <label for="copy_{{ file.id }}"></label>
+                            </div>
+                        </td>
                         <td>{{ file.file.name|cut:"_"|slice:"1:" }}</td>
-                        <!-- 나머지 열 추가 -->
+                        <td>{{ file.upload_date }}</td>
+                        <td>{{ file.description }}</td>
+                        <td>{{ file.embedding_file }} </td>
+                        <td>
+                            <a href="{% url 'account:edit_file' file.id %}">수정</a>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
+
     </form>
  
     <button><a href="{% url 'client:list'  %}" style='color:white'>뒤로가기</a></button>
 </div>
  
 <script>
+
     document.addEventListener('DOMContentLoaded', function() {
- 
-        const outboundButton = document.querySelector('button > a[href="{% url 'client:start_tm' %}"]');
-        outboundButton.addEventListener('click', function(event) {
-            event.preventDefault();
- 
+        const form = document.querySelector('.form-container');
+        
+        form.addEventListener('submit', function(event) {
             const selectedClientIds = Array.from(document.querySelectorAll('input[name="client_ids"]:checked')).map(checkbox => checkbox.value);
             const selectedFileIds = Array.from(document.querySelectorAll('input[name="file_ids"]:checked')).map(checkbox => checkbox.value);
- 
-            const urlParams = new URLSearchParams();
-            urlParams.append('selected_clients', selectedClientIds.join(','));
-            urlParams.append('selected_files', selectedFileIds.join(','));
- 
-            // 새로운 URL로 이동
-            window.location.href = "{% url 'client:start_tm' %}?" + urlParams.toString();
+            
+            // 선택된 고객 또는 파일이 하나도 없을 경우 경고 표시
+            if (selectedClientIds.length === 0 || selectedFileIds.length === 0) {
+                alert('고객과 파일 모두 선택해 주십시오.');
+                event.preventDefault(); // 기본 이벤트 (페이지 이동) 방지
+                return;
+            }
+            
+            // 선택된 항목이 있을 때만 hidden input fields를 추가합니다.
+            if (selectedClientIds.length > 0) {
+                const clientIdsInput = document.createElement('input');
+                clientIdsInput.type = 'hidden';
+                clientIdsInput.name = 'selected_clients';
+                clientIdsInput.value = selectedClientIds.join(',');
+                form.appendChild(clientIdsInput);
+            }
+            
+            if (selectedFileIds.length > 0) {
+                const fileIdsInput = document.createElement('input');
+                fileIdsInput.type = 'hidden';
+                fileIdsInput.name = 'selected_files';
+                fileIdsInput.value = selectedFileIds.join(',');
+                form.appendChild(fileIdsInput);
+            }
         });
     });
- 
- 
 </script>
- 
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const clientCheckboxes = document.querySelectorAll('input[name="client_ids"]');
+    clientCheckboxes.forEach(function(checkbox) {
+        checkbox.checked = true;
+    });
+});
+
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileCheckboxes = document.querySelectorAll('input[name="file_ids"]');
+        fileCheckboxes.forEach(function(checkbox) {
+            checkbox.checked = true;
+        });
+    
+    });
+    
+    </script>
+
 {% endblock %}

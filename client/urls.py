@@ -11,11 +11,8 @@ app_name = 'client'
 def index(request):
     return render(request, 'index.html')
 
-def customer(request):
-    return render(request, 'customer.html')
-
 def audio(request):
-    return render(request, 'audio.html')
+    return render(request, 'client/audio.html')
 
 urlpatterns = [
     path('', ClientListView.as_view(), name = 'list'),
