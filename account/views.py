@@ -26,17 +26,15 @@ from langchain.vectorstores import Chroma
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders.csv_loader import CSVLoader
-<<<<<<< HEAD
 from account.forms import PasswordChangeForm
 from django.urls import reverse_lazy
-=======
 import csv
 
->>>>>>> 649a2fb1ab5f8c5865b94d2f14523e21eef1d072
 
 def index(request):
     return render(request, 'registration/login.html')
 
+# 회원가입
 def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
@@ -47,7 +45,9 @@ def signup(request):
         form = SignupForm()
             
     return render(request, 'registration/signup.html',{'form':form})
-    
+
+
+# 내 정보 수정  
 @login_required
 def profile_update(request):
     if request.method == 'POST':
@@ -60,7 +60,7 @@ def profile_update(request):
 
     return render(request, 'registration/profile_update.html', {'form': form})
 
-
+# 비밀번호 변경
 class PasswordChangeView(PasswordChangeView):
     success_url = reverse_lazy('account:login')
     template_name = 'account/password_change_form.html'  
@@ -70,7 +70,6 @@ class PasswordChangeView(PasswordChangeView):
         form.save()
         messages.success(self.request, "비밀번호가 성공적으로 변경되었습니다!")
         return super().form_valid(form)
-
 
 
 
@@ -86,14 +85,6 @@ class UserPasswordResetView(PasswordResetView):
         else:
             return render(self.request, 'registration/password_reset_done_fail.html')
 
-# class UserPasswordResetDoneView(PasswordResetDoneView):
-#     template_name = 'registration/password_reset_done.html'
-    
-    
-    # def get(self, request, *args, **kwargs):
-    #     # 암호 변경 폼을 문자열로 렌더링
-    #     form_html = render_to_string(self.template_name, {'form': self.get_form()})
-    #     return JsonResponse({'form_html': form_html}, safe=False)
 
 @login_required
 def file_upload(request):

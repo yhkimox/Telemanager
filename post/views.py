@@ -1,21 +1,31 @@
 from django.conf import settings
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect, get_list_or_404
 from .models import Post, Comment
 from .forms import PostForm, CommentForm
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
+from django.contrib import messages
 
 def index(request):
-    return render(request, 'post/index.html')
+    posts = Post.objects.all()
+    return render(request, 'post/post_list.html', {'posts': posts})
 
 
 def post_list(request):
     posts = Post.objects.all()
-    return render(request, 'post/post_list.html', {'posts': posts})
+    search_key = request.GET.get("keyword")
+    
+    if search_key:
+        posts = posts.filter(Q(title__icontains=search_key))
+        
+    return render(request, 'post/post_list.html', {'posts': posts, 'q': search_key})
 
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    return render(request, 'post/post_detail.html', {'post': post})
+    comments = post.comment_set.all()  # 댓글을 가져오는 부분을 수정
+    return render(request, 'post/post_detail.html', {'post': post, 'comments': comments})
+
 
 @login_required
 def post_new(request):
@@ -54,73 +64,33 @@ def post_edit(request, pk):
         'form': form,
     })
 
-# def detail(request, pk):
-#     post_detail = get_object_or_404(Post, pk=pk)
-#     comment_form = CommentForm()
-#     return render(request, 'post/post_detail.html', {'post_detail':post_detail, 'comment_form':comment_form})
-
-def list(request):
-    post_list = Post.objects.all()
-    search_key = request.GET.get("keyword")
-    print(search_key)
-    if search_key:
-        print(search_key)
-        post_list = Post.objects.filter(title__icontains=search_key)
-        
-    return render(request, 'post/post_list.html', {'post_all':post_list, 'q':search_key})
-
-
-# def comments_create(request, pk):
-#     if request.user.is_authenticated:
-#         post = get_object_or_404(Post, pk=pk)
-#         comment_form = CommentForm(request.POST)
-#         if comment_form.is_valid():
-#             comment = comment_form.save(commit=False)
-#             comment.post = post
-#             comment.user = request.user
-#             comment.save()
-#         return redirect('post:post_detail', pk)
-#     return redirect('account:login')
-
-
-# def comments_delete(request, pk, comment_pk):
-#     if request.user.is_authenticated:
-#         comment = get_object_or_404(Comment, pk=comment_pk)
-#         if request.user == comment.user:
-#             comment.delete()
-#     return redirect('post:post_detail', pk)
-
 def Comment(request, pk):
     post = get_object_or_404(Post, pk=pk)
     comments = CommentForm(request.POST)
     if comments.is_valid():
         comments = comments.save(commit=False)
-        comments.post = get_object_or_404(Post, pk=post.pk)
+        comments.post = get_object_or_404(Post, pk=pk)
         comments.user = request.user
         comments.save()
-    return redirect('post:post_detail', pk=post.pk)
+    return redirect('post:post_detail', pk=pk)
     
-# def comment_delete(request, post_id, comment_id):
-#     post = get_object_or_404(Post, id=post_id)
-#     comment = get_object_or_404(Comment, id=comment_id)
-#     comment.delete()   
-#     return redirect('post_detail', post_id = post.id)
 
-# def comment_edit(request, post_id, comment_id):
-#     post = Post.objects.get(id=post_id)
-#     comment = get_object_or_404(Comment, id=comment_id)
+def comment_delete(request, pk, comment_id):
+    if request.method == 'POST':
+        post = get_object_or_404(Post, pk=pk)
+        
+        # Comment 모델의 쿼리셋을 사용하여 댓글을 가져옴
+        comment = get_object_or_404(Comment, pk=comment_id, post=post)
 
-#     if request.method == 'GET':
-#         form = CommentForm(instance=comment)
+        # Check if the logged-in user has the permission to delete the comment
+        if request.user.is_authenticated and request.user == comment.user:
+            comment.delete()
+            messages.success(request, 'Comment deleted successfully.')
+        else:
+            messages.error(request, 'You do not have permission to delete this comment.')
 
-#     elif request.method == 'POST':
-#         form = CommentForm(request.POST, instance=comment)
-#         if form.is_valid():
-#             comment = form.save()
-#             return redirect('post:post_detail', post_id=post.id)
-
-#     return render(request, 'post/comment_edit.html',{
-#         'form': form,
-#         'comment': comment,
-#         'post':post,
-#     })
+        return redirect('post:post_detail', pk=pk)
+    else:
+        # Handle cases where 'GET' request is received (e.g., direct URL access)
+        messages.error(request, 'Invalid request method.')
+        return redirect('post:post_detail', pk=pk)
