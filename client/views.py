@@ -286,6 +286,8 @@ def start_tm(request):
             chatbot.save()
             chatbots.append(chatbot)
             
+            print(ments['answer'])
+            
         # print("@@@")
 
     context = {
@@ -301,12 +303,13 @@ def start_tm(request):
 
 def make_phrases(user_info, purpose, embeding_url, hf, llm):
     
-    system_template = f"""다음과 같은 맥락을 사용하여 마지막 질문에 대답하십시오.
+    system_template = f"""당신은 최고의 아웃바운드 상담사입니다.
+    다음과 같은 맥락을 사용하여 마지막 질문에 대답하십시오.
     만약 답을 모르면 모른다고만 말하고 답을 지어내려고 하지 마십시오.
     답변은 최대 세 문장으로 하고 가능한 한 간결하게 유지하십시오.
     답변을 할 때, 고객에 대한 정보는 이와 같습니다.
     {user_info}. 형식은 [(키, 값),(키, 값),(키, 값),...]형태로 이루어져 있습니다.
-    이를 활용하여 맞춤형으로 작성해 주십시오.
+    고객의 정보를 활용하여 맞춤형으로 작성해 주십시오.
     {{summaries}}
     질문: {{question}}
     도움이 되는 답변:"""
@@ -323,7 +326,7 @@ def make_phrases(user_info, purpose, embeding_url, hf, llm):
     chain_type_kwargs = {"prompt": prompt}
 
     vectordb_hf = Chroma(persist_directory=embeding_url, embedding_function=hf)
-    retriever_hf = vectordb_hf.as_retriever()
+    retriever_hf = vectordb_hf.as_retriever(search_type='mmr')
     
     chain = RetrievalQAWithSourcesChain.from_chain_type(
         llm=llm,
