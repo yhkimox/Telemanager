@@ -124,3 +124,42 @@
     </script>
 
 {% endblock %}
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get chat window element
+        const chatWindow = document.getElementById('chat-window');
+
+        // Get the initial chat answer from Django template
+        const initialAnswer = '{{ mentsanswer }}';
+
+        // Display the initial chat answer in the chat window
+        if (initialAnswer.trim() !== '') {
+            const botChatMessage = document.createElement('div');
+            botChatMessage.className = 'chat-message';
+            botChatMessage.textContent = `챗봇: ${initialAnswer}`;
+            chatWindow.prepend(botChatMessage);
+        }
+
+        // Set up event listener for chat input
+        const chatInput = document.getElementById('chat-input');
+        chatInput.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                const userMessage = chatInput.value.trim();
+
+                if (userMessage !== '') {
+                    // 사용자의 입력을 채팅창에 표시
+                    const userChatMessage = document.createElement('div');
+                    userChatMessage.className = 'chat-message';
+                    userChatMessage.textContent = `사용자: ${userMessage}`;
+                    chatWindow.prepend(userChatMessage); // 맨 위에 추가
+
+                    // 입력창 초기화 및 포커스 유지
+                    chatInput.value = '';
+                    chatInput.focus();
+                }
+            }
+        });
+    });
+</script>
