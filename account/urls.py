@@ -10,7 +10,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from .views import UserPasswordResetView, PasswordChangeView
-
+from .views import CustomLoginView
 app_name = 'account'
 
 def generic(request):
@@ -23,14 +23,16 @@ def elements(request):
 urlpatterns = [
     path('generic.html', generic, name='generic'),
     path('elements.html', elements, name='elements'),
-    path('', auth_views.LoginView.as_view(), name='login'),
+    path('', CustomLoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('signup/', views.signup, name='signup'),
+    path('before/', views.before, name='before'),
     path('profile/', TemplateView.as_view(template_name='registration/profile.html'), name='profile' ),
     path('profile_update/', views.profile_update, name='profile_update'),
     path('password_change/', views.PasswordChangeView.as_view(), name='password_change'),
     path('password_reset/', views.UserPasswordResetView.as_view(), name="password_reset"),
     path('password_reset_done/', auth_views.PasswordResetDoneView.as_view(), name="password_reset_done"),
+    path('check_id/', views.check_id, name='check_id'),
     
     path('list/', views.file_list, name='file_list'),  
     path('upload/', views.file_upload, name='file_upload'),

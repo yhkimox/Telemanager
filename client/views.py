@@ -25,6 +25,7 @@ from langchain.chains import RetrievalQAWithSourcesChain
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
 from django.http import HttpResponse
+from openai import OpenAI
 
 open_api_key = os.environ.get('OPENAI_API_KEY')
 
@@ -216,40 +217,40 @@ def selected_items(request):
     }
 
     return render(request, 'client/selected_items.html', context)
-
 def start_tm(request):
+    whisper = OpenAI()
     input_data = ''
     selected_clients = []
     selected_files = []
-    
+   
     if request.method == 'POST':
         input_data = request.POST.get('input_data', '')
         selected_clients = request.POST.get('selected_clients', '').split(',')
         selected_files = request.POST.get('selected_files', '').split(',')
-
-
+ 
+ 
         # 빈 문자열을 제거합니다. ( 선택이 안된 경우 )
         selected_clients = [id for id in selected_clients if id]
         selected_files = [id for id in selected_files if id]
-
+ 
         # 처음엔 빈 쿼리셋 할당
         clients = Client.objects.none()  
         files = CompanyFile.objects.none()  
-
+ 
         if selected_clients:   # 해당 되는 clients 넣어줌
             clients = Client.objects.filter(id__in=selected_clients)
-
+ 
         if selected_files:     # 해당 되는 files 넣어줌
             files = CompanyFile.objects.filter(id__in=selected_files)
-
+ 
         # 회사 파일 벡터 임베딩 경로 가져오기
         file_name = files[0].file.name.split('.')[0]
         embeding_file_url = './media/embedding_files/{}'.format(file_name)
         # print(embeding_file_url)
-
+ 
         # 질문지 생성해주는 hugginface 모델 불러오기
         llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0, openai_api_key=open_api_key)
-        
+       
         model_name = "jhgan/ko-sroberta-multitask"
         model_kwargs = {'device': 'cpu'}
         encode_kwargs = {'normalize_embeddings': False}
@@ -259,35 +260,49 @@ def start_tm(request):
             encode_kwargs=encode_kwargs,
             # cache_dir=True
             )
-        
+       
         chatbots = [] # 챗봇 리스트 생성
         # 고객 하나씩 접근해서 정보 가져오기
         for c in clients:
             clients_info = [] # 고객 정보가 들어간 리스트
-            
+           
             # 열 정보만 가져오기
             excluded_fields = ['user', 'tm_date']
             user_defined_fields = [field.name for field in Client._meta.get_fields() if not field.auto_created]
             client_values = [(field, getattr(c, field)) for field in user_defined_fields if field not in excluded_fields]
-            
+           
             # 질문지 생성부분
             ments = make_phrases(client_values, input_data, embeding_file_url, hf, llm)
             print(ments)
             print(f"{c}의 문구 생성 완료")
-            
+           
             # 데이터 저장하기
             chatbot = ChatBot(
                 owner = request.user,
                 client = c,
-                outbound_purpose=input_data,
-                outbound_message=ments['answer'],
+                outbound_message=ments,
                 messages=[],
             )
             chatbot.save()
             chatbots.append(chatbot)
-            
+           
+            questions = ments['answer'].split("\n")
+ 
+            for i, q in enumerate(questions):
+                print(q)
+                try:
+                    q = q[q.index('"'):]
+                    response = whisper.audio.speech.create(
+                        model="tts-1",
+                        voice="nova",
+                        input=f"{q}",
+                    )
+                    response.stream_to_file(f"{str(i)}.mp3")
+                except:
+                    pass
+ 
         # print("@@@")
-
+ 
     context = {
         'selectedClients': clients,
         'selectedFiles': files,
@@ -295,19 +310,19 @@ def start_tm(request):
         'chatbots': chatbots,
         'mentsanswer' : ments['answer'], # 20240102 yh 대답 부분이 필요해서 추가함.
     }
-
+ 
     return render(request, 'client/start_tm.html', context)
-
         
 
 def make_phrases(user_info, purpose, embeding_url, hf, llm):
     
-    system_template = f"""다음과 같은 맥락을 사용하여 마지막 질문에 대답하십시오.
+    system_template = f"""당신은 최고의 아웃바운드 상담사입니다.
+    다음과 같은 맥락을 사용하여 마지막 질문에 대답하십시오.
     만약 답을 모르면 모른다고만 말하고 답을 지어내려고 하지 마십시오.
     답변은 최대 세 문장으로 하고 가능한 한 간결하게 유지하십시오.
     답변을 할 때, 고객에 대한 정보는 이와 같습니다.
     {user_info}. 형식은 [(키, 값),(키, 값),(키, 값),...]형태로 이루어져 있습니다.
-    이를 활용하여 맞춤형으로 작성해 주십시오.
+    고객의 정보를 활용하여 맞춤형으로 작성해 주십시오.
     {{summaries}}
     질문: {{question}}
     도움이 되는 답변:"""
@@ -324,7 +339,7 @@ def make_phrases(user_info, purpose, embeding_url, hf, llm):
     chain_type_kwargs = {"prompt": prompt}
 
     vectordb_hf = Chroma(persist_directory=embeding_url, embedding_function=hf)
-    retriever_hf = vectordb_hf.as_retriever()
+    retriever_hf = vectordb_hf.as_retriever(search_type='mmr')
     
     chain = RetrievalQAWithSourcesChain.from_chain_type(
         llm=llm,
