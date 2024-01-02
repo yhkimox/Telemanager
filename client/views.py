@@ -308,6 +308,7 @@ def start_tm(request):
         'selectedFiles': files,
         'input_data': input_data,  # 추가
         'chatbots': chatbots,
+        'mentsanswer' : ments['answer'], # 20240102 yh 대답 부분이 필요해서 추가함.
     }
  
     return render(request, 'client/start_tm.html', context)

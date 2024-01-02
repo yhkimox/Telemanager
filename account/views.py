@@ -18,11 +18,16 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders.csv_loader import CSVLoader
 from account.forms import PasswordChangeForm
 import csv
+<<<<<<< HEAD
+from django.contrib.auth.decorators import login_required
+
+=======
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login, logout
 from client.models import Client
 from django.contrib.auth.views import LoginView
 from .models import Profile
+>>>>>>> 122ef83f09a61c11a27e849b133993605594a88b
 
 def index(request):
     return render(request, 'registration/login.html')
@@ -43,6 +48,10 @@ def signup(request):
 
     return render(request, 'registration/signup.html', {'form': form})
 
+@login_required(login_url='/accounts/login/')  # LOGIN_URL로 이동하지 않고, 여기에서 직접 지정
+def check_id(request):
+    # 여기에 check_id와 관련된 뷰 로직을 작성
+    return render(request, 'account/check_id.html')
 
 @login_required
 def profile_update(request):

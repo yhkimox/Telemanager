@@ -1,3 +1,6 @@
+<!-- start_tm.html -->
+{% extends 'base.html' %}
+
 {% load static %}
 
 {% block static %}
@@ -5,94 +8,158 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
 {% endblock %}
 
-{{ input_data }}
+{% block content %}
 
+    <!-- 배너 -->
+    <div id="main" class="container">
+        <hr>
+        <br><br>
+        <h3>Outbound TM</h3>
 
-<!-- style로 분리해볼려고 했는데 id='chart'에서부터 꼬임. -->
+        <a>tm 목적:  {{ input_data }}</a>
 
-<!--main-->
-<div id="main" class="containered" style="display: flex; justify-content: space-between; align-items: flex-start;">
-    <div id='chart' style="width: 200px; border: 1px solid #ccc; text-align: center;">
-        <h3 style='font-size: 1rem;'>선택된 고객 목록</h3>
-        <table border="1"> 
-            <thead>
-                <tr>
-                    <th><input type="checkbox" id="select-all"></th>
-                    <th>이름</th>
-                    <th>주소</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for client in selectedClients %}
-                    <tr>
-                        <td><input type="checkbox" name="client_ids" value="{{ client.id }}"></td>
-                        <td>{{ client.name }}</td>
-                        <td>{{ client.location }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <!--main-->
+        <div id='main' class='containered' style='display: flex; justify-content: space-between; align-items: flex-start;'>
+            <div id='chart' style='width: 200px; border: 1px solid #ccc; text-align: center;'>
+                <h3 style='font-size: 1rem;'>선택된 고객 목록</h3>
+                <table border='1'>
+                    <thead>
+                        <tr>
+                            <th><input type='checkbox' id='select-all'></th>
+                            <th>이름</th>
+                            <th>주소</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for client in selectedClients %}
+                            <tr>
+                                <td><input type='checkbox' name='client_ids' value='{{ client.id }}'></td>
+                                <td>{{ client.name }}</td>
+                                <td>{{ client.location }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
 
-        <h3 style='font-size: 1rem;'>선택된 파일 목록</h3>
-        <table border="1"> 
-            <thead>
-                <tr>
-                    <th><input type="checkbox" id="select-all2"></th>
-                    <th>파일 이름</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for file in selectedFiles %}
-                    <tr>
-                        <td><input type="checkbox" name="file_ids" value="{{ file.id }}"></td>
-                        <td>{{ file.file.name|cut:"_"|slice:"1:" }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <button id='goBack' onclick="goBack()">뒤로가기</button>
-    </div>
+                <h3 style='font-size: 1rem;'>선택된 파일 목록</h3>
+                <table border='1'>
+                    <thead>
+                        <tr>
+                            <th><input type='checkbox' id='select-all2'></th>
+                            <th>파일 이름</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for file in selectedFiles %}
+                            <tr>
+                                <td><input type='checkbox' name='file_ids' value='{{ file.id }}'></td>
+                                <td>{{ file.file.name|cut:"_"|slice:"1:" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <button id='goBack' onclick='goBack()'>뒤로가기</button>
+            </div>
 
-    <!-- 채팅 대화창 -->
-    <div id="chat-container" style="width: calc(100% - 230px); position: relative; border: 5px solid #ccc; margin-left: auto; margin-right: auto;">
-        <div id="chat-window" class="chat-window" style="height: 470px; overflow-y: auto; margin-left:20px; margin-right:20px; display: flex; flex-direction: column-reverse;"></div>
-        
-        <!-- 채팅 입력창 -->
-        <textarea id="chat-input" class="chat-input" placeholder="채팅을 입력해주세요" style="width: 100%; height: 100px; position: absolute; bottom: -100px; margin-left:0px; margin-right:0px; margin-top: 50px;"></textarea>
-        <div>
-            <button onclick="soundtrack" style="position: absolute; bottom: -140px;">녹음하기</button>
+            <!-- yh -->
+            <!-- 채팅 대화창 -->
+            <div class='chat-container'>
+                <div class='user-info'>
+                    <img src='../../../static/images/냥.jpg' alt='User Avatar' width='30' height='30'>
+                    <span>User123</span>
+                    <div class='user-status-indicator'></div>
+                </div>
+                <div class='chat-messages' id='chat-messages'>
+                    <!-- 채팅 메시지들이 동적으로 추가될 부분 -->
+                </div>
+                <div class='input-container'>
+                    <input type='text' id='message-input' placeholder='Type your message...' onkeydown="if (event.key === 'Enter') sendMessage()">
+                    <button class='send-button' onclick='sendMessage()'>Send</button>
+                </div>
+            </div>
+                <div>
+                    <button onclick='soundtrack()'>녹음하기</button>
+                </div>
+            
         </div>
+
     </div>
-</div>
+    </div>
 
+    <script>
+        function goBack() {
+            window.history.back();
+        }
 
+        const chatInput = document.getElementById('message-input');
+        const chatMessages = document.getElementById('chat-messages');
 
+        chatInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
 
-<script>
-    function goBack() {
-        window.history.back();
-    }
-
-    const chatInput = document.getElementById('chat-input');
-    const chatWindow = document.getElementById('chat-window');
-
-    chatInput.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' && !event.shiftKey) {
-            event.preventDefault();
+        function sendMessage() {
             const userMessage = chatInput.value.trim();
 
             if (userMessage !== '') {
-                // 사용자의 입력을 채팅창에 표시
+                // 사용자의 입력을 채팅창에 동적으로 추가
                 const userChatMessage = document.createElement('div');
-                userChatMessage.className = 'chat-message';
-                userChatMessage.textContent = `사용자: ${userMessage}`;
-                chatWindow.prepend(userChatMessage); // 맨 위에 추가
+                userChatMessage.className = 'message sent';
+                userChatMessage.innerHTML = `<div class="message-bubble">${userMessage}</div>`;
+                chatMessages.appendChild(userChatMessage);
 
                 // 입력창 초기화 및 포커스 유지
                 chatInput.value = '';
                 chatInput.focus();
             }
         }
-    });
 
+        function soundtrack() {
+            // 녹음 기능 구현
+            // 원하는 동작 수행
+        }
+    </script>
+
+{% endblock %}
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get chat window element
+        const chatWindow = document.getElementById('chat-window');
+
+        // Get the initial chat answer from Django template
+        const initialAnswer = '{{ mentsanswer }}';
+
+        // Display the initial chat answer in the chat window
+        if (initialAnswer.trim() !== '') {
+            const botChatMessage = document.createElement('div');
+            botChatMessage.className = 'chat-message';
+            botChatMessage.textContent = `챗봇: ${initialAnswer}`;
+            chatWindow.prepend(botChatMessage);
+        }
+
+        // Set up event listener for chat input
+        const chatInput = document.getElementById('chat-input');
+        chatInput.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                const userMessage = chatInput.value.trim();
+
+                if (userMessage !== '') {
+                    // 사용자의 입력을 채팅창에 표시
+                    const userChatMessage = document.createElement('div');
+                    userChatMessage.className = 'chat-message';
+                    userChatMessage.textContent = `사용자: ${userMessage}`;
+                    chatWindow.prepend(userChatMessage); // 맨 위에 추가
+
+                    // 입력창 초기화 및 포커스 유지
+                    chatInput.value = '';
+                    chatInput.focus();
+                }
+            }
+        });
+    });
 </script>
