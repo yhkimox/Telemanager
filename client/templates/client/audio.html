@@ -6,7 +6,7 @@
     <title>마이크 녹음</title>
 </head>
 <body>
-    <button>시작/종료</button>
+    <button id='start_again'>시작/종료</button>
     <br><br>
     <audio controls>녹음된 소리를 재생할 audio 엘리먼트</audio>
 
@@ -15,7 +15,7 @@
 
     // 엘리먼트 취득
     const $audioEl = document.querySelector("audio");
-    const $btn = document.querySelector("button");
+    const $recordbtn = document.getElementById("start_again");
 
     // 녹음중 상태 변수
     let isRecording = false;
@@ -26,7 +26,7 @@
     // 녹음 데이터 저장 배열
     const audioArray = [];
 
-    $btn.onclick = async function (event) {
+    $recordbtn.onclick = async function (event) {
         if(!isRecording){
 
             // 마이크 mediaStream 생성: Promise를 반환하므로 async/await 사용
