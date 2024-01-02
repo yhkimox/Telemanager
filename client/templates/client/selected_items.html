@@ -13,6 +13,7 @@
    
     .input-left {
         display: flex;
+        height: 50px;
         flex-direction: row; /* 요소들을 가로로 나란히 배치합니다 */
         align-items: center; /* 요소들을 세로로 가운데 정렬합니다 */
         margin-right: 10px; /* 오른쪽 마진을 추가하여 input 요소 사이에 간격을 조절합니다 */
@@ -52,7 +53,7 @@
         <span>어떤 목적의 마케팅을 보내드릴까요?</span>
    
         <div class='input-left'>
-            <input type="text" name="input_data" id="textInput" class="input-left" placeholder="TM 목적 입력">
+            <textarea name="input_data" id="textInput" class="input-left" placeholder="TM 목적 입력" rows="4"></textarea>
             <input type="submit" value="Send">
         </div>
         <br><br><br>
@@ -208,17 +209,27 @@
         const loadingPage = document.getElementById("load");
         loadingPage.style.display = 'block';
     }
+    
     // 페이지를 떠날 때의 동작을 정의 1229
     function handleUnload() {
         // 로딩 화면 숨기기.
         const loadingPage = document.getElementById("load");
         loadingPage.style.display = 'none';
     }
-
     // unload 이벤트가 발생할 때 handleUnload 함수 실행
     window.addEventListener('unload', handleUnload);
 
 
+    // enter + shift를 누르면 아웃바운드에서 줄바꿈 기능이 수행되게 하는 스크립트
+    document.getElementById('textInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && e.shiftKey) {
+            // Shift + Enter를 눌렀을 때만 동작
+            this.value += '\n'; // 줄바꿈 추가
+        }
+    });
+
 </script>
+
+
 
 {% endblock %}
