@@ -9,14 +9,11 @@ app_name = 'chatbot'
 def chat(request):
     return render(request, 'chat.html')
 
-def index(request):
-    # app_name: URL 패턴을 정의할 때 설정한 app_name
-    # 'client:index': app_name과 패턴 이름을 조합한 것
-    url = reverse('chatbot:index') # 
-    return render(request, 'index.html', {'index_url': url})
+
 
 urlpatterns = [
     path('', views.chat, name='chat'),
-    path('index.html', index, name='index'),
+    path('index/', views.index, name='index'),
+    #path('edit/<int:client_id>/', views.edit_client, name='edit_client'),
 ]
 
