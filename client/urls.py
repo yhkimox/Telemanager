@@ -11,8 +11,8 @@ app_name = 'client'
 def index(request):
     return render(request, 'index.html')
 
-def customer(request):
-    return render(request, 'customer.html')
+def audio(request):
+    return render(request, 'client/audio.html')
 
 urlpatterns = [
     path('', ClientListView.as_view(), name = 'list'),
@@ -25,7 +25,7 @@ urlpatterns = [
 
 
     path('delete_selected/', views.DeleteSelectedClientsView.as_view(), name='delete_selected'),
-    #path('customer/', customer, name='customer'),
+    path('audio/', audio, name='audio'),
 ]
 
 

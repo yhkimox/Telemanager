@@ -10,17 +10,27 @@ import os
 import zipfile
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from account.models import CompanyFile
+from account.models import CompanyFile, Profile
+from chatbot.models import ChatBot
 from pytz import UTC
 from django.core.paginator import Paginator
 
-open_api_key = os.environ.get('OPENAI_API_KEY')
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
+from langchain.chat_models import ChatOpenAI
+from langchain.chains import RetrievalQAWithSourcesChain
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.vectorstores import Chroma
+from django.http import HttpResponse
 
+open_api_key = os.environ.get('OPENAI_API_KEY')
 
 class ClientListView(LoginRequiredMixin, ListView):
     model = Client
     template_name = 'client/client_list.html'  
-    
     
     def get_context_data(self, **kwargs): # 2
         context = super().get_context_data(**kwargs)  # 컨텍스트 데이터 가져옴
@@ -204,19 +214,119 @@ def start_tm(request):
     input_data = ''
     selected_clients = []
     selected_files = []
-
+    
     if request.method == 'POST':
         input_data = request.POST.get('input_data', '')
-        selected_clients = request.POST.getlist('client_ids')
-        selected_files = request.POST.getlist('file_ids')
-        
-        # 빈 문자열 제거
+        selected_clients = request.POST.get('selected_clients', '').split(',')
+        selected_files = request.POST.get('selected_files', '').split(',')
+
+
+        # 빈 문자열을 제거합니다. ( 선택이 안된 경우 )
         selected_clients = [id for id in selected_clients if id]
         selected_files = [id for id in selected_files if id]
 
-        clients = Client.objects.filter(id__in=selected_clients)
-        files = CompanyFile.objects.filter(id__in=selected_files)
+        # 처음엔 빈 쿼리셋 할당
+        clients = Client.objects.none()  
+        files = CompanyFile.objects.none()  
 
-        return render(request, 'client/start_tm.html', {'data': input_data, 'selectedClients': clients, 'selectedFiles': files})
+        if selected_clients:   # 해당 되는 clients 넣어줌
+            clients = Client.objects.filter(id__in=selected_clients)
 
-    return render(request, 'client/selected_items.html', {'data': input_data, 'selectedClients': selected_clients, 'selectedFiles': selected_files})
+        if selected_files:     # 해당 되는 files 넣어줌
+            files = CompanyFile.objects.filter(id__in=selected_files)
+
+        # 회사 파일 벡터 임베딩 경로 가져오기
+        file_name = files[0].file.name.split('.')[0]
+        embeding_file_url = './media/embedding_files/{}'.format(file_name)
+        # print(embeding_file_url)
+
+        # 질문지 생성해주는 hugginface 모델 불러오기
+        llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0, openai_api_key=open_api_key)
+        
+        model_name = "jhgan/ko-sroberta-multitask"
+        model_kwargs = {'device': 'cpu'}
+        encode_kwargs = {'normalize_embeddings': False}
+        hf = HuggingFaceEmbeddings(
+            model_name=model_name,
+            model_kwargs=model_kwargs,
+            encode_kwargs=encode_kwargs,
+            # cache_dir=True
+            )
+        
+        chatbots = [] # 챗봇 리스트 생성
+        # 고객 하나씩 접근해서 정보 가져오기
+        for c in clients:
+            clients_info = [] # 고객 정보가 들어간 리스트
+            
+            # 열 정보만 가져오기
+            excluded_fields = ['user', 'tm_date']
+            user_defined_fields = [field.name for field in Client._meta.get_fields() if not field.auto_created]
+            client_values = [(field, getattr(c, field)) for field in user_defined_fields if field not in excluded_fields]
+            
+            # 질문지 생성부분
+            ments = make_phrases(client_values, input_data, embeding_file_url, hf, llm)
+            print(ments)
+            print(f"{c}의 문구 생성 완료")
+            
+            # 데이터 저장하기
+            chatbot = ChatBot(
+                owner = request.user,
+                client = c,
+                outbound_message=ments,
+                messages=[],
+            )
+            chatbot.save()
+            chatbots.append(chatbot)
+            
+        # print("@@@")
+
+    context = {
+        'selectedClients': clients,
+        'selectedFiles': files,
+        'input_data': input_data,  # 추가
+        'chatbots': chatbots,
+    }
+
+    return render(request, 'client/start_tm.html', context)
+
+        
+
+def make_phrases(user_info, purpose, embeding_url, hf, llm):
+    
+    system_template = f"""다음과 같은 맥락을 사용하여 마지막 질문에 대답하십시오.
+    만약 답을 모르면 모른다고만 말하고 답을 지어내려고 하지 마십시오.
+    답변은 최대 세 문장으로 하고 가능한 한 간결하게 유지하십시오.
+    답변을 할 때, 고객에 대한 정보는 이와 같습니다.
+    {user_info}. 형식은 [(키, 값),(키, 값),(키, 값),...]형태로 이루어져 있습니다.
+    이를 활용하여 맞춤형으로 작성해 주십시오.
+    {{summaries}}
+    질문: {{question}}
+    도움이 되는 답변:"""
+    # print(system_template)
+    # print()
+    messages = [
+        SystemMessagePromptTemplate.from_template(system_template),
+        HumanMessagePromptTemplate.from_template("{question}")
+    ]
+    
+    # prompt 내에 변수처럼 쓸 수 있게끔 해두는 장치
+    prompt = ChatPromptTemplate.from_messages(messages)
+    
+    chain_type_kwargs = {"prompt": prompt}
+
+    vectordb_hf = Chroma(persist_directory=embeding_url, embedding_function=hf)
+    retriever_hf = vectordb_hf.as_retriever()
+    
+    chain = RetrievalQAWithSourcesChain.from_chain_type(
+        llm=llm,
+        chain_type="stuff",
+        retriever = retriever_hf,
+        return_source_documents=False, # source document를 return
+        chain_type_kwargs=chain_type_kwargs # langchain type argument에다가 지정한 prompt를 넣어줌, 별도의 prompt를 넣음
+    )
+    
+    query = purpose  # Provide the input as a dictionary
+    result = chain(query)
+    # print(result['answer'])
+    
+    return result

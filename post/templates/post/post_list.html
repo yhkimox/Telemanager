@@ -1,32 +1,20 @@
-<!-- post/templates/post/post_list.html -->
+<!-- post_list.html -->
 {% extends 'base.html' %}
 {% load static %}
 
 {% block static %}
     <!-- 외부 CSS 파일에 대한 링크 -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
-    <style>
-      .custom-table-wrapper {
-          padding: 20px;
-      }
-  </style>
 {% endblock %}
 
 {% block content %}
-
-    <!-- 배너 -->
-    <section id="banner">
-        <div class="inner">
-            <header>
-                <h1>TeleManager</h1>
-                <p>Outbound TM Automation Service for Enterprises</p>
-            </header>
-            <a href="#main" class="button big scrolly">Learn More</a>
-        </div>
-    </section>
-    <hr><br><br>
+<!--main-->
+<div id="main" class="container">
+    <hr>
+    <br><br>
 
     <div class="custom-table-wrapper">
+<<<<<<< HEAD
       <h2>게시판</h2>
       <form action="" method="get">
           {% csrf_token %}
@@ -61,4 +49,40 @@
 
 
 
+=======
+        <h2>게시판</h2>
+        <form action="" method="get" class="custom-search" >
+            {% csrf_token %}
+            <input type="text" name="keyword" value="{{q|default:''}}" >
+            <input type="submit" value="Search" >
+        </form>
+       
+        <table>
+            <thead>
+                <tr>
+                    <th>Index</th>
+                    <th>Title</th>
+                    <th>작성자</th>
+                    <th>작성 날짜</th>
+                    <!-- 다른 필드들에 대한 헤더도 추가할 수 있음 -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for post in posts %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td><a href="{% url 'post:post_detail' pk=post.pk %}">{{ post.title }}</a></td>
+                        <td>{{ post.author.username }}</td>
+                        <td>{{ post.created }}</td>
+                        <!-- 다른 필드들에 대한 데이터도 추가할 수 있음 -->
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+       
+        <br>
+        <button> <a href="{% url 'post:post_new' %}" style='color:white'>New Post</a></button>
+    </div>
+</div>
+>>>>>>> cf8f4635bc2fbd75f418f1f18b8ebccc57e7ad1f
 {% endblock %}
