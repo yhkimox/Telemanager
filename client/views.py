@@ -272,7 +272,8 @@ def start_tm(request):
             chatbot = ChatBot(
                 owner = request.user,
                 client = c,
-                outbound_message=ments,
+                outbound_purpose=input_data,
+                outbound_message=ments['answer'],
                 messages=[],
             )
             chatbot.save()
