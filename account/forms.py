@@ -9,10 +9,15 @@ class SignupForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         fields = UserCreationForm.Meta.fields + ('email', )
         
-    def save(self):
-        user = super().save()
-        Profile.objects.create(user=user,)
-        
+    def save(self, commit=True):
+        user = super().save(commit=False)  # User 객체를 먼저 가져오되, 아직 저장하지 않습니다.
+        if commit:
+            user.save()  # User 객체를 저장합니다.
+
+    # Profile 객체를 생성하기 전에 User 객체가 저장되었는지 확인합니다.
+        if user.pk:
+            Profile.objects.create(user=user)  # Profile 객체 생성
+
         return user
     
 class ProfileUpdateForm(UserChangeForm):
