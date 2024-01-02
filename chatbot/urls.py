@@ -6,9 +6,6 @@ from django.shortcuts import render
 
 app_name = 'chatbot'
 
-def chat(request):
-    return render(request, 'chat.html')
-
 def index(request):
     # app_name: URL 패턴을 정의할 때 설정한 app_name
     # 'client:index': app_name과 패턴 이름을 조합한 것
@@ -18,5 +15,7 @@ def index(request):
 urlpatterns = [
     path('', views.chat, name='chat'),
     path('index.html', index, name='index'),
+    path('test/', views.test, name='test'),
+
 ]
 

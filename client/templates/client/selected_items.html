@@ -13,6 +13,7 @@
    
     .input-left {
         display: flex;
+        height: 50px;
         flex-direction: row; /* 요소들을 가로로 나란히 배치합니다 */
         align-items: center; /* 요소들을 세로로 가운데 정렬합니다 */
         margin-right: 10px; /* 오른쪽 마진을 추가하여 input 요소 사이에 간격을 조절합니다 */
@@ -52,7 +53,7 @@
         <span>어떤 목적의 마케팅을 보내드릴까요?</span>
    
         <div class='input-left'>
-            <input type="text" name="input_data" id="textInput" class="input-left" placeholder="TM 목적 입력">
+            <textarea name="input_data" id="textInput" class="input-left" placeholder="TM 목적 입력" rows="4"></textarea>
             <input type="submit" value="Send">
         </div>
         <br><br><br>
