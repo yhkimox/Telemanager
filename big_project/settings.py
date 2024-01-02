@@ -141,7 +141,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "auth.User"
 AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.ModelBackend"]
-LOGIN_URL = "/accounts/login/"
+LOGIN_URL = "/account/"
 LOGIN_REDIRECT_URL = 'check_id/'
 LOGOUT_REDIRECT_URL = "/"
 # The number of seconds a password reset link is valid for (default: 3 days).
