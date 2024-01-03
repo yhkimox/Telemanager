@@ -33,12 +33,7 @@ urlpatterns = [
     path('<int:pk>/comment/', views.Comment, name='comment'),
     path('<int:pk>/delete_comment/<int:comment_id>/', views.comment_delete, name="delete_comment"),
 ]
-<<<<<<< HEAD
 
-=======
- 
- 
->>>>>>> cf8f4635bc2fbd75f418f1f18b8ebccc57e7ad1f
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

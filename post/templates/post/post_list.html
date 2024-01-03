@@ -1,55 +1,19 @@
 <!-- post_list.html -->
 {% extends 'base.html' %}
 {% load static %}
-
+ 
 {% block static %}
     <!-- 외부 CSS 파일에 대한 링크 -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
 {% endblock %}
-
+ 
 {% block content %}
 <!--main-->
 <div id="main" class="container">
     <hr>
     <br><br>
-
+ 
     <div class="custom-table-wrapper">
-<<<<<<< HEAD
-      <h2>게시판</h2>
-      <form action="" method="get">
-          {% csrf_token %}
-          <input type="text" name="keyword" value="{{ q|default:'' }}" >
-          <input type="submit" value="Search">
-      </form>
-  
-      <table>
-          <thead>
-              <tr>
-                  <th>Index</th>
-                  <th>Title</th>
-                  <th>작성자</th>
-                  <th>작성 날짜</th>
-              </tr>
-          </thead>
-          <tbody>
-              {% for post in posts %}
-                  <tr>
-                      <td>{{ forloop.counter }}</td>
-                      <td><a href="{% url 'post:post_detail' pk=post.pk %}">{{ post.title }}</a></td>
-                      <td>{{ post.author.username }}</td>
-                      <td>{{ post.created }}</td>
-                  </tr>
-              {% endfor %}
-          </tbody>
-      </table>
-      
-      <br>
-      <button> <a href="{% url 'post:post_new' %}" style='color:white'>New Post</a></button>
-  </div>
-
-
-
-=======
         <h2>게시판</h2>
         <form action="" method="get" class="custom-search" >
             {% csrf_token %}
@@ -84,5 +48,4 @@
         <button> <a href="{% url 'post:post_new' %}" style='color:white'>New Post</a></button>
     </div>
 </div>
->>>>>>> cf8f4635bc2fbd75f418f1f18b8ebccc57e7ad1f
 {% endblock %}
