@@ -94,8 +94,14 @@ def normalize_gender(gender_str):
         return '여'
     else:
         return None  
-    
 
+def error_page(request):
+    return render(request, 'client/error.html', {'error_message': '잘못된 요청입니다.'})
+      
+
+FILE_COUNT_LIMIT = 5         # 업로드 하는 파일에 대한 개수 제한
+FILE_SIZE_LIMIT = 10485760   # 업로드 하는 파일의 최대 사이즈 제한 10 * 1024 * 1024 (10MB)
+WHITE_LIST = ['xlsx', 'xls'] # 허용하는 확장자 제한
     
 def upload_excel(request): # 이상 없음.
     if request.method == 'POST' and request.FILES['excel_file']:
@@ -103,9 +109,9 @@ def upload_excel(request): # 이상 없음.
         
         file_extension = check_file.name.split('.')[-1].lower()
         
-        # 지정된 파일 형태 확인
-        if file_extension not in ['xlsx', 'xls']:
-            return render(request, 'error.html', {'error_message': '잘못된 파일 형식입니다.'})
+        # 지정된 파일 형태 확인, 아닐 경우 에러 페이지로 render
+        if file_extension not in WHITE_LIST:
+            return render(request, 'client/error.html', {'error_message': '잘못된 파일 형식입니다. xlsx, xls 형식의 파일을 제출해주십시오.'})
         
         
         tmgoal = request.POST.get('tmgoal')
