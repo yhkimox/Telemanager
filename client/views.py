@@ -119,21 +119,21 @@ def upload_excel(request):
     if request.method == 'POST' and request.FILES['excel_file']:
         check_file = request.FILES['excel_file']
         
-        # 파일 개수 체크
-        if len(request.FILES.getlist('excel_file')) > FILE_COUNT_LIMIT:
-            print(len(request.FILES.getlist('excel_file')))
-            return render(request, 'client/error.html', {'error_message': f'파일은 최대 {FILE_COUNT_LIMIT}개까지만 업로드 가능합니다.'})
+        # # 파일 개수 체크
+        # if len(request.FILES.getlist('excel_file')) > FILE_COUNT_LIMIT:
+        #     print(len(request.FILES.getlist('excel_file')))
+        #     return render(request, 'client/error.html', {'error_message': f'파일은 최대 {FILE_COUNT_LIMIT}개까지만 업로드 가능합니다.'})
         
-        for file in check_file:
-            file_extension = file.name.split('.')[-1].lower()
 
-            # 파일 형식 체크
-            if file_extension not in WHITE_LIST:
-                return render(request, 'client/error.html', {'error_message': '잘못된 파일 형식입니다. xlsx, xls 형식의 파일을 제출해주십시오.'})
+        file_extension = check_file.name.split('.')[-1].lower()
 
-            # 파일 크기 체크
-            if file.size > FILE_SIZE_LIMIT:
-                return render(request, 'client/error.html', {'error_message': f'파일 크기는 최대 {FILE_SIZE_LIMIT / (1024 * 1024)} MB까지만 허용됩니다.'})
+        # 파일 형식 체크
+        if file_extension not in WHITE_LIST:
+            return render(request, 'client/error.html', {'error_message': '잘못된 파일 형식입니다. xlsx, xls 형식의 파일을 제출해주십시오.'})
+
+        # 파일 크기 체크
+        if check_file.size > FILE_SIZE_LIMIT:
+            return render(request, 'client/error.html', {'error_message': f'파일 크기는 최대 {FILE_SIZE_LIMIT / (1024 * 1024)} MB까지만 허용됩니다.'})
         
         
         tmgoal = request.POST.get('tmgoal')
