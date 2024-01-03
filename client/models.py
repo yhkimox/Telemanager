@@ -15,6 +15,11 @@ class Client(models.Model):
 	gender = models.CharField(max_length=10, choices=[('Male', 'Male'), ('Female', 'Female')], null=True, blank=True)  # (실제 값, 보여지는 값)
 	email = models.EmailField(max_length=254, null=True, blank=True)     # 고객 이메일 저장
  
+
+	def __str__(self):
+		return self.name
+ 
+
  
 class Marketing(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

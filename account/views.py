@@ -19,7 +19,13 @@ from langchain.document_loaders.csv_loader import CSVLoader
 from account.forms import PasswordChangeForm
 from django.urls import reverse_lazy
 import csv
+from django.contrib.auth.decorators import login_required
 
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth import authenticate, login, logout
+from client.models import Client
+from django.contrib.auth.views import LoginView
+from .models import Profile
 
 def index(request):
     return render(request, 'registration/login.html')
@@ -30,15 +36,22 @@ def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save(commit=False)
+            user.save()
+
+            Profile.objects.create(user=user, is_approved=False)
+
             return redirect(settings.LOGIN_URL)
     else:
         form = SignupForm()
             
     return render(request, 'registration/signup.html',{'form':form})
 
+<<<<<<< HEAD
 
 # 내 정보 수정  
+=======
+>>>>>>> fe17ddb97d65672b06f14f72d132e5fb8328a369
 @login_required
 def profile_update(request):
     if request.method == 'POST':
@@ -152,6 +165,7 @@ def file_upload(request):
 
 
 # 파일 목록을 출력하는 view입니다.
+@login_required
 def file_list(request):
     files = CompanyFile.objects.filter(user=request.user)
     return render(request, 'upload/list.html', {'files': files})
@@ -219,3 +233,22 @@ class DeleteSelectedFilesView(LoginRequiredMixin, View):
                 
         return redirect(reverse('client:list'))  
 
+def before(request):
+    return render(request, 'registration/before.html')
+
+class CustomLoginView(LoginView):
+    def form_valid(self, form):
+        # 기존 로그인 로직을 수행합니다.
+        super().form_valid(form)
+        
+        # 로그인한 사용자를 가져옵니다.
+        user = self.request.user
+        
+        print(user)
+        # is_approved 값에 따라 리디렉션합니다.
+        profile = Profile.objects.get(user=user)
+        if profile and not profile.is_approved:
+            logout(self.request)   # logout 시켜줌
+            return redirect('account:before')  # before.html로 리디렉션
+        else:
+            return redirect('index')  # views.index 함수로 리디렉션

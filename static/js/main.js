@@ -144,6 +144,11 @@
     });
 })(jQuery);
 
+function toggleDarkMode() {
+    const darkModeStyle = document.getElementById('dark-mode-style');
+    darkModeStyle.href = darkModeStyle.href.includes('dark-mode') ? '{% static "css/main.css" %}' : '{% static "css/dark-mode.css" %}';
+}
+
 //hj
 
 

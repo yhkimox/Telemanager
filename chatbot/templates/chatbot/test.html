@@ -1,0 +1,60 @@
+<!-- start_tm.html -->
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block static %}
+    <!-- 외부 CSS 파일에 대한 링크 -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+{% endblock %}
+
+{% block content %}
+<div id="main" class="container">
+        <hr>
+        <br><br>
+
+        <div class="chat-container">
+            <div class="user-info">
+                <img src="../../../static/images/냥.jpg" alt="User Avatar" width="30" height="30">
+                <span>User123</span>
+                <div class="user-status-indicator"></div>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <!-- 채팅 메시지들이 동적으로 추가될 부분 -->
+            </div>
+            <div class="input-container">
+                <input type="text" id="message-input" placeholder="Type your message...">
+                <button class="send-button" onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+
+        <script>
+            function sendMessage() {
+                const messageInput = document.getElementById('message-input');
+                const chatMessages = document.getElementById('chat-messages');
+
+                const userMessage = messageInput.value.trim();
+
+                if (userMessage !== '') {
+                    // 사용자의 입력을 채팅창에 동적으로 추가
+                    const userChatMessage = document.createElement('div');
+                    userChatMessage.className = 'message sent';
+                    userChatMessage.innerHTML = `<div class="message-bubble">${userMessage}</div>`;
+                    chatMessages.appendChild(userChatMessage);
+
+                    // 입력창 초기화 및 포커스 유지
+                    messageInput.value = '';
+                    messageInput.focus();
+                }
+            }
+
+            // 엔터 키로 메시지 전송
+            document.getElementById('message-input').addEventListener('keydown', function (event) {
+                if (event.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        </script>
+    </div>
+</div>
+{% endblock %}

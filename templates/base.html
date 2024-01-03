@@ -49,12 +49,21 @@
                 {% csrf_token %}
                 <button type="submit">Logout</button>
             </form>
-            <li><a href='/client/'>고객관리</a></li>
-            <li><a href='/chatbot/'>고객마케팅</a></li>
-            <li><a href='/chatbot/'>마케팅시현</a></li>
-            <li><a href='/post/'>게시판</a></li>
-            <li><a href="generic.html">*일반</a></li>
-            <li><a href="elements.html">*요소</a></li>
+            {% if user.is_authenticated %}
+                <li><a href='/client/'>고객관리</a></li>
+                <li><a href='/chatbot/'>고객마케팅</a></li>
+                <li><a href='/chatbot/'>마케팅시현</a></li>
+                <li><a href='/post/'>게시판</a></li>
+                <li><a href="generic.html">*일반</a></li>
+                <li><a href="elements.html">*요소</a></li>  
+            {% else %}
+                <li><a href='/account/'>고객관리</a></li>
+                <li><a href='/account/'>고객마케팅</a></li>
+                <li><a href='/account/'>마케팅시현</a></li>
+                <li><a href='/account/'>게시판</a></li>
+                <li><a href="/account/">*일반</a></li>
+                <li><a href="/account/">*요소</a></li>  
+            {% endif %}
         </ul>
     </nav>
 
@@ -71,6 +80,7 @@
 
     {% block content %}{% endblock %}
 
+
     <!-- 푸터 -->
     <footer id="footer">
         <div class="copyright">
@@ -84,6 +94,10 @@
     <div class="copyright">
         Site made with: <a href="#">Team 11</a>
     </div>
+
+
+
+
     {% if request.path != '/' %}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
