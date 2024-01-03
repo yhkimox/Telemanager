@@ -230,6 +230,8 @@ def selected_items(request):
     }
 
     return render(request, 'client/selected_items.html', context)
+
+
 def start_tm(request):
     whisper = OpenAI()
     input_data = ''
@@ -396,6 +398,17 @@ def save_audio(request):
     
     audio_data = request.FILES.get('audio_data')
     if audio_data:
+        
+        # audio/계정 안에 고객당 폴더 생성하기
+        # 폴더가 존재하지 않으면 폴더를 생성
+        #final_save_path = f"./media/audio/{file_name}/{c.id}"
+        #if not os.path.exists(final_save_path): # 폴더 존재하지 않을경우 생성
+        #    os.makedirs(final_save_path)
+        #    # print(f"{audio_path} 폴더가 생성되었습니다.")
+        #else: # 폴더 존재할 경우 패스
+        #    pass
+            
+        
         ogg_save_path = os.path.join('C:/Users/user/Desktop/big_project/media/audio/', 'audio.ogg')
         mp3_save_path = os.path.join('C:/Users/user/Desktop/big_project/media/audio/', 'audio.mp3')
 
