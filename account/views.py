@@ -47,11 +47,6 @@ def signup(request):
             
     return render(request, 'registration/signup.html',{'form':form})
 
-<<<<<<< HEAD
-
-# 내 정보 수정  
-=======
->>>>>>> fe17ddb97d65672b06f14f72d132e5fb8328a369
 @login_required
 def profile_update(request):
     if request.method == 'POST':
