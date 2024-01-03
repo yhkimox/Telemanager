@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+{% load static %}
+
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -9,6 +11,14 @@
     <button id='start_again'>시작/종료</button>
     <br><br>
     <audio controls>녹음된 소리를 재생할 audio 엘리먼트</audio>
+
+    <br><br><br><br><br>
+    <!-- 시작할 때 드러날 이미지 버튼들 -->
+    <button id="recordbutton" onclick="showButton('베타');" style="background-image: url('{% static 'Glowing_ring.gif' %}'); width: 50px; height: 50px;"></button>
+    <button id="playbutton" onclick="showButton('베타');" style="background-image: url('{% static 'Glowing_ring.gif' %}'); width: 50px; height: 50px;"></button>
+    <!-- 시작할 때 숨어있을 이미지 버튼들 -->
+    <button id="recording" style="display: none; background-image: url('{% static 'Glowing_ring.gif' %}'); width: 50px; height: 50px;" onclick="showButton('알파');"></button>
+    <button id="playbutton" style="display: none; background-image: url('{% static 'Glowing_ring.gif' %}'); width: 50px; height: 50px;" onclick="showButton('알파');"></button>
 
 </body>
 <script>
@@ -40,21 +50,32 @@
                 audioArray.push(event.data); // 오디오 데이터가 취득될 때마다 배열에 담아둔다.
             }
 
+
             // 이벤트핸들러: 녹음 종료 처리 & 재생하기
-            mediaRecorder.onstop = (event)=>{
-                
+            mediaRecorder.onstop = async (event) => {
                 // 녹음이 종료되면, 배열에 담긴 오디오 데이터(Blob)들을 합친다: 코덱도 설정해준다.
-                const blob = new Blob(audioArray, {"type": "audio/ogg codecs=opus"});
-                audioArray.splice(0); // 기존 오디오 데이터들은 모두 비워 초기화한다.
-                
+                const blob = new Blob(audioArray, { type: "audio/ogg; codecs=opus" });
+                audioArray.splice(0);// 기존 오디오 데이터들은 모두 비워 초기화한다.
+
+                const formData = new FormData();
+                formData.append('audio_data', blob);
+
+                // 서버에 녹음된 오디오를 전송
+                const response = await fetch('/save_audio/', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const responseData = await response.json();
+                console.log(responseData.message);
+
+                // 여기서 재생하는 것은 필요에 따라 수정 가능
                 // Blob 데이터에 접근할 수 있는 주소를 생성한다.
                 const blobURL = window.URL.createObjectURL(blob);
-
                 // audio엘리먼트로 재생한다.
                 $audioEl.src = blobURL;
                 $audioEl.play();
-
-            }
+            };
 
             // 녹음 시작
             mediaRecorder.start();
@@ -68,6 +89,46 @@
     }
 
 
+    // 버튼 기능 설정
+    document.addEventListener("DOMContentLoaded", function() {
+        // 초기에 알파 버튼만 보이게 설정
+        showButton('알파');
+    });
+    
+    function showButton(val) {
+        var recordButton = document.getElementById('recordbutton');
+        var playButton = document.getElementById('playbutton');
+        //var message = document.getElementById('message');
+        var uploadForm = document.getElementById('upload-form');
+        var uploadForm2 = document.getElementById('upload-form-2');
+    
+        if (val === '알파') {
+            recordButton.style.display = 'block';
+            playButton.style.display = 'none';
+            //message.innerHTML = '';
+            uploadForm.style.display = 'none';
+            uploadForm2.style.display = 'none';
+        } else if (val === '베타') {
+            recordButton.style.display = 'none';
+            playButton.style.display = 'block';
+            //message.innerHTML = '';
+            uploadForm.style.display = 'block';
+            uploadForm2.style.display = 'block';
+        } else if (val === '감마') {
+            recordButton.style.display = 'none';
+            playButton.style.display = 'block';
+            //message.innerHTML = '';
+            uploadForm.style.display = 'block';
+            uploadForm2.style.display = 'block';
+        } else if (val === '감마') {
+            recordButton.style.display = 'none';
+            playButton.style.display = 'block';
+            //message.innerHTML = '';
+            uploadForm.style.display = 'block';
+            uploadForm2.style.display = 'block';
+        }
+    }
+
 </script>
 
 <br>
@@ -79,3 +140,7 @@
 <br>
 <a>시작/종료 버튼을 다시 누르면 기존의 녹음 파일은 리셋되며, 처음 동작을 반복한다.</a>
 </html>
+
+
+
+
