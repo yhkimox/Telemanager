@@ -24,8 +24,6 @@
     }
 </style>
 
-
-<!--main-->
 <div id="main" class="container">
     <hr>
     <br><br>
@@ -41,8 +39,10 @@
 
     
     <a href="/post/">Back to Post List</a>
-    <a href="{% url 'post:post_delete' pk=post.pk %}">Delete Post</a>
-    <a href="{% url 'post:post_edit' pk=post.pk %}">Edit Post</a>
+    {% if user.is_authenticated and user == post.author %}
+        <a href="{% url 'post:post_delete' pk=post.pk %}">Delete Post</a>
+        <a href="{% url 'post:post_edit' pk=post.pk %}">Edit Post</a>
+    {% endif %}
 
     <br>
     <h4>댓글 쓰기</h4>
@@ -67,9 +67,17 @@
                     <br>
                     <p2 class="coment_content"> {{ comment.content }}</p2> 
                     <br>
+                    {% if user.is_authenticated and user == comment.user %}
+                    <!-- 현재 로그인한 사용자와 댓글 작성자가 일치하면 삭제 버튼 표시 -->
+                    <form method="post" action="{% url 'post:delete_comment' pk=post.pk comment_id=comment.id %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                    {% endif %}
                 </div>
             </div>
         </div>
     {% endfor %}
 </div>
 {% endblock %}
+>>>>>>> cf8f4635bc2fbd75f418f1f18b8ebccc57e7ad1f

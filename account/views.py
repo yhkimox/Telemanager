@@ -17,6 +17,7 @@ from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders.csv_loader import CSVLoader
 from account.forms import PasswordChangeForm
+from django.urls import reverse_lazy
 import csv
 from django.contrib.auth.decorators import login_required
 
@@ -30,6 +31,7 @@ def index(request):
     return render(request, 'registration/login.html')
 
 
+# 회원가입
 def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
@@ -42,13 +44,8 @@ def signup(request):
             return redirect(settings.LOGIN_URL)
     else:
         form = SignupForm()
-
-    return render(request, 'registration/signup.html', {'form': form})
-
-@login_required(login_url='/accounts/login/')  # LOGIN_URL로 이동하지 않고, 여기에서 직접 지정
-def check_id(request):
-    # 여기에 check_id와 관련된 뷰 로직을 작성
-    return render(request, 'account/check_id.html')
+            
+    return render(request, 'registration/signup.html',{'form':form})
 
 @login_required
 def profile_update(request):
@@ -62,7 +59,7 @@ def profile_update(request):
 
     return render(request, 'registration/profile_update.html', {'form': form})
 
-
+# 비밀번호 변경
 class PasswordChangeView(PasswordChangeView):
     success_url = reverse_lazy('account:login')
     template_name = 'account/password_change_form.html'

@@ -30,11 +30,11 @@ urlpatterns = [
     path('new/', views.post_new, name='post_new'),
     path('<int:pk>/delete/', views.post_delete, name='post_delete'),
     path('<int:pk>/edit/', views.post_edit, name='post_edit'),
-    path('<int:pk>/comment/', views.Comment, name='comment'),
-    # path('<int:pk>/comment/<int:comment_id>/edit/',views.comment_edit, name="comment_edit"),
+    path('<int:pk>/comment/', views.Comment2, name='comment'),
+    path('<int:pk>/delete_comment/<int:comment_id>/', views.comment_delete, name="delete_comment"),
 ]
- 
- 
+
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    
