@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 {% load static %}
 
 <html lang="ko">
@@ -6,26 +5,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>마이크 녹음</title>
+
+    <style>
+        /* 이미지 크기 통일 및 가로 정렬 스타일 */
+        .button-container {
+            display: flex;
+            gap: 0; /* 이미지 사이의 간격을 0으로 설정 */
+            justify-content: space-around; /* 가로로 정렬되도록 함 */
+        }
+        /* 이미지 크기 조절 스타일 */
+        .button-image {
+            width: 64px; /* 원하는 너비로 조절 */
+            height: 64px; /* 원하는 높이로 조절 */
+        }
+    </style>
 </head>
 <body>
-    <button id='start_again'>시작/종료</button>
-    <br><br>
     <audio controls>녹음된 소리를 재생할 audio 엘리먼트</audio>
 
     <br><br><br><br><br>
-    <!-- 시작할 때 드러날 이미지 버튼들 -->
-    <button id="recordbutton" onclick="showButton('베타');" style="background-image: url('{% static 'Glowing_ring.gif' %}'); width: 50px; height: 50px;"></button>
-    <button id="playbutton" onclick="showButton('베타');" style="background-image: url('{% static 'Glowing_ring.gif' %}'); width: 50px; height: 50px;"></button>
-    <!-- 시작할 때 숨어있을 이미지 버튼들 -->
-    <button id="recording" style="display: none; background-image: url('{% static 'Glowing_ring.gif' %}'); width: 50px; height: 50px;" onclick="showButton('알파');"></button>
-    <button id="playbutton" style="display: none; background-image: url('{% static 'Glowing_ring.gif' %}'); width: 50px; height: 50px;" onclick="showButton('알파');"></button>
+    <div class="button-container">
+        <!-- 시작할 때 드러날 버튼들 -->
+        <button id="recordbutton" onclick="showButton('startrecord');" style="background-image: url('{% static 'loading_recording/icons8-recording-60.png' %}');" class="button-image"></button>
+        <button id="playbutton" onclick="playAudio(); showButton('playvoice');" style="background-image: url('{% static 'loading_recording/icon8-play-60.png' %}');" class="button-image"></button>
+        <!-- 시작할 때 숨어있을 이미지, 버튼들 -->
+        <button id="no_record" style="display: none; background-image: url('{% static 'loading_recording/icons8-no-record-60.gif' %}');" class="button-image"></button>
+        <button id="stop_record" onclick="showButton('stoprecord');" style="display: none; background-image: url('{% static 'loading_recording/icons8-voice-recognition-60.gif' %}');" class="button-image"></button>
+        <button id="no_play" style="display: none; background-image: url('{% static 'loading_recording/icons8-hearing-60.png' %}');" class="button-image"></button>
+        <button id="playing" onclick="showButton('stoprecord');" style="display: none; background-image: url('{% static 'loading_recording/icons8-speech-bubble-60.gif' %}');" class="button-image"></button>
+    </div>
 
 </body>
 <script>
 
     // 엘리먼트 취득
     const $audioEl = document.querySelector("audio");
-    const $recordbtn = document.getElementById("start_again");
+    const $startRecordBtn = document.getElementById("recordbutton");
+    const $stopRecordBtn = document.getElementById("stop_record");
 
     // 녹음중 상태 변수
     let isRecording = false;
@@ -36,96 +52,109 @@
     // 녹음 데이터 저장 배열
     const audioArray = [];
 
-    $recordbtn.onclick = async function (event) {
-        if(!isRecording){
+    // 버튼 기능 설정
+    document.addEventListener("DOMContentLoaded", function () {
+        // 초기에 알파 버튼만 보이게 설정
+        showButton('recordbutton');
+        showButton('playbutton');
 
-            // 마이크 mediaStream 생성: Promise를 반환하므로 async/await 사용
-            const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true});
+        // 시작 버튼에 클릭 이벤트 추가
+        $startRecordBtn.addEventListener('click', function () {
+            if (!isRecording) {
+                // 마이크 mediaStream 생성: Promise를 반환하므로 async/await 사용
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(async (mediaStream) => {
+                        // MediaRecorder 생성
+                        mediaRecorder = new MediaRecorder(mediaStream);
 
-            // MediaRecorder 생성
-            mediaRecorder = new MediaRecorder(mediaStream);
+                        // 이벤트핸들러: 녹음 데이터 취득 처리
+                        mediaRecorder.ondataavailable = (event) => {
+                            console.log('Received audio data:', event.data);
+                            audioArray.push(event.data);
+                        }
 
-            // 이벤트핸들러: 녹음 데이터 취득 처리
-            mediaRecorder.ondataavailable = (event)=>{
-                audioArray.push(event.data); // 오디오 데이터가 취득될 때마다 배열에 담아둔다.
+                        // 이벤트핸들러: 녹음 종료 처리 & 재생하기
+                        mediaRecorder.onstop = async (event) => {
+                            const blob = new Blob(audioArray, { type: "audio/ogg; codecs=opus" });
+                            audioArray.splice(0);
+                            const formData = new FormData();
+                            formData.append('audio_data', blob);
+                            const response = await fetch('/client/save_audio/', {
+                                method: 'POST',
+                                body: formData,
+                                credentials: 'include',
+                            });
+                            const responseData = await response.json();
+                            console.log(responseData.message);
+
+                            const blobURL = window.URL.createObjectURL(blob);
+                            $audioEl.src = blobURL;
+                            $audioEl.play();
+                            showButton('stoprecord');
+                        };
+
+                        // 녹음 시작
+                        mediaRecorder.start();
+                        isRecording = true;
+                        showButton('startrecord');
+                    })
+                    .catch((error) => {
+                        console.error('Error accessing microphone:', error);
+                    });
             }
+        });
+
+        // 종료 버튼에 클릭 이벤트 추가
+        $stopRecordBtn.addEventListener('click', function () {
+            if (isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+            }
+        });
+    });
 
 
-            // 이벤트핸들러: 녹음 종료 처리 & 재생하기
-            mediaRecorder.onstop = async (event) => {
-                // 녹음이 종료되면, 배열에 담긴 오디오 데이터(Blob)들을 합친다: 코덱도 설정해준다.
-                const blob = new Blob(audioArray, { type: "audio/ogg; codecs=opus" });
-                audioArray.splice(0);// 기존 오디오 데이터들은 모두 비워 초기화한다.
-
-                const formData = new FormData();
-                formData.append('audio_data', blob);
-
-                // 서버에 녹음된 오디오를 전송
-                const response = await fetch('/save_audio/', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const responseData = await response.json();
-                console.log(responseData.message);
-
-                // 여기서 재생하는 것은 필요에 따라 수정 가능
-                // Blob 데이터에 접근할 수 있는 주소를 생성한다.
-                const blobURL = window.URL.createObjectURL(blob);
-                // audio엘리먼트로 재생한다.
-                $audioEl.src = blobURL;
-                $audioEl.play();
-            };
-
-            // 녹음 시작
-            mediaRecorder.start();
-            isRecording = true;
-
-        }else{
-            // 녹음 종료
-            mediaRecorder.stop();
-            isRecording = false;
+    // 재생 버튼 클릭 시 오디오 재생
+    function playAudio() {
+        if ($audioEl.src) {
+            $audioEl.play();
         }
     }
 
+    
 
-    // 버튼 기능 설정
-    document.addEventListener("DOMContentLoaded", function() {
-        // 초기에 알파 버튼만 보이게 설정
-        showButton('알파');
-    });
-    
+
+    // 버튼 전환을 수행하는 코드
     function showButton(val) {
-        var recordButton = document.getElementById('recordbutton');
+        var startrecordButton = document.getElementById('recordbutton');
         var playButton = document.getElementById('playbutton');
-        //var message = document.getElementById('message');
-        var uploadForm = document.getElementById('upload-form');
-        var uploadForm2 = document.getElementById('upload-form-2');
+        var cantrecordimg = document.getElementById('no_record');
+        var stoprecordButton = document.getElementById('stop_record');
+        var cantplayimg = document.getElementById('no_play');
+        var playingimg = document.getElementById('playing');
+        
     
-        if (val === '알파') {
-            recordButton.style.display = 'block';
+        if (val === 'startrecord') {
+            startrecordButton.style.display = 'none';
             playButton.style.display = 'none';
-            //message.innerHTML = '';
-            uploadForm.style.display = 'none';
-            uploadForm2.style.display = 'none';
-        } else if (val === '베타') {
-            recordButton.style.display = 'none';
+            cantrecordimg.style.display = 'none';
+            stoprecordButton.style.display = 'block';
+            playingimg.style.display = 'none';
+            cantplayimg.style.display = 'block';
+        } else if (val === 'stoprecord') {
+            startrecordButton.style.display = 'block';
             playButton.style.display = 'block';
-            //message.innerHTML = '';
-            uploadForm.style.display = 'block';
-            uploadForm2.style.display = 'block';
-        } else if (val === '감마') {
-            recordButton.style.display = 'none';
-            playButton.style.display = 'block';
-            //message.innerHTML = '';
-            uploadForm.style.display = 'block';
-            uploadForm2.style.display = 'block';
-        } else if (val === '감마') {
-            recordButton.style.display = 'none';
-            playButton.style.display = 'block';
-            //message.innerHTML = '';
-            uploadForm.style.display = 'block';
-            uploadForm2.style.display = 'block';
+            cantrecordimg.style.display = 'none';
+            stoprecordButton.style.display = 'none';
+            playingimg.style.display = 'none';
+            cantplayimg.style.display = 'none';
+        } else if (val === 'playvoice') {
+            startrecordButton.style.display = 'none';
+            playButton.style.display = 'none';
+            cantrecordimg.style.display = 'block';
+            stoprecordButton.style.display = 'none';
+            playingimg.style.display = 'block';
+            cantplayimg.style.display = 'none';
         }
     }
 

@@ -15,6 +15,19 @@ from chatbot.models import ChatBot
 from pytz import UTC
 from django.core.paginator import Paginator
 
+# 녹음한 음성을 mp3로 변환하여 저장하기 위한 라이브러리. 클래스 saveAudioView 참조.
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.views.decorators import gzip
+from django.utils.decorators import method_decorator
+from django.views import View
+# from django.shortcuts import render
+# import os
+from pydub import AudioSegment
+
+
+
 from langchain.prompts.chat import (
     ChatPromptTemplate,
     SystemMessagePromptTemplate,
@@ -24,7 +37,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.chains import RetrievalQAWithSourcesChain
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
-from django.http import HttpResponse
+#from django.http import HttpResponse
 from openai import OpenAI
 
 open_api_key = os.environ.get('OPENAI_API_KEY')
@@ -354,3 +367,30 @@ def make_phrases(user_info, purpose, embeding_url, hf, llm):
     # print(result['answer'])
     
     return result
+
+
+@csrf_exempt
+@require_POST
+def save_audio(request):
+    
+    audio_data = request.FILES.get('audio_data')
+    if audio_data:
+        ogg_save_path = os.path.join('C:/Users/user/Desktop/big_project/media/audio', 'audio.ogg')
+        mp3_save_path = os.path.join('C:/Users/user/Desktop/big_project/media/audio', 'audio.mp3')
+
+        # 원본 ogg 파일을 저장
+        with open(ogg_save_path, 'wb') as ogg_file:
+            for chunk in audio_data.chunks():
+                ogg_file.write(chunk)
+
+        # ogg 파일을 mp3로 변환
+        audio_segment = AudioSegment.from_file(ogg_save_path) # 여기가 문제.
+
+        # ffmpeg 경로 설정 (설치한 경로로 변경)
+        # AudioSegment.converter = "C:/path/to/ffmpeg"
+        
+        audio_segment.export(mp3_save_path, format='mp3')
+
+        return JsonResponse({'message': 'Audio file saved and converted to MP3 successfully.'})
+    else:
+        return JsonResponse({'message': 'No audio data received.'})
