@@ -9,6 +9,20 @@
 {% endblock %}
 
 {% block content %}
+    <style>
+        /* 이미지 크기 통일 및 가로 정렬 스타일 */
+        .button-container {
+            display: flex;
+            gap: 0; /* 이미지 사이의 간격을 0으로 설정 */
+            justify-content: space-around; /* 가로로 정렬되도록 함 */
+        }
+        /* 이미지 크기 조절 스타일 */
+        .button-image {
+            width: 60px; /* 원하는 너비로 조절 */
+            height: 60px; /* 원하는 높이로 조절 */
+        }
+    </style>
+
 
     <!-- 배너 -->
     <div id="main" class="container">
@@ -79,7 +93,18 @@
                 </div>
             </div>
                 <div>
-                    <button onclick='soundtrack()'>녹음하기</button>
+                    <audio controls>녹음된 소리를 재생할 audio 엘리먼트</audio>
+                    <br><br><br><br><br>
+                    <div class="button-container">
+                        <!-- 시작할 때 드러날 버튼들 -->
+                        <button id="recordbutton" onclick="showButton('startrecord');" style="background-image: url('{% static 'loading_recording/icons8-recording-60.png' %}');" class="button-image"></button>
+                        <button id="playbutton" onclick="playAudio(); showButton('playvoice');" style="background-image: url('{% static 'loading_recording/icon8-play-60.png' %}');" class="button-image"></button>
+                        <!-- 시작할 때 숨어있을 이미지, 버튼들 -->
+                        <button id="no_record" style="display: none; background-image: url('{% static 'loading_recording/icons8-no-record-60.gif' %}');" class="button-image"></button>
+                        <button id="stop_record" onclick="showButton('stoprecord');" style="display: none; background-image: url('{% static 'loading_recording/icons8-voice-recognition-60.gif' %}');" class="button-image"></button>
+                        <button id="no_play" style="display: none; background-image: url('{% static 'loading_recording/icons8-hearing-60.png' %}');" class="button-image"></button>
+                        <button id="playing" onclick="showButton('stoprecord');" style="display: none; background-image: url('{% static 'loading_recording/icons8-speech-bubble-60.gif' %}');" class="button-image"></button>
+                    </div>
                 </div>
             
         </div>
@@ -117,50 +142,175 @@
                 chatInput.focus();
             }
         }
-
-        function soundtrack() {
-            // 녹음 기능 구현
-            // 원하는 동작 수행
-        }
     </script>
 
-{% endblock %}
-<script>
 
-    document.addEventListener('DOMContentLoaded', function () {
-        // Get chat window element
-        const chatWindow = document.getElementById('chat-window');
-
-        // Get the initial chat answer from Django template
-        const initialAnswer = '{{ mentsanswer }}';
-
-        // Display the initial chat answer in the chat window
-        if (initialAnswer.trim() !== '') {
-            const botChatMessage = document.createElement('div');
-            botChatMessage.className = 'chat-message';
-            botChatMessage.textContent = `챗봇: ${initialAnswer}`;
-            chatWindow.prepend(botChatMessage);
+    <!-- 녹음 기능 스크립트 -->
+    <script>
+        // 버튼 전환을 수행하는 코드
+        function showButton(val) {
+            var startrecordButton = document.getElementById('recordbutton');
+            var playButton = document.getElementById('playbutton');
+            var cantrecordimg = document.getElementById('no_record');
+            var stoprecordButton = document.getElementById('stop_record');
+            var cantplayimg = document.getElementById('no_play');
+            var playingimg = document.getElementById('playing');
+            
+        
+            if (val === 'startrecord') {
+                startrecordButton.style.display = 'none';
+                playButton.style.display = 'none';
+                cantrecordimg.style.display = 'none';
+                stoprecordButton.style.display = 'block';
+                playingimg.style.display = 'none';
+                cantplayimg.style.display = 'block';
+            } else if (val === 'stoprecord') {
+                startrecordButton.style.display = 'block';
+                playButton.style.display = 'block';
+                cantrecordimg.style.display = 'none';
+                stoprecordButton.style.display = 'none';
+                playingimg.style.display = 'none';
+                cantplayimg.style.display = 'none';
+            } else if (val === 'playvoice') {
+                startrecordButton.style.display = 'none';
+                playButton.style.display = 'none';
+                cantrecordimg.style.display = 'block';
+                stoprecordButton.style.display = 'none';
+                playingimg.style.display = 'block';
+                cantplayimg.style.display = 'none';
+            }
         }
 
-        // Set up event listener for chat input
-        const chatInput = document.getElementById('chat-input');
-        chatInput.addEventListener('keydown', function (event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                const userMessage = chatInput.value.trim();
+        // 엘리먼트 취득
+        const $audioEl = document.querySelector("audio");
+        const $startRecordBtn = document.getElementById("recordbutton");
+        const $stopRecordBtn = document.getElementById("stop_record");
 
-                if (userMessage !== '') {
-                    // 사용자의 입력을 채팅창에 표시
-                    const userChatMessage = document.createElement('div');
-                    userChatMessage.className = 'chat-message';
-                    userChatMessage.textContent = `사용자: ${userMessage}`;
-                    chatWindow.prepend(userChatMessage); // 맨 위에 추가
+        // 녹음중 상태 변수
+        let isRecording = false;
 
-                    // 입력창 초기화 및 포커스 유지
-                    chatInput.value = '';
-                    chatInput.focus();
+        // MediaRecorder 변수 생성
+        let mediaRecorder = null;
+
+        // 녹음 데이터 저장 배열
+        const audioArray = [];
+
+        // 버튼 기능 설정
+        document.addEventListener("DOMContentLoaded", function () {
+            // 초기에 알파 버튼만 보이게 설정
+            showButton('recordbutton');
+            showButton('playbutton');
+
+            // 시작 버튼에 클릭 이벤트 추가
+            $startRecordBtn.addEventListener('click', function () {
+                if (!isRecording) {
+                    // 마이크 mediaStream 생성: Promise를 반환하므로 async/await 사용
+                    navigator.mediaDevices.getUserMedia({ audio: true })
+                        .then(async (mediaStream) => {
+                            // MediaRecorder 생성
+                            mediaRecorder = new MediaRecorder(mediaStream);
+
+                            // 이벤트핸들러: 녹음 데이터 취득 처리
+                            mediaRecorder.ondataavailable = (event) => {
+                                console.log('Received audio data:', event.data);
+                                audioArray.push(event.data);
+                            }
+
+                            // 이벤트핸들러: 녹음 종료 처리 & 재생하기
+                            mediaRecorder.onstop = async (event) => {
+                                const blob = new Blob(audioArray, { type: "audio/ogg; codecs=opus" });
+                                audioArray.splice(0);
+                                const formData = new FormData();
+                                formData.append('audio_data', blob);
+                                const response = await fetch('/client/save_audio/', {
+                                    method: 'POST',
+                                    body: formData,
+                                    credentials: 'include',
+                                });
+                                const responseData = await response.json();
+                                console.log(responseData.message);
+
+                                const blobURL = window.URL.createObjectURL(blob);
+                                $audioEl.src = blobURL;
+                                $audioEl.play();
+                                showButton('stoprecord');
+                            };
+
+                            // 녹음 시작
+                            mediaRecorder.start();
+                            isRecording = true;
+                            showButton('startrecord');
+                        })
+                        .catch((error) => {
+                            console.error('Error accessing microphone:', error);
+                        });
                 }
-            }
+            });
+
+            // 종료 버튼에 클릭 이벤트 추가
+            $stopRecordBtn.addEventListener('click', function () {
+                if (isRecording) {
+                    mediaRecorder.stop();
+                    isRecording = false;
+                }
+            });
         });
-    });
-</script>
+
+
+        // 재생 버튼 클릭 시 오디오 재생
+        function playAudio() {
+            if ($audioEl.src) {
+                $audioEl.play();
+            }
+        }
+
+
+    </script>
+
+
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get chat window element
+            const chatWindow = document.getElementById('chat-window');
+
+            // Get the initial chat answer from Django template
+            const initialAnswer = '{{ mentsanswer }}';
+
+            // Display the initial chat answer in the chat window
+            if (initialAnswer.trim() !== '') {
+                const botChatMessage = document.createElement('div');
+                botChatMessage.className = 'chat-message';
+                botChatMessage.textContent = `챗봇: ${initialAnswer}`;
+                chatWindow.prepend(botChatMessage);
+            }
+
+            // Set up event listener for chat input
+            const chatInput = document.getElementById('chat-input');
+            chatInput.addEventListener('keydown', function (event) {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault();
+                    const userMessage = chatInput.value.trim();
+
+                    if (userMessage !== '') {
+                        // 사용자의 입력을 채팅창에 표시
+                        const userChatMessage = document.createElement('div');
+                        userChatMessage.className = 'chat-message';
+                        userChatMessage.textContent = `사용자: ${userMessage}`;
+                        chatWindow.prepend(userChatMessage); // 맨 위에 추가
+
+                        // 입력창 초기화 및 포커스 유지
+                        chatInput.value = '';
+                        chatInput.focus();
+                    }
+                }
+            });
+        });
+    </script>
+
+
+
+{% endblock %}
+
+
