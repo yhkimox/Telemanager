@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpRequest
 from django.views.generic import ListView, View
 import pandas as pd
-from .models import Client, Marketing
+from .models import Client
 from .forms import ClientForm  # 고객 모델 폼
 from django.urls import reverse
 from datetime import datetime
@@ -98,11 +98,19 @@ def normalize_gender(gender_str):
 
     
 def upload_excel(request): # 이상 없음.
-    if request.method == 'POST':
-        excel_file = request.FILES['excel_file']
+    if request.method == 'POST' and request.FILES['excel_file']:
+        check_file = request.FILES['excel_file']
+        
+        file_extension = check_file.name.split('.')[-1].lower()
+        
+        # 지정된 파일 형태 확인
+        if file_extension not in ['xlsx', 'xls']:
+            return render(request, 'error.html', {'error_message': '잘못된 파일 형식입니다.'})
+        
+        
         tmgoal = request.POST.get('tmgoal')
         request.session['tmgoal'] = tmgoal
-        df = pd.read_excel(excel_file)
+        df = pd.read_excel(check_file)
         
         print(df.columns)
 
