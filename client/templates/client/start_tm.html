@@ -109,7 +109,7 @@
     let currentQuestionIndex = 1;  // 0번째 질문은 이미 보여주었으므로 1부터 시작
 
     // 기존 코드
-    function sendMessage() {
+    async function sendMessage() {
         const userMessage = chatInput.value.trim();
 
         if (userMessage !== '') {
@@ -118,6 +118,29 @@
             userChatMessage.className = 'message sent';
             userChatMessage.innerHTML = `<div class="message-bubble">${userMessage}</div>`;
             chatMessages.appendChild(userChatMessage);
+
+
+            // ajax, fetch 사용해야 할 부분
+            console.log(userMessage);
+            let results = await executeBackendTextProcessing(userMessage);
+            console.log("@@@");
+            console.log(results);
+
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             // '네'에 대한 응답을 자동으로 추가
             if (userMessage === '네') {
@@ -142,6 +165,46 @@
             chatInput.focus();
         }
     }
+
+    // 텍스트 백앤드 전달하여 감정 분류 및 결과 값 받기
+    async function executeBackendTextProcessing(userMessage) {
+        try {
+            const response = await fetch("/client/start_tm/text_processing/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ userMessage: userMessage }),
+            });
+    
+            const data = await response.json();
+    
+            // 여기에서 필요한 동작 수행
+    
+            return data.result;  // 예시로 결과 값 반환
+        } catch (error) {
+            console.error("에러 발생:", error);
+            throw error;  // 에러를 다시 던지면 이후에도 에러 처리 가능
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // 엔터 키를 누를 때 sendMessage 호출
     chatInput.addEventListener('keyup', function (event) {
