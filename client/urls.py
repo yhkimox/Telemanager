@@ -2,7 +2,7 @@ from django.urls import path, reverse, reverse_lazy
 from django.views.generic import TemplateView, ListView, CreateView, DetailView, UpdateView, DeleteView
 from . import views
 from .models import *
-from .views import ClientListView, save_audio
+from .views import ClientListView
 from django.shortcuts import render
 
 
