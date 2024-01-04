@@ -167,12 +167,13 @@ def upload_excel(request):
         df = pd.read_excel(check_file)
         
         print(df.columns)
-
+        
         for index, row in df.iterrows():
             user = request.user
             name = str(row['name'])
             number = row['number']
             email = row['email']
+            
             print(name, number, email)
             # 기존에 손님 데이터와 중복되는 데이터인지 확인
             existing_client = Client.objects.filter(name=name, number=number, email=email, user= user).first()
@@ -210,6 +211,15 @@ def upload_excel(request):
             #else:
             #    print("User is not authenticated.")
             
+            # info 필드에 추가 정보 저장
+            info = ""
+
+            # 제외된 키를 제외한 모든 키와 값을 추가
+            for key, value in row.items():
+                if key not in ['name', 'number','gender', 'email', 'birth_date','location']:  # 원하는 키를 제외한 리스트
+                    info += f"{key}: {value}, "
+            
+        
             Client.objects.create(
                 user=user,
                 name=name,
@@ -220,6 +230,7 @@ def upload_excel(request):
                 tm_date=temp_date,
                 gender=normalized_gender,
                 email=email,
+                info = info.strip()
             )
         print(f"Client {Client.id} created successfully.")  # 디버깅 메시지 잘뜬다.
         print(tmgoal)
