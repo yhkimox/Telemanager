@@ -36,7 +36,12 @@ from django.views import View
 import json
 # from django.shortcuts import render
 # import os
-from pydub import AudioSegment
+# from pydub import AudioSegment
+
+from transformers import BertForSequenceClassification
+import torch
+from transformers import pipeline
+from transformers import BertTokenizer
 
 
 open_api_key = os.environ.get('OPENAI_API_KEY')
@@ -255,7 +260,18 @@ def selected_items(request):
     return render(request, 'client/selected_items.html', context)
 
 # start_tm 페이지 렌더링 부분(아웃바운드 목적 적고 send 누를 때 실행)
+start_tm_model_name = "jhgan/ko-sroberta-multitask"
+start_tm_model_kwargs = {'device': 'cpu'}
+start_tm_encode_kwargs = {'normalize_embeddings': False}
+start_tm_hf = HuggingFaceEmbeddings(
+    model_name=start_tm_model_name,
+    model_kwargs=start_tm_model_kwargs,
+    encode_kwargs=start_tm_encode_kwargs,
+    # cache_dir=True
+    )
 def start_tm(request):
+    global start_tm_hf
+    
     whisper = OpenAI()
     input_data = ''
     selected_clients = []
@@ -290,15 +306,7 @@ def start_tm(request):
         # 질문지 생성해주는 hugginface 모델 불러오기
         llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0, openai_api_key=open_api_key)
        
-        model_name = "jhgan/ko-sroberta-multitask"
-        model_kwargs = {'device': 'cpu'}
-        encode_kwargs = {'normalize_embeddings': False}
-        hf = HuggingFaceEmbeddings(
-            model_name=model_name,
-            model_kwargs=model_kwargs,
-            encode_kwargs=encode_kwargs,
-            # cache_dir=True
-            )
+        
        
         chatbots = [] # 챗봇 리스트 생성
         
@@ -331,7 +339,7 @@ def start_tm(request):
                 pass
             
             # 질문지 생성부분
-            ments = make_phrases(client_values, input_data, embeding_file_url, hf, llm)
+            ments = make_phrases(client_values, input_data, embeding_file_url, start_tm_hf, llm)
             print(ments)
             print(f"{c}의 문구 생성 완료")
            
@@ -420,25 +428,34 @@ def make_phrases(user_info, purpose, embeding_url, hf, llm):
     return result
 
 # 문구 감정 분류 및 결과 내보내는 함수
+sentence_model = BertForSequenceClassification.from_pretrained("klue/bert-base", num_labels=3)
+# Load model weights with map_location to 'cpu'
+sentence_model.load_state_dict(torch.load("./models/BERT_sentiment_analysis_model.pt", map_location='cpu'))
+# Move the model to the specified device (either 'cpu' or 'cuda')
+sentence_model = sentence_model.to('cpu')
+sentence_tokenizer = BertTokenizer.from_pretrained('klue/bert-base')  # tokenizer 이름은 위에서 받은 사전학습된 모델의 이름이랑 항상 같아야 함
+# 여기에서 user_message를 사용하여 필요한 작업 수행
+pipe = pipeline("text-classification", model=sentence_model, tokenizer=sentence_tokenizer, function_to_apply='softmax', top_k=1)
+
 @csrf_exempt
 def text_processing(request):
+    global pipe
     if request.method == "POST":
-        try:
-            # POST 요청으로 받은 데이터
-            data = json.loads(request.body)
-            user_message = data.get("userMessage", "")
+        # try:
+        # POST 요청으로 받은 데이터
+        data = json.loads(request.body)
+        user_message = data.get("userMessage", "")
 
-            # 여기에서 user_message를 사용하여 필요한 작업 수행
-            # 작업 결과를 result에 할당 (예: True 또는 False)
-
-            result = "임시 테스트 입니다."  # 예시로 True 값을 할당
-            print(user_message)
-            print(result)
-
-            # 결과를 JSON 형식으로 응답
-            return JsonResponse({"result": result})
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
+        # 여기에서 user_message를 사용하여 필요한 작업 수행    
+        # 0중립, 1긍정, 2부정  
+        label_dict = {'LABEL_0' : '중립', 'LABEL_1' : '긍정', 'LABEL_2' : '부정'}
+        values = pipe(user_message)
+        result = label_dict[values[0][0]['label']] # [긍정, 중립, 부정] 이 셋중 하나 값 가짐
+        
+        # 결과를 JSON 형식으로 응답
+        return JsonResponse({"result": result})
+        # except Exception as e:
+        #     return JsonResponse({"error": str(e)}, status=500)
     else:
         return JsonResponse({"error": "POST 요청만 지원합니다."}, status=400)
 
