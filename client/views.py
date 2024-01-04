@@ -1,4 +1,3 @@
-
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpRequest
 from django.views.generic import ListView, View
@@ -37,6 +36,10 @@ from django.views import View
 import json
 # from django.shortcuts import render
 # import os
+from pydub import AudioSegment
+## For URL Checking
+from django.conf import settings
+from django.http import HttpResponseForbidden
 # from pydub import AudioSegment
 
 from transformers import BertForSequenceClassification
@@ -47,7 +50,19 @@ from transformers import BertTokenizer
 
 open_api_key = os.environ.get('OPENAI_API_KEY')
 
-class ClientListView(LoginRequiredMixin, ListView):
+ALLOW_URL_LIST = settings.ALLOW_URL_LIST
+FILE_COUNT_LIMIT = settings.FILE_COUNT_LIMIT         
+FILE_SIZE_LIMIT_CLIENT = settings.FILE_SIZE_LIMIT_CLIENT 
+WHITE_LIST_CLIENT = settings.WHITE_LIST_CLIENT
+
+class IPRequiredMixin:
+    def dispatch(self, request, *args, **kwargs):
+        client_ip = request.META.get('REMOTE_ADDR')
+        if client_ip not in settings.ALLOW_URL_LIST:
+            return HttpResponseForbidden(render(request, 'index.html'))
+        return super().dispatch(request, *args, **kwargs)
+    
+class ClientListView(IPRequiredMixin, LoginRequiredMixin, ListView):
     model = Client
     template_name = 'client/client_list.html'  
     
@@ -58,9 +73,7 @@ class ClientListView(LoginRequiredMixin, ListView):
         file_list = CompanyFile.objects.filter(user = self.request.user)
         
         search_key = self.request.GET.get("keyword", "")
-        print(search_key)
         if search_key:
-            print(search_key)
             client_list = Client.objects.filter(user = self.request.user, name__icontains=search_key)
 
         client_paginator = Paginator(client_list, 5)
@@ -96,7 +109,8 @@ class ClientListView(LoginRequiredMixin, ListView):
 
 
 
-class DeleteSelectedClientsView(View):
+class DeleteSelectedClientsView(IPRequiredMixin, View):
+    
     def post(self, request):
         selected_ids = request.POST.getlist('client_ids')  
         Client.objects.filter(id__in=selected_ids).delete()  
@@ -113,15 +127,21 @@ def normalize_gender(gender_str):
     else:
         return None  
 
-def error_page(request):
-    return render(request, 'client/error.html', {'error_message': '잘못된 요청입니다.'})
-      
 
-FILE_COUNT_LIMIT = 1         # 업로드 하는 파일에 대한 개수 제한
-FILE_SIZE_LIMIT = 10485760   # 업로드 하는 파일의 최대 사이즈 제한 10 * 1024 * 1024 (10MB)
-WHITE_LIST = ['xlsx', 'xls'] # 허용하는 확장자 제한
-    
+def error_page(request):  
+    return render(request, 'client/error.html', {'error_message': '잘못된 요청입니다.'})
+
+
 def upload_excel(request): 
+
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+
+    
+    
     if request.method == 'POST' and request.FILES['excel_file']:
         check_file = request.FILES['excel_file']
         
@@ -134,12 +154,12 @@ def upload_excel(request):
         file_extension = check_file.name.split('.')[-1].lower()
 
         # 파일 형식 체크
-        if file_extension not in WHITE_LIST:
+        if file_extension not in WHITE_LIST_CLIENT:
             return render(request, 'client/error.html', {'error_message': '잘못된 파일 형식입니다. xlsx, xls 형식의 파일을 제출해주십시오.'})
 
         # 파일 크기 체크
-        if check_file.size > FILE_SIZE_LIMIT:
-            return render(request, 'client/error.html', {'error_message': f'파일 크기는 최대 {FILE_SIZE_LIMIT / (1024 * 1024)} MB까지만 허용됩니다.'})
+        if check_file.size > FILE_SIZE_LIMIT_CLIENT:
+            return render(request, 'client/error.html', {'error_message': f'파일 크기는 최대 {FILE_SIZE_LIMIT_CLIENT / (1024 * 1024)} MB까지만 허용됩니다.'})
         
         
         tmgoal = request.POST.get('tmgoal')
@@ -209,8 +229,15 @@ def upload_excel(request):
     
     return render(request, 'client/upload.html')
 
-
 def edit_client(request, client_id):
+    
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+
+    
     client = get_object_or_404(Client, id=client_id, user=request.user)
     
     if request.method == 'POST':
@@ -225,6 +252,14 @@ def edit_client(request, client_id):
 
 @login_required
 def delete_client(request, client_id):
+    
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+
+    
     client = get_object_or_404(Client, id=client_id, user=request.user)
     
     if request.method == 'POST':
@@ -235,6 +270,14 @@ def delete_client(request, client_id):
 
 
 def selected_items(request):
+
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+
+    
     selected_clients = request.GET.get('selected_clients', '').split(',')
     selected_files = request.GET.get('selected_files', '').split(',')
 
@@ -260,6 +303,7 @@ def selected_items(request):
 
     return render(request, 'client/selected_items.html', context)
 
+
 # start_tm 페이지 렌더링 부분(아웃바운드 목적 적고 send 누를 때 실행)
 start_tm_model_name = "jhgan/ko-sroberta-multitask"
 start_tm_model_kwargs = {'device': 'cpu'}
@@ -271,8 +315,15 @@ start_tm_hf = HuggingFaceEmbeddings(
     # cache_dir=True
     )
 def start_tm(request):
-    global start_tm_hf
     
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+
+
+    global start_tm_hf
     whisper = OpenAI()
     input_data = ''
     selected_clients = []
@@ -440,7 +491,17 @@ pipe = pipeline("text-classification", model=sentence_model, tokenizer=sentence_
 
 @csrf_exempt
 def text_processing(request):
+
+    
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+
+
     global pipe
+    
     if request.method == "POST":
         # try:
         # POST 요청으로 받은 데이터
