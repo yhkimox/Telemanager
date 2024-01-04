@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpRequest
 from django.views.generic import ListView, View
 import pandas as pd
-from .models import Client, Marketing
+from .models import Client
 from .forms import ClientForm  # 고객 모델 폼
 from django.urls import reverse
 from datetime import datetime
@@ -14,8 +14,19 @@ from account.models import CompanyFile, Profile
 from chatbot.models import ChatBot
 from pytz import UTC
 from django.core.paginator import Paginator
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
+from langchain.chat_models import ChatOpenAI
+from langchain.chains import RetrievalQAWithSourcesChain
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.vectorstores import Chroma
+from django.http import HttpResponse
+from openai import OpenAI
 
-# 녹음한 음성을 mp3로 변환하여 저장하기 위한 라이브러리. 클래스 saveAudioView 참조.
+# 녹음한 음성을 mp3로 변환하여 저장하기 위한 라이브러리.
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
@@ -26,19 +37,6 @@ from django.views import View
 # import os
 from pydub import AudioSegment
 
-
-
-from langchain.prompts.chat import (
-    ChatPromptTemplate,
-    SystemMessagePromptTemplate,
-    HumanMessagePromptTemplate,
-)
-from langchain.chat_models import ChatOpenAI
-from langchain.chains import RetrievalQAWithSourcesChain
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import Chroma
-#from django.http import HttpResponse
-from openai import OpenAI
 
 open_api_key = os.environ.get('OPENAI_API_KEY')
 
@@ -107,15 +105,39 @@ def normalize_gender(gender_str):
         return '여'
     else:
         return None  
-    
 
+def error_page(request):
+    return render(request, 'client/error.html', {'error_message': '잘못된 요청입니다.'})
+      
+
+FILE_COUNT_LIMIT = 1         # 업로드 하는 파일에 대한 개수 제한
+FILE_SIZE_LIMIT = 10485760   # 업로드 하는 파일의 최대 사이즈 제한 10 * 1024 * 1024 (10MB)
+WHITE_LIST = ['xlsx', 'xls'] # 허용하는 확장자 제한
     
-def upload_excel(request): # 이상 없음.
-    if request.method == 'POST':
-        excel_file = request.FILES['excel_file']
+def upload_excel(request): 
+    if request.method == 'POST' and request.FILES['excel_file']:
+        check_file = request.FILES['excel_file']
+        
+        # # 파일 개수 체크
+        # if len(request.FILES.getlist('excel_file')) > FILE_COUNT_LIMIT:
+        #     print(len(request.FILES.getlist('excel_file')))
+        #     return render(request, 'client/error.html', {'error_message': f'파일은 최대 {FILE_COUNT_LIMIT}개까지만 업로드 가능합니다.'})
+        
+
+        file_extension = check_file.name.split('.')[-1].lower()
+
+        # 파일 형식 체크
+        if file_extension not in WHITE_LIST:
+            return render(request, 'client/error.html', {'error_message': '잘못된 파일 형식입니다. xlsx, xls 형식의 파일을 제출해주십시오.'})
+
+        # 파일 크기 체크
+        if check_file.size > FILE_SIZE_LIMIT:
+            return render(request, 'client/error.html', {'error_message': f'파일 크기는 최대 {FILE_SIZE_LIMIT / (1024 * 1024)} MB까지만 허용됩니다.'})
+        
+        
         tmgoal = request.POST.get('tmgoal')
         request.session['tmgoal'] = tmgoal
-        df = pd.read_excel(excel_file)
+        df = pd.read_excel(check_file)
         
         print(df.columns)
 
@@ -230,12 +252,15 @@ def selected_items(request):
     }
 
     return render(request, 'client/selected_items.html', context)
+
+
 def start_tm(request):
     whisper = OpenAI()
     input_data = ''
     selected_clients = []
     selected_files = []
-   
+    question_tm=[] # hj
+    
     if request.method == 'POST':
         input_data = request.POST.get('input_data', '')
         selected_clients = request.POST.get('selected_clients', '').split(',')
@@ -275,15 +300,35 @@ def start_tm(request):
             )
        
         chatbots = [] # 챗봇 리스트 생성
+        
+        
+        # audio 폴더 생성하기(계정 폴더)
+        # 폴더가 존재하지 않으면 폴더를 생성
+        audio_path = f"./media/audio/{file_name}/"
+        if not os.path.exists(audio_path): # 폴더 존재하지 않을경우 생성
+            os.makedirs(audio_path)
+        else: # 폴더 존재할 경우 패스
+            pass
+        
         # 고객 하나씩 접근해서 정보 가져오기
+        
         for c in clients:
             clients_info = [] # 고객 정보가 들어간 리스트
-           
+
             # 열 정보만 가져오기
             excluded_fields = ['user', 'tm_date']
             user_defined_fields = [field.name for field in Client._meta.get_fields() if not field.auto_created]
             client_values = [(field, getattr(c, field)) for field in user_defined_fields if field not in excluded_fields]
-           
+
+            # audio/계정 안에 고객당 폴더 생성하기
+            # 폴더가 존재하지 않으면 폴더를 생성
+            final_save_path = f"./media/audio/{file_name}/{c.id}"
+            if not os.path.exists(final_save_path): # 폴더 존재하지 않을경우 생성
+                os.makedirs(final_save_path)
+                # print(f"{audio_path} 폴더가 생성되었습니다.")
+            else: # 폴더 존재할 경우 패스
+                pass
+            
             # 질문지 생성부분
             ments = make_phrases(client_values, input_data, embeding_file_url, hf, llm)
             print(ments)
@@ -300,9 +345,10 @@ def start_tm(request):
             chatbots.append(chatbot)
            
             questions = ments['answer'].split("\n")
- 
+            
             for i, q in enumerate(questions):
                 print(q)
+                question_tm.append(q) # hj
                 try:
                     q = q[q.index('"'):]
                     response = whisper.audio.speech.create(
@@ -310,11 +356,13 @@ def start_tm(request):
                         voice="nova",
                         input=f"{q}",
                     )
-                    response.stream_to_file(f"{str(i)}.mp3")
+                    response.stream_to_file(f"{final_save_path}/{str(i)}.mp3")
+                    # response.stream_to_file(f"./{str(i)}.mp3")
                 except:
                     pass
  
-        # print("@@@")
+        #print('@@@')
+
  
     context = {
         'selectedClients': clients,
@@ -322,6 +370,7 @@ def start_tm(request):
         'input_data': input_data,  # 추가
         'chatbots': chatbots,
         'mentsanswer' : ments['answer'], # 20240102 yh 대답 부분이 필요해서 추가함.
+        'question' : question_tm # hj
     }
  
     return render(request, 'client/start_tm.html', context)
@@ -369,15 +418,16 @@ def make_phrases(user_info, purpose, embeding_url, hf, llm):
     return result
 
 
+# 녹음한 파일을 저장하는 function
 @csrf_exempt
 @require_POST
 def save_audio(request):
     
     audio_data = request.FILES.get('audio_data')
     if audio_data:
-        ogg_save_path = os.path.join('C:/Users/user/Desktop/big_project/media/audio/', 'audio.ogg')
-        mp3_save_path = os.path.join('C:/Users/user/Desktop/big_project/media/audio/', 'audio.mp3')
-
+        ogg_save_path = os.path.join('../media/audio/', 'audio.ogg')
+        mp3_save_path = os.path.join('../media/audio/', 'audio.mp3')
+ 
         # 원본 ogg 파일을 저장
         with open(ogg_save_path, 'wb') as ogg_file:
             for chunk in audio_data.chunks():
@@ -391,6 +441,15 @@ def save_audio(request):
         
         audio_segment.export(mp3_save_path, format='mp3')
 
+ 
+        # ogg 파일을 mp3로 변환
+        audio_segment = AudioSegment.from_file(ogg_save_path) # 여기가 문제.
+ 
+        # ffmpeg 경로 설정 (설치한 경로로 변경)
+        # AudioSegment.converter = "C:/path/to/ffmpeg"
+       
+        audio_segment.export(mp3_save_path, format='mp3')
+ 
         return JsonResponse({'message': 'Audio file saved and converted to MP3 successfully.'})
     else:
         return JsonResponse({'message': 'No audio data received.'})
