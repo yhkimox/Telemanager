@@ -26,7 +26,7 @@ from langchain.vectorstores import Chroma
 from django.http import HttpResponse
 from openai import OpenAI
 
-"""
+
 # 녹음한 음성을 mp3로 변환하여 저장하기 위한 라이브러리.
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -37,7 +37,7 @@ from django.views import View
 # from django.shortcuts import render
 # import os
 from pydub import AudioSegment
-"""
+
 
 
 open_api_key = os.environ.get('OPENAI_API_KEY')
