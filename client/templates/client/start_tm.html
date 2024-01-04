@@ -110,6 +110,8 @@
     const questions = [{% for q in question %}'{{ q }}', {% endfor %}];
 
     let currentQuestionIndex = 1;  // 0번째 질문은 이미 보여주었으므로 1부터 시작
+    let exitConversation = false; // 대화 중단 원할시 True, 대화 계속 하길 원할시 False
+    let finalConversation = false; // 대화가 종료 되었을 경우 True, 대화가 끝나지 않을 경우 false
 
     // 기존 코드
     async function sendMessage() {
@@ -129,24 +131,75 @@
             console.log("@@@");
             console.log(results);
 
-            
+            if (exitConversation===false){
+                // 대화를 계속 원하는 경우 (exitConversation False)
+                if (results === '부정') {
+                    const neMessage = document.createElement('div');
+                    neMessage.className = 'message received';
+                    neMessage.innerHTML = `<div class="message-bubble">혹시 대화를 종료하기를 원하시나요?</div>`;
+                    chatMessages.appendChild(neMessage);
+                    exitConversation = true;
+                } else {
+                    // 긍정 혹은 중립일 경우 실행되는 부분
+                    if (currentQuestionIndex < questions.length) {
+                        const neMessage = document.createElement('div');
+                        neMessage.className = 'message received';
+                        neMessage.innerHTML = `<div class="message-bubble">${questions[currentQuestionIndex]}</div>`;
+                        chatMessages.appendChild(neMessage);
+                        currentQuestionIndex += 1;
+                    } else {
+                        // 모든 질문에 대한 응답이 끝났을 경우 채팅 종료
+                        const endMessage = document.createElement('div');
+                        endMessage.className = 'message received';
+                        endMessage.innerHTML = '<div class="message-bubble">채팅이 종료되었습니다.</div>';
+                        chatMessages.appendChild(endMessage);
+                        finalConversation=true;
+                        // 추가로 필요한 동작 수행 (채팅 종료 등)
+                    }
+                }
+
+            } else {
+                // 대화가 중단되는 것을 물어보는 단계( exitConversation가 True)
+                const neMessage = document.createElement('div');
+                if (results === '긍정') {
+                    const neMessage = document.createElement('div');
+                    neMessage.className = 'message received';
+                    neMessage.innerHTML = `<div class="message-bubble">감사합니다. 문의 사항 있다면 연락주세요. 02-XXXX-XXXX</div>`;
+                    chatMessages.appendChild(neMessage);
+                    exitConversation = true;
+                    finalConversation=true;
+                } else {
+                    exitConversation = false;
+                    // 긍정 혹은 중립일 경우 실행되는 부분
+                    if (currentQuestionIndex < questions.length) {
+                        const neMessage = document.createElement('div');
+                        neMessage.className = 'message received';
+                        neMessage.innerHTML = `<div class="message-bubble">${questions[currentQuestionIndex]}</div>`;
+                        chatMessages.appendChild(neMessage);
+                        currentQuestionIndex += 1;
+                    } else {
+                        // 모든 질문에 대한 응답이 끝났을 경우 채팅 종료
+                        const endMessage = document.createElement('div');
+                        endMessage.className = 'message received';
+                        endMessage.innerHTML = '<div class="message-bubble">채팅이 종료되었습니다.</div>';
+                        chatMessages.appendChild(endMessage);
+                        // 추가로 필요한 동작 수행 (채팅 종료 등)
+                    }
+                }
+            }
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-            // '네'에 대한 응답을 자동으로 추가
-            if (userMessage === '네') {
+            /*// '네'에 대한 응답을 자동으로 추가
+            if (results === '부정') {
+                const neMessage = document.createElement('div');
+                neMessage.className = 'message received';
+                neMessage.innerHTML = `<div class="message-bubble">혹시 대화를 종료하기를 원하시나요?</div>`;
+                chatMessages.appendChild(neMessage);
+                exitConversation = True;
+            } else {
+                // 긍정 혹은 중립일 경우 실행되는 부분
                 if (currentQuestionIndex < questions.length) {
                     const neMessage = document.createElement('div');
                     neMessage.className = 'message received';
@@ -157,11 +210,15 @@
                     // 모든 질문에 대한 응답이 끝났을 경우 채팅 종료
                     const endMessage = document.createElement('div');
                     endMessage.className = 'message received';
-                    endMessage.innerHTML = '<div class="message-bubble">채팅 종료</div>';
+                    endMessage.innerHTML = '<div class="message-bubble">채팅이 종료되었습니다.</div>';
                     chatMessages.appendChild(endMessage);
                     // 추가로 필요한 동작 수행 (채팅 종료 등)
                 }
-            }
+            }*/
+
+
+
+
 
             // 입력창 초기화 및 포커스 유지
             chatInput.value = '';
