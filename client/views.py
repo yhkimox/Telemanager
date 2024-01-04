@@ -347,9 +347,9 @@ def start_tm(request):
             questions = ments['answer'].split("\n")
             
             # # 생성된 문구별 각각 음성 파일로 저장하는 부분
-            # for i, q in enumerate(questions):
-            #     print(q)
-            #     question_tm.append(q) # hj
+            for i, q in enumerate(questions):
+                print(q)
+                question_tm.append(q) # hj
             #     try:
             #         q = q[q.index('"'):]
             #         response = whisper.audio.speech.create(
@@ -371,7 +371,7 @@ def start_tm(request):
         'input_data': input_data,  # 추가
         'chatbots': chatbots,
         'mentsanswer' : ments['answer'], # 20240102 yh 대답 부분이 필요해서 추가함.
-        # 'question' : question_tm # hj
+        'question' : question_tm # hj
     }
  
     return render(request, 'client/start_tm.html', context)
