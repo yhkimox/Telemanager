@@ -93,6 +93,7 @@ class UserPasswordResetView(PasswordResetView):
 def error_page(request):
     return render(request, 'upload/error.html', {'error_message': '잘못된 요청입니다.'})
 
+FILE_SIZE_LIMIT = 31457280   # 업로드 하는 파일의 최대 사이즈 제한 30 * 1024 * 1024 (30MB)
 WHITE_LIST = ['csv'] # 허용하는 확장자 제한
 
 @login_required
@@ -109,6 +110,10 @@ def file_upload(request):
             print(file_extension)
             if file_extension not in WHITE_LIST:
                 return render(request, 'upload/error.html', {'error_message': '잘못된 파일 형식입니다. csv 형식의 파일을 제출해주십시오.'})
+            
+            # 파일 크기 체크
+            if uploaded_file.size > FILE_SIZE_LIMIT:
+                return render(request, 'upload/error.html', {'error_message': f'파일 크기는 최대 {FILE_SIZE_LIMIT / (1024 * 1024)} MB까지만 허용됩니다.'})
             
 
             fs = FileSystemStorage(location='media/company_data_files/')
