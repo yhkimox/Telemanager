@@ -417,7 +417,7 @@ def make_phrases(user_info, purpose, embeding_url, hf, llm):
     
     return result
 
-
+"""
 # 녹음한 파일을 저장하는 function
 @csrf_exempt
 @require_POST
@@ -453,3 +453,4 @@ def save_audio(request):
         return JsonResponse({'message': 'Audio file saved and converted to MP3 successfully.'})
     else:
         return JsonResponse({'message': 'No audio data received.'})
+"""
