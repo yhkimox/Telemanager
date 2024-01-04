@@ -121,13 +121,6 @@ def normalize_gender(gender_str):
 
 
 def error_page(request):  
-    
-    client_ip = request.META.get('REMOTE_ADDR')
-
-    # 허용 목록에 IP 주소가 있는지 확인
-    if client_ip not in ALLOW_URL_LIST:
-        return redirect('account:urlerror')
-
     return render(request, 'client/error.html', {'error_message': '잘못된 요청입니다.'})
 
 

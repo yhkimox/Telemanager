@@ -29,7 +29,8 @@ from django.contrib.auth.views import LoginView
 from .models import Profile
 import shutil
 from django.conf import settings
-
+from django.http import HttpResponseForbidden
+from django.views.generic import TemplateView
 
 ALLOW_URL_LIST = settings.ALLOW_URL_LIST
 FILE_COUNT_LIMIT = settings.FILE_COUNT_LIMIT         
@@ -40,13 +41,29 @@ WHITE_LIST_COMPANY = settings.WHITE_LIST_COMPANY
 
 
 
+class IPRequiredMixin:
+    def dispatch(self, request, *args, **kwargs):
+        client_ip = request.META.get('REMOTE_ADDR')
+        if client_ip not in ALLOW_URL_LIST:
+            return redirect('account:urlerror')
+        return super().dispatch(request, *args, **kwargs)
 
+class ProfileView(IPRequiredMixin, TemplateView):
+    template_name = 'registration/profile.html'
+    
 def index(request):
+    
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+    
     return render(request, 'registration/login.html')
 
 # 개인정보 동의
 # @method_decorator(logout_message_required, name='dispatch')
-class AgreementView(View):
+class AgreementView(IPRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         request.session['agreement'] = False
         return render(request, 'registration/agreement.html')
@@ -62,6 +79,13 @@ class AgreementView(View):
         
 # 회원가입
 def signup(request):
+
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+    
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
@@ -78,6 +102,13 @@ def signup(request):
 
 @login_required
 def profile_update(request):
+
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+    
     if request.method == 'POST':
         form = ProfileUpdateForm(request.POST, instance=request.user)
         if form.is_valid():
@@ -89,7 +120,7 @@ def profile_update(request):
     return render(request, 'registration/profile_update.html', {'form': form})
 
 # 비밀번호 변경
-class PasswordChangeView(PasswordChangeView):
+class PasswordChangeView(IPRequiredMixin, PasswordChangeView):
     success_url = reverse_lazy('account:login')
     template_name = 'account/password_change_form.html'
     form_class = PasswordChangeForm
@@ -102,7 +133,7 @@ class PasswordChangeView(PasswordChangeView):
 
 
 # 비밀번호 찾기
-class UserPasswordResetView(PasswordResetView):
+class UserPasswordResetView(IPRequiredMixin, PasswordResetView):
     template_name = 'registration/password_reset.html'  # 템플릿을 변경하려면 이와 같은 형식으로 입력
     success_url = reverse_lazy('account:password_reset_done')
     form_class = PasswordResetForm
@@ -120,14 +151,27 @@ class UserPasswordResetView(PasswordResetView):
         return JsonResponse({'email_not_exists': True})
 
 def error_page(request):
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+    
     return render(request, 'upload/error.html', {'error_message': '잘못된 요청입니다.'})
 
 def urlerror_page(request):
+   
     return render(request, 'urlcheck/error2.html', {'error_message': '유효하지 않은 URL 입니다.'})
 
 
 @login_required
 def file_upload(request):
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+    
     if request.method == 'POST':
         form = CompanyFileForm(request.POST, request.FILES)
         if form.is_valid():
@@ -204,12 +248,26 @@ def file_upload(request):
 # 파일 목록을 출력하는 view입니다.
 @login_required
 def file_list(request):
+    
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+    
     files = CompanyFile.objects.filter(user=request.user)
     return render(request, 'upload/list.html', {'files': files})
 
 
 @login_required
 def edit_file(request, file_id):
+    
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+    
     file = get_object_or_404(CompanyFile, id=file_id, user=request.user)
 
     if request.method == 'POST':
@@ -225,6 +283,13 @@ def edit_file(request, file_id):
 
 @login_required
 def delete_file(request, file_id):
+
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+    
     file = get_object_or_404(CompanyFile, id=file_id, user=request.user)
 
     if request.method == 'POST':
@@ -273,9 +338,16 @@ class DeleteSelectedFilesView(LoginRequiredMixin, View):
     
 
 def before(request):
+    
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+    
     return render(request, 'registration/before.html')
 
-class CustomLoginView(LoginView):
+class CustomLoginView(IPRequiredMixin, LoginView):
     
     def form_valid(self, form):
         # 기존 로그인 로직을 수행합니다.
