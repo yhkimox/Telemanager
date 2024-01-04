@@ -10,14 +10,25 @@ from django.contrib import messages
 
 ALLOW_URL_LIST = settings.ALLOW_URL_LIST
 
+ALLOW_URL_LIST = settings.ALLOW_URL_LIST
+FILE_COUNT_LIMIT = settings.FILE_COUNT_LIMIT         
+FILE_SIZE_LIMIT_CLIENT = settings.FILE_SIZE_LIMIT_CLIENT 
+WHITE_LIST_CLIENT = settings.WHITE_LIST_CLIENT
 
+### 데코레이터 정의 - def 에 적용
+def check_ip_allowed(view_func):
+    def _wrapped_view(request, *args, **kwargs):
+        # URL CHECK
+        client_ip = request.META.get('REMOTE_ADDR')
+        
+        if client_ip not in ALLOW_URL_LIST:
+            return redirect('account:urlerror')  # 특정 URL로 리디렉션
+        
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
+
+@check_ip_allowed
 def post_list(request):
-    
-    # URL CHECK
-    client_ip = request.META.get('REMOTE_ADDR')
-    
-    if client_ip not in ALLOW_URL_LIST:
-        return redirect('account:urlerror') 
     
     posts = Post.objects.all()
     search_key = request.GET.get("keyword")
@@ -26,13 +37,9 @@ def post_list(request):
         posts = posts.filter(Q(title__icontains=search_key))
         
     return render(request, 'post/post_list.html', {'posts': posts, 'q': search_key})
- 
-def index(request):
-    # URL CHECK
-    client_ip = request.META.get('REMOTE_ADDR')
 
-    if client_ip not in ALLOW_URL_LIST:
-        return redirect('account:urlerror') 
+@check_ip_allowed
+def index(request):
     
     posts = Post.objects.all()
     search_key = request.GET.get("keyword", "")
@@ -47,13 +54,9 @@ def index(request):
 
     # posts = Post.objects.all()
     # return render(request, 'post/post_list.html', {'posts': posts})
- 
-def post_detail(request, pk):
-    # URL CHECK
-    client_ip = request.META.get('REMOTE_ADDR')
 
-    if client_ip not in ALLOW_URL_LIST:
-        return redirect('account:urlerror') 
+@check_ip_allowed
+def post_detail(request, pk):
     
     post = get_object_or_404(Post, pk=pk)
     comments = post.comment_set.all()  # 댓글을 가져오는 부분을 수정
@@ -61,12 +64,8 @@ def post_detail(request, pk):
 
 
 @login_required
+@check_ip_allowed
 def post_new(request):
-    # URL CHECK
-    client_ip = request.META.get('REMOTE_ADDR')
-
-    if client_ip not in ALLOW_URL_LIST:
-        return redirect('account:urlerror') 
     
     if request.method == 'POST':
         form = PostForm(request.POST)
@@ -80,13 +79,8 @@ def post_new(request):
         form = PostForm()
     return render(request, 'post/post_form.html', {'form': form})
  
- 
+@check_ip_allowed
 def post_delete(request, pk):
-    # URL CHECK
-    client_ip = request.META.get('REMOTE_ADDR')
-
-    if client_ip not in ALLOW_URL_LIST:
-        return redirect('account:urlerror') 
 
     post = get_object_or_404(Post, pk=pk)
     if request.method == 'POST':
@@ -94,14 +88,9 @@ def post_delete(request, pk):
         return redirect('post:post_list')
     return render(request, 'post/post_delete.html', {'post': post})
  
- 
+@check_ip_allowed 
 def post_edit(request, pk):
-    # URL CHECK
-    client_ip = request.META.get('REMOTE_ADDR')
 
-    if client_ip not in ALLOW_URL_LIST:
-        return redirect('account:urlerror') 
-    
     post = get_object_or_404(Post, pk=pk)
    
     if request.method == 'GET':
@@ -117,12 +106,8 @@ def post_edit(request, pk):
         'form': form,
     })
 
+@check_ip_allowed
 def Comment2(request, pk):
-    # URL CHECK
-    client_ip = request.META.get('REMOTE_ADDR')
-
-    if client_ip not in ALLOW_URL_LIST:
-        return redirect('account:urlerror') 
 
     post = get_object_or_404(Post, pk=pk)
     
@@ -142,13 +127,8 @@ def Comment2(request, pk):
         
     return redirect('post:post_detail', pk=pk)
     
-
+@check_ip_allowed
 def comment_delete(request, pk, comment_id):
-    # URL CHECK
-    client_ip = request.META.get('REMOTE_ADDR')
-
-    if client_ip not in ALLOW_URL_LIST:
-        return redirect('account:urlerror') 
 
     if request.method == 'POST':
         post = get_object_or_404(Post, pk=pk)

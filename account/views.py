@@ -28,10 +28,17 @@ from client.models import Client
 from django.contrib.auth.views import LoginView
 from .models import Profile
 import shutil
+from django.conf import settings
 
 
-FILE_SIZE_LIMIT_COMPANY = settings.FILE_SIZE_LIMIT_COMPANY   
+ALLOW_URL_LIST = settings.ALLOW_URL_LIST
+FILE_COUNT_LIMIT = settings.FILE_COUNT_LIMIT         
+FILE_SIZE_LIMIT_CLIENT = settings.FILE_SIZE_LIMIT_CLIENT 
+WHITE_LIST_CLIENT = settings.WHITE_LIST_CLIENT
+FILE_SIZE_LIMIT_COMPANY = settings.FILE_SIZE_LIMIT_COMPANY 
 WHITE_LIST_COMPANY = settings.WHITE_LIST_COMPANY
+
+
 
 
 def index(request):
@@ -86,6 +93,7 @@ class PasswordChangeView(PasswordChangeView):
     success_url = reverse_lazy('account:login')
     template_name = 'account/password_change_form.html'
     form_class = PasswordChangeForm
+    
 
     def form_valid(self, form):
         form.save()
@@ -111,7 +119,6 @@ class UserPasswordResetView(PasswordResetView):
         # 존재하지 않는 이메일인 경우에 대한 처리
         return JsonResponse({'email_not_exists': True})
 
-
 def error_page(request):
     return render(request, 'upload/error.html', {'error_message': '잘못된 요청입니다.'})
 
@@ -131,12 +138,12 @@ def file_upload(request):
             # 파일 확장자 검사
             file_extension = uploaded_file.name.split('.')[-1].lower()
             print(file_extension)
-            if file_extension not in WHITE_LIST:
+            if file_extension not in WHITE_LIST_COMPANY:
                 return render(request, 'upload/error.html', {'error_message': '잘못된 파일 형식입니다. csv 형식의 파일을 제출해주십시오.'})
             
             # 파일 크기 체크
-            if uploaded_file.size > FILE_SIZE_LIMIT:
-                return render(request, 'upload/error.html', {'error_message': f'파일 크기는 최대 {FILE_SIZE_LIMIT / (1024 * 1024)} MB까지만 허용됩니다.'})
+            if uploaded_file.size > FILE_SIZE_LIMIT_COMPANY:
+                return render(request, 'upload/error.html', {'error_message': f'파일 크기는 최대 {FILE_SIZE_LIMIT_COMPANY / (1024 * 1024)} MB까지만 허용됩니다.'})
             
 
             fs = FileSystemStorage(location='media/company_data_files/')
@@ -229,6 +236,7 @@ def delete_file(request, file_id):
 
 
 class DeleteSelectedFilesView(LoginRequiredMixin, View):
+    
     def post(self, request):
         selected_ids = request.POST.getlist('file_ids')  
         #CompanyFile.objects.filter(id__in=selected_ids).delete()  
@@ -262,11 +270,13 @@ class DeleteSelectedFilesView(LoginRequiredMixin, View):
                 
                 
         return redirect(reverse('client:list'))  
+    
 
 def before(request):
     return render(request, 'registration/before.html')
 
 class CustomLoginView(LoginView):
+    
     def form_valid(self, form):
         # 기존 로그인 로직을 수행합니다.
         super().form_valid(form)
