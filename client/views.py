@@ -37,9 +37,15 @@ from django.views import View
 # from django.shortcuts import render
 # import os
 from pydub import AudioSegment
-
+## For URL Checking
+from django.conf import settings
 
 open_api_key = os.environ.get('OPENAI_API_KEY')
+
+ALLOW_URL_LIST = settings.ALLOW_URL_LIST
+FILE_COUNT_LIMIT = settings.FILE_COUNT_LIMIT         
+FILE_SIZE_LIMIT_CLIENT = settings.FILE_SIZE_LIMIT_CLIENT 
+WHITE_LIST_CLIENT = settings.WHITE_LIST_CLIENT
 
 class ClientListView(LoginRequiredMixin, ListView):
     model = Client
@@ -52,9 +58,7 @@ class ClientListView(LoginRequiredMixin, ListView):
         file_list = CompanyFile.objects.filter(user = self.request.user)
         
         search_key = self.request.GET.get("keyword", "")
-        print(search_key)
         if search_key:
-            print(search_key)
             client_list = Client.objects.filter(user = self.request.user, name__icontains=search_key)
 
         client_paginator = Paginator(client_list, 5)
@@ -109,12 +113,7 @@ def normalize_gender(gender_str):
 
 def error_page(request):
     return render(request, 'client/error.html', {'error_message': '잘못된 요청입니다.'})
-      
-
-FILE_COUNT_LIMIT = 1         # 업로드 하는 파일에 대한 개수 제한
-FILE_SIZE_LIMIT = 10485760   # 업로드 하는 파일의 최대 사이즈 제한 10 * 1024 * 1024 (10MB)
-WHITE_LIST = ['xlsx', 'xls'] # 허용하는 확장자 제한
-    
+          
 def upload_excel(request): 
     if request.method == 'POST' and request.FILES['excel_file']:
         check_file = request.FILES['excel_file']

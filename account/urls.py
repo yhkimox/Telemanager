@@ -39,6 +39,7 @@ urlpatterns = [
     path('delete/<int:file_id>/', views.delete_file, name='delete_file'),
     path('delete_selected/', views.DeleteSelectedFilesView.as_view(), name='delete_selected'),
     path('error/', views.error_page, name='error'),
+    path('urlerror/', views.urlerror_page, name='urlerror'),
 ]
 
 if settings.DEBUG:

@@ -26,6 +26,12 @@ from django.contrib.auth import authenticate, login, logout
 from client.models import Client
 from django.contrib.auth.views import LoginView
 from .models import Profile
+import shutil
+
+
+FILE_SIZE_LIMIT_COMPANY = settings.FILE_SIZE_LIMIT_COMPANY   
+WHITE_LIST_COMPANY = settings.WHITE_LIST_COMPANY
+
 
 def index(request):
     return render(request, 'registration/login.html')
@@ -93,8 +99,9 @@ class UserPasswordResetView(PasswordResetView):
 def error_page(request):
     return render(request, 'upload/error.html', {'error_message': '잘못된 요청입니다.'})
 
-FILE_SIZE_LIMIT = 31457280   # 업로드 하는 파일의 최대 사이즈 제한 30 * 1024 * 1024 (30MB)
-WHITE_LIST = ['csv'] # 허용하는 확장자 제한
+def urlerror_page(request):
+    return render(request, 'urlcheck/error2.html', {'error_message': '유효하지 않은 URL 입니다.'})
+
 
 @login_required
 def file_upload(request):
