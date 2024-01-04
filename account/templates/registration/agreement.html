@@ -15,12 +15,7 @@
 
 <form action="{% url 'account:agreement' %}" method="POST" id="agreementForm">
     {% csrf_token %}
-    <div class="scrollable-container">
-        <label>
-            <input type="checkbox" name="selectAllCheckbox" id="selectAllCheckbox" />
-            <span>전체 동의</span>
-        </label>
-    </div>
+
     <div class="scrollable-container">
         <div class="scrollable-box">
             <!-- 여기에 이용약관 내용을 넣으세요 -->
@@ -44,7 +39,7 @@
 
         </div>
         <label>
-            <input type="checkbox" name="agreement1" class="individual-checkbox" required />
+            <input type="checkbox" name="agreement1" class="individual-checkbox" required style="display: block;" />
             <span>위 내용을 읽었으며, 이용약관에 동의합니다.</span>
         </label>
     </div>
@@ -53,15 +48,20 @@
          <div class="scrollable-box">
             <!-- 여기에 개인정보 처리방침 내용을 넣으세요 -->
             <p>
-                [기관명]은(는) 개인정보보호법 제17조제1항제1호에 근거하여, 다음과 같이 [제공 목적 ]을(를) 위하여 개인정보를 제3자에게 제공하는데 동의를 받고자 합니다. : [정보주체 이름]은(는) 위와 같이 개인정보를 수집․ 이용하는 데 대한 동의를 거부할 권리가 있습니다.
+                [기관명]은(는) 개인정보보호법 제17조 제1항 제1호에 근거하여, 다음과 같이 [제공 목적 ]을(를) 위하여 개인정보를 제3자에게 제공하는데 동의를 받고자 합니다. : [정보주체 이름]은(는) 위와 같이 개인정보를 수집․ 이용하는 데 대한 동의를 거부할 권리가 있습니다.
             </p>
         </div>
 
         <label>
-            <input type="checkbox" name="agreement2" class="individual-checkbox" required />
+            <input type="checkbox" name="agreement2" class="individual-checkbox" required style="display: block;" />
             <span>위 내용을 읽었으며, 개인정보 수집 및 이용에 동의합니다.</span>
          </label>
     </div>
+    <br><br>
+    <label>
+        <input type="checkbox" name="selectAllCheckbox" id="selectAllCheckbox" required style="display: block;" />
+        <span>전체 동의</span>
+    </label>
     <br><br>
     <button type="submit">네, 동의합니다</button>
     <button type="button" id="disagreeButton">아니오, 동의하지 않습니다</button>
@@ -79,18 +79,5 @@
         window.location.href = "{% url 'account:login' %}";
     });
 
-    function initializeAgreementModal() {
-        document.getElementById('selectAllCheckbox').addEventListener('change', function () {
-            var checkboxes = document.querySelectorAll('.individual-checkbox');
-            checkboxes.forEach(function (checkbox) {
-                checkbox.checked = this.checked;
-            }, this);
-        });
-    }
-
-    // 이 부분을 추가합니다.
-    window.addEventListener('load', function () {
-        initializeAgreementModal();
-    });
 </script>
 {% endblock %}

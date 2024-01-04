@@ -42,6 +42,11 @@
         text-decoration: none;
         cursor: pointer;
     }
+
+    .individual-checkbox {
+
+    }
+
 </style>
 
 <!--main
@@ -63,6 +68,7 @@
                     </table>
                 </div>
                 <a href="#" id="showAgreementModal">회원이 아니신가요?</a>
+                <a> | </a>
                 <a href="{% url 'account:password_reset' %}">비밀번호 찾기</a>
                 <br><br>
                 <ul class="actions">
@@ -95,19 +101,56 @@
     showAgreementModalBtn.onclick = function () {
         // Disable scrolling when the modal is open
         document.body.style.overflow = 'hidden';
+        document.documentElement.style.overflowY = 'hidden';  // For older browsers
+        // Hide the banner when the modal is open
+        document.getElementById('banner').style.visibility = 'hidden';
         agreementModal.style.display = 'block';
-        
+
 
         // 이 부분을 추가합니다.
         initializeAgreementModal();
     }
 
+    // When the user clicks on <span> (x) or outside the modal, close it
+    function closeModal() {
+        // Enable scrolling when the modal is closed
+        document.body.style.overflow = 'auto';
+        document.documentElement.style.overflowY = 'auto';
+        agreementModal.style.display = 'none';
+        // Show the banner when the modal is closed
+        document.getElementById('banner').style.visibility = 'visible';
+    }
+
+    function initializeAgreementModal() {
+        var selectAllCheckbox = document.getElementById('selectAllCheckbox');
+        var individualCheckboxes = document.querySelectorAll('.individual-checkbox');
+
+        selectAllCheckbox.addEventListener('change', function () {
+            individualCheckboxes.forEach(function (checkbox) {
+                checkbox.checked = this.checked;
+            }, this);
+        });
+    
+        // 체크박스 초기 상태 설정
+        individualCheckboxes.forEach(function (checkbox) {
+            checkbox.checked = selectAllCheckbox.checked;
+        });
+    }
+    
+    // 모달이 열릴 때마다 초기화
+    showAgreementModalBtn.onclick = function () {
+        document.body.style.overflow = 'hidden';
+        document.documentElement.style.overflowY = 'hidden';
+        document.getElementById('banner').style.visibility = 'hidden';
+        agreementModal.style.display = 'block';
+    
+        initializeAgreementModal();
+    };
+
     // When the user clicks anywhere outside of the modal, close it
     window.onclick = function (event) {
         if (event.target == agreementModal) {
-            // Enable scrolling when the modal is closed
-            document.body.style.overflow = 'auto';
-            agreementModal.style.display = 'none';
+            closeModal();
         }
     }
 </script>
