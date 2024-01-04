@@ -17,6 +17,7 @@ from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders.csv_loader import CSVLoader
 from account.forms import PasswordChangeForm
+from django.urls import reverse_lazy
 import csv
 from django.contrib.auth.decorators import login_required
 
@@ -30,6 +31,7 @@ def index(request):
     return render(request, 'registration/login.html')
 
 
+# 회원가입
 def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
@@ -42,9 +44,14 @@ def signup(request):
             return redirect(settings.LOGIN_URL)
     else:
         form = SignupForm()
+<<<<<<< HEAD
 
     return render(request, 'registration/signup.html', {'form': form})
 
+=======
+            
+    return render(request, 'registration/signup.html',{'form':form})
+>>>>>>> 0369360af28d751e9aeb44f8ed914c88633396d4
 
 @login_required
 def profile_update(request):
@@ -58,7 +65,7 @@ def profile_update(request):
 
     return render(request, 'registration/profile_update.html', {'form': form})
 
-
+# 비밀번호 변경
 class PasswordChangeView(PasswordChangeView):
     success_url = reverse_lazy('account:login')
     template_name = 'account/password_change_form.html'
@@ -89,6 +96,11 @@ class UserPasswordResetView(PasswordResetView):
         return JsonResponse({'email_not_exists': True})
 
 
+def error_page(request):
+    return render(request, 'upload/error.html', {'error_message': '잘못된 요청입니다.'})
+
+WHITE_LIST = ['csv'] # 허용하는 확장자 제한
+
 @login_required
 def file_upload(request):
     if request.method == 'POST':
@@ -98,10 +110,12 @@ def file_upload(request):
             user_id = request.user.id
             combined_name = f"{user_id}_{uploaded_file.name}"
 
-            # 데이터베이스에서 파일 이름과 사용자 ID로 중복 확인
-            if CompanyFile.objects.filter(file=combined_name, user=request.user).exists():
-                messages.warning(request, '동일한 파일 이름이 이미 존재합니다.')
-                return redirect('client:list')
+            # 파일 확장자 검사
+            file_extension = uploaded_file.name.split('.')[-1].lower()
+            print(file_extension)
+            if file_extension not in WHITE_LIST:
+                return render(request, 'upload/error.html', {'error_message': '잘못된 파일 형식입니다. csv 형식의 파일을 제출해주십시오.'})
+            
 
             fs = FileSystemStorage(location='media/company_data_files/')
 
