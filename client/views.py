@@ -33,6 +33,7 @@ from django.views.decorators.http import require_POST
 from django.views.decorators import gzip
 from django.utils.decorators import method_decorator
 from django.views import View
+import json
 # from django.shortcuts import render
 # import os
 from pydub import AudioSegment
@@ -252,7 +253,7 @@ def selected_items(request):
 
     return render(request, 'client/selected_items.html', context)
 
-
+# start_tm 페이지 렌더링 부분(아웃바운드 목적 적고 send 누를 때 실행)
 def start_tm(request):
     whisper = OpenAI()
     input_data = ''
@@ -346,9 +347,9 @@ def start_tm(request):
             questions = ments['answer'].split("\n")
             
             # # 생성된 문구별 각각 음성 파일로 저장하는 부분
-            # for i, q in enumerate(questions):
-            #     print(q)
-            #     question_tm.append(q) # hj
+            for i, q in enumerate(questions):
+                print(q)
+                question_tm.append(q) # hj
             #     try:
             #         q = q[q.index('"'):]
             #         response = whisper.audio.speech.create(
@@ -370,12 +371,12 @@ def start_tm(request):
         'input_data': input_data,  # 추가
         'chatbots': chatbots,
         'mentsanswer' : ments['answer'], # 20240102 yh 대답 부분이 필요해서 추가함.
-        # 'question' : question_tm # hj
+        'question' : question_tm # hj
     }
  
     return render(request, 'client/start_tm.html', context)
         
-
+# 문구 생성 부분
 def make_phrases(user_info, purpose, embeding_url, hf, llm):
     
     system_template = f"""당신은 최고의 아웃바운드 상담사입니다.
@@ -417,6 +418,28 @@ def make_phrases(user_info, purpose, embeding_url, hf, llm):
     
     return result
 
+# 문구 감정 분류 및 결과 내보내는 함수
+@csrf_exempt
+def text_processing(request):
+    if request.method == "POST":
+        try:
+            # POST 요청으로 받은 데이터
+            data = json.loads(request.body)
+            user_message = data.get("userMessage", "")
+
+            # 여기에서 user_message를 사용하여 필요한 작업 수행
+            # 작업 결과를 result에 할당 (예: True 또는 False)
+
+            result = "임시 테스트 입니다."  # 예시로 True 값을 할당
+            print(user_message)
+            print(result)
+
+            # 결과를 JSON 형식으로 응답
+            return JsonResponse({"result": result})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "POST 요청만 지원합니다."}, status=400)
 
 # # 녹음한 파일을 저장하는 function
 # @csrf_exempt
