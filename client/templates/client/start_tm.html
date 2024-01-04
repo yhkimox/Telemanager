@@ -4,7 +4,7 @@
 {% load static %}
 
 {% block static %}
-    <!-- 외부 CSS 파일에 대한 링크 -->
+    <!-- External CSS file link -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
 {% endblock %}
 
@@ -63,8 +63,10 @@
         <div class='chat-container'>
             <div class='user-info'>
                 <img src='../../../static/images/냥.jpg' alt='User Avatar' width='30' height='30'>
-                <span>User123</span>
+                {% for client in selectedClients %}
+                <span>{{ client.name }}</span>
                 <div class='user-status-indicator'></div>
+                {% endfor %}
             </div>
 
             <div class='chat-messages' id='chat-messages'>
@@ -78,6 +80,7 @@
                 <button class='send-button' onclick='sendMessage()'>Send</button>
             </div>
         </div>
+<<<<<<< HEAD
 <<<<<<< HEAD
 
         {% comment %}
@@ -114,6 +117,24 @@
                 </div>
         </div> {% endcomment %}
 >>>>>>> c353218212724ee94ba2d2e7b7306fb628b6d12e
+=======
+        {% comment %} 
+        <div>
+            <audio controls>녹음된 소리를 재생할 audio 엘리먼트</audio>
+            <br><br><br><br><br>
+            <div class="button-container">
+                <!-- 시작할 때 드러날 버튼들 -->
+                <button id="recordbutton" onclick="showButton('startrecord');" style="background-image: url('{% static 'loading_recording/icons8-recording-60.png' %}');" class="button-image"></button>
+                <button id="playbutton" onclick="playAudio(); showButton('playvoice');" style="background-image: url('{% static 'loading_recording/icon8-play-60.png' %}');" class="button-image"></button>
+                <!-- 시작할 때 숨어있을 이미지, 버튼들 -->
+                <button id="no_record" style="display: none; background-image: url('{% static 'loading_recording/icons8-no-record-60.gif' %}');" class="button-image"></button>
+                <button id="stop_record" onclick="showButton('stoprecord');" style="display: none; background-image: url('{% static 'loading_recording/icons8-voice-recognition-60.gif' %}');" class="button-image"></button>
+                <button id="no_play" style="display: none; background-image: url('{% static 'loading_recording/icons8-hearing-60.png' %}');" class="button-image"></button>
+                <button id="playing" onclick="showButton('stoprecord');" style="display: none; background-image: url('{% static 'loading_recording/icons8-speech-bubble-60.gif' %}');" class="button-image"></button>
+            </div>
+        </div>
+        {% endcomment %}
+>>>>>>> 171fd845d66c025edbafc510dd512003b3625836
     </div>
 </div>
 
@@ -130,7 +151,7 @@
     let currentQuestionIndex = 1;  // 0번째 질문은 이미 보여주었으므로 1부터 시작
 
     // 기존 코드
-    function sendMessage() {
+    async function sendMessage() {
         const userMessage = chatInput.value.trim();
 
         if (userMessage !== '') {
@@ -139,6 +160,29 @@
             userChatMessage.className = 'message sent';
             userChatMessage.innerHTML = `<div class="message-bubble">${userMessage}</div>`;
             chatMessages.appendChild(userChatMessage);
+
+
+            // ajax, fetch 사용해야 할 부분
+            console.log(userMessage);
+            let results = await executeBackendTextProcessing(userMessage);
+            console.log("@@@");
+            console.log(results);
+
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             // '네'에 대한 응답을 자동으로 추가
             if (userMessage === '네') {
@@ -164,12 +208,53 @@
         }
     }
 
+    // 텍스트 백앤드 전달하여 감정 분류 및 결과 값 받기
+    async function executeBackendTextProcessing(userMessage) {
+        try {
+            const response = await fetch("/client/start_tm/text_processing/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ userMessage: userMessage }),
+            });
+    
+            const data = await response.json();
+    
+            // 여기에서 필요한 동작 수행
+    
+            return data.result;  // 예시로 결과 값 반환
+        } catch (error) {
+            console.error("에러 발생:", error);
+            throw error;  // 에러를 다시 던지면 이후에도 에러 처리 가능
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // 엔터 키를 누를 때 sendMessage 호출
     chatInput.addEventListener('keyup', function (event) {
         if (event.key === 'Enter') {
             sendMessage();
         }
     });
+<<<<<<< HEAD
 <<<<<<< HEAD
     {% comment %}
     function showButton(val) {
@@ -296,6 +381,8 @@
 =======
     }*/
 >>>>>>> c353218212724ee94ba2d2e7b7306fb628b6d12e
+=======
+>>>>>>> 171fd845d66c025edbafc510dd512003b3625836
 </script>
 
 {% endblock %}
