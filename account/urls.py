@@ -11,6 +11,7 @@ from django.contrib import admin
 from django.urls import path, include
 from .views import UserPasswordResetView, PasswordChangeView
 from .views import CustomLoginView
+from .views import ProfileView
 app_name = 'account'
 
 def generic(request):
@@ -26,19 +27,20 @@ urlpatterns = [
     path('', CustomLoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('signup/', views.signup, name='signup'),
+    path('agreement/', views.AgreementView.as_view(), name='agreement'),
     path('before/', views.before, name='before'),
-    path('profile/', TemplateView.as_view(template_name='registration/profile.html'), name='profile' ),
+    path('profile/', ProfileView.as_view(), name='profile' ),
     path('profile_update/', views.profile_update, name='profile_update'),
     path('password_change/', views.PasswordChangeView.as_view(), name='password_change'),
     path('password_reset/', views.UserPasswordResetView.as_view(), name="password_reset"),
     path('password_reset_done/', auth_views.PasswordResetDoneView.as_view(), name="password_reset_done"),
-    
     path('list/', views.file_list, name='file_list'),  
     path('upload/', views.file_upload, name='file_upload'),
     path('edit/<int:file_id>/', views.edit_file, name='edit_file'),
     path('delete/<int:file_id>/', views.delete_file, name='delete_file'),
     path('delete_selected/', views.DeleteSelectedFilesView.as_view(), name='delete_selected'),
     path('error/', views.error_page, name='error'),
+    path('urlerror/', views.urlerror_page, name='urlerror'),
 ]
 
 if settings.DEBUG:

@@ -4,7 +4,7 @@
 {% load static %}
 
 {% block static %}
-    <!-- 외부 CSS 파일에 대한 링크 -->
+    <!-- External CSS file link -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
 {% endblock %}
 
@@ -53,18 +53,20 @@
                             <td><input type='checkbox' name='file_ids' value='{{ file.id }}'></td>
                             <td>{{ file.file.name|cut:"_"|slice:"1:" }}</td>
                         </tr>
-                        {% endfor %}
-                    </thead>
-                </table>
-                <button id='goBack' onclick='goBack()'>뒤로가기</button>
-            </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button id='goBack' onclick='goBack()'>뒤로가기</button>
+        </div>
 
         <!-- 채팅 대화창 -->
         <div class='chat-container'>
             <div class='user-info'>
                 <img src='../../../static/images/냥.jpg' alt='User Avatar' width='30' height='30'>
-                <span>User123</span>
+                {% for client in selectedClients %}
+                <span>{{ client.name }}</span>
                 <div class='user-status-indicator'></div>
+                {% endfor %}
             </div>
 
             <div class='chat-messages' id='chat-messages'>
@@ -78,6 +80,28 @@
                 <button class='send-button' onclick='sendMessage()'>Send</button>
             </div>
         </div>
+
+        
+
+        {% comment %}
+        <div>
+            <audio controls>녹음된 소리를 재생할 audio 엘리먼트</audio>
+            <br><br><br><br><br>
+            <div class="button-container">
+                <!-- 시작할 때 드러날 버튼들 -->
+                <button id="recordbutton" onclick="showButton('startrecord');" style="background-image: url('{% static 'loading_recording/icons8-recording-60.png' %}');" class="button-image"></button>
+                <button id="playbutton" onclick="playAudio(); showButton('playvoice');" style="background-image: url('{% static 'loading_recording/icon8-play-60.png' %}');" class="button-image"></button>
+                <!-- 시작할 때 숨어있을 이미지, 버튼들 -->
+                <button id="no_record" style="display: none; background-image: url('{% static 'loading_recording/icons8-no-record-60.gif' %}');" class="button-image"></button>
+                <button id="stop_record" onclick="showButton('stoprecord');" style="display: none; background-image: url('{% static 'loading_recording/icons8-voice-recognition-60.gif' %}');" class="button-image"></button>
+                <button id="no_play" style="display: none; background-image: url('{% static 'loading_recording/icons8-hearing-60.png' %}');" class="button-image"></button>
+                <button id="playing" onclick="showButton('stoprecord');" style="display: none; background-image: url('{% static 'loading_recording/icons8-speech-bubble-60.gif' %}');" class="button-image"></button>
+            </div>
+            </div>
+        </div>
+        {% endcomment %}
+
+
         {% comment %} <div>
             <audio controls>녹음된 소리를 재생할 audio 엘리먼트</audio>
                     <br><br><br><br><br>
@@ -93,6 +117,25 @@
                     </div>
                 </div>
         </div> {% endcomment %}
+
+
+        {% comment %} 
+        <div>
+            <audio controls>녹음된 소리를 재생할 audio 엘리먼트</audio>
+            <br><br><br><br><br>
+            <div class="button-container">
+                <!-- 시작할 때 드러날 버튼들 -->
+                <button id="recordbutton" onclick="showButton('startrecord');" style="background-image: url('{% static 'loading_recording/icons8-recording-60.png' %}');" class="button-image"></button>
+                <button id="playbutton" onclick="playAudio(); showButton('playvoice');" style="background-image: url('{% static 'loading_recording/icon8-play-60.png' %}');" class="button-image"></button>
+                <!-- 시작할 때 숨어있을 이미지, 버튼들 -->
+                <button id="no_record" style="display: none; background-image: url('{% static 'loading_recording/icons8-no-record-60.gif' %}');" class="button-image"></button>
+                <button id="stop_record" onclick="showButton('stoprecord');" style="display: none; background-image: url('{% static 'loading_recording/icons8-voice-recognition-60.gif' %}');" class="button-image"></button>
+                <button id="no_play" style="display: none; background-image: url('{% static 'loading_recording/icons8-hearing-60.png' %}');" class="button-image"></button>
+                <button id="playing" onclick="showButton('stoprecord');" style="display: none; background-image: url('{% static 'loading_recording/icons8-speech-bubble-60.gif' %}');" class="button-image"></button>
+            </div>
+        </div>
+        {% endcomment %}
+
     </div>
 </div>
 
@@ -107,9 +150,11 @@
     const questions = [{% for q in question %}'{{ q }}', {% endfor %}];
 
     let currentQuestionIndex = 1;  // 0번째 질문은 이미 보여주었으므로 1부터 시작
+    let exitConversation = false; // 대화 중단 원할시 True, 대화 계속 하길 원할시 False
+    let finalConversation = false; // 대화가 종료 되었을 경우 True, 대화가 끝나지 않을 경우 false
 
     // 기존 코드
-    function sendMessage() {
+    async function sendMessage() {
         const userMessage = chatInput.value.trim();
 
         if (userMessage !== '') {
@@ -119,8 +164,82 @@
             userChatMessage.innerHTML = `<div class="message-bubble">${userMessage}</div>`;
             chatMessages.appendChild(userChatMessage);
 
-            // '네'에 대한 응답을 자동으로 추가
-            if (userMessage === '네') {
+
+            // ajax, fetch 사용해야 할 부분
+            console.log(userMessage);
+            let results = await executeBackendTextProcessing(userMessage);
+            console.log("@@@");
+            console.log(results);
+
+            if (exitConversation===false){
+                // 대화를 계속 원하는 경우 (exitConversation False)
+                if (results === '부정') {
+                    const neMessage = document.createElement('div');
+                    neMessage.className = 'message received';
+                    neMessage.innerHTML = `<div class="message-bubble">혹시 대화를 종료하기를 원하시나요?</div>`;
+                    chatMessages.appendChild(neMessage);
+                    exitConversation = true;
+                } else {
+                    // 긍정 혹은 중립일 경우 실행되는 부분
+                    if (currentQuestionIndex < questions.length) {
+                        const neMessage = document.createElement('div');
+                        neMessage.className = 'message received';
+                        neMessage.innerHTML = `<div class="message-bubble">${questions[currentQuestionIndex]}</div>`;
+                        chatMessages.appendChild(neMessage);
+                        currentQuestionIndex += 1;
+                    } else {
+                        // 모든 질문에 대한 응답이 끝났을 경우 채팅 종료
+                        const endMessage = document.createElement('div');
+                        endMessage.className = 'message received';
+                        endMessage.innerHTML = '<div class="message-bubble">채팅이 종료되었습니다.</div>';
+                        chatMessages.appendChild(endMessage);
+                        finalConversation=true;
+                        // 추가로 필요한 동작 수행 (채팅 종료 등)
+                    }
+                }
+
+            } else {
+                // 대화가 중단되는 것을 물어보는 단계( exitConversation가 True)
+                const neMessage = document.createElement('div');
+                if (results === '긍정') {
+                    const neMessage = document.createElement('div');
+                    neMessage.className = 'message received';
+                    neMessage.innerHTML = `<div class="message-bubble">감사합니다. 문의 사항 있다면 연락주세요. 02-XXXX-XXXX</div>`;
+                    chatMessages.appendChild(neMessage);
+                    exitConversation = true;
+                    finalConversation=true;
+                } else {
+                    exitConversation = false;
+                    // 긍정 혹은 중립일 경우 실행되는 부분
+                    if (currentQuestionIndex < questions.length) {
+                        const neMessage = document.createElement('div');
+                        neMessage.className = 'message received';
+                        neMessage.innerHTML = `<div class="message-bubble">${questions[currentQuestionIndex]}</div>`;
+                        chatMessages.appendChild(neMessage);
+                        currentQuestionIndex += 1;
+                    } else {
+                        // 모든 질문에 대한 응답이 끝났을 경우 채팅 종료
+                        const endMessage = document.createElement('div');
+                        endMessage.className = 'message received';
+                        endMessage.innerHTML = '<div class="message-bubble">채팅이 종료되었습니다.</div>';
+                        chatMessages.appendChild(endMessage);
+                        // 추가로 필요한 동작 수행 (채팅 종료 등)
+                    }
+                }
+            }
+
+
+
+
+            /*// '네'에 대한 응답을 자동으로 추가
+            if (results === '부정') {
+                const neMessage = document.createElement('div');
+                neMessage.className = 'message received';
+                neMessage.innerHTML = `<div class="message-bubble">혹시 대화를 종료하기를 원하시나요?</div>`;
+                chatMessages.appendChild(neMessage);
+                exitConversation = True;
+            } else {
+                // 긍정 혹은 중립일 경우 실행되는 부분
                 if (currentQuestionIndex < questions.length) {
                     const neMessage = document.createElement('div');
                     neMessage.className = 'message received';
@@ -131,11 +250,15 @@
                     // 모든 질문에 대한 응답이 끝났을 경우 채팅 종료
                     const endMessage = document.createElement('div');
                     endMessage.className = 'message received';
-                    endMessage.innerHTML = '<div class="message-bubble">채팅 종료</div>';
+                    endMessage.innerHTML = '<div class="message-bubble">채팅이 종료되었습니다.</div>';
                     chatMessages.appendChild(endMessage);
                     // 추가로 필요한 동작 수행 (채팅 종료 등)
                 }
-            }
+            }*/
+
+
+
+
 
             // 입력창 초기화 및 포커스 유지
             chatInput.value = '';
@@ -143,12 +266,45 @@
         }
     }
 
+    // 텍스트 백앤드 전달하여 감정 분류 및 결과 값 받기
+    async function executeBackendTextProcessing(userMessage) {
+        try {
+            const response = await fetch("/client/start_tm/text_processing/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ userMessage: userMessage }),
+            });
+    
+            const data = await response.json();
+    
+            // 여기에서 필요한 동작 수행
+    
+            return data.result;  // 예시로 결과 값 반환
+        } catch (error) {
+            console.error("에러 발생:", error);
+            throw error;  // 에러를 다시 던지면 이후에도 에러 처리 가능
+        }
+    }
+
+
+
+
+
+
+
+
     // 엔터 키를 누를 때 sendMessage 호출
     chatInput.addEventListener('keyup', function (event) {
         if (event.key === 'Enter') {
             sendMessage();
         }
     });
+
+    {% comment %}
+    function showButton(val) {
+
             
     /*function showButton(val) {
         var startrecordButton = document.getElementById('recordbutton');
@@ -264,7 +420,9 @@
         if ($audioEl.src) {
             $audioEl.play();
         }
-    }*/
+    }
+    {% endcomment %}
+
 </script>
 
 {% endblock %}

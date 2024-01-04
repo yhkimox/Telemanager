@@ -16,7 +16,7 @@ class Client(models.Model):
 	age = models.IntegerField(null= True, blank=True)                    # 고객 나이 저장
 	gender = models.CharField(max_length=10, choices=[('Male', 'Male'), ('Female', 'Female')], null=True, blank=True)  # (실제 값, 보여지는 값)
 	email = models.EmailField(max_length=254, null=True, blank=True)     # 고객 이메일 저장
- 
+	info = models.CharField(max_length=1000, null=True, blank=True)		 # 고객의 정보들
 
 	def __str__(self):
 		return self.name
