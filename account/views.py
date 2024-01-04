@@ -10,6 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View
 from django.urls import reverse_lazy, reverse
 import os
+from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
 from langchain.vectorstores import Chroma
@@ -30,7 +31,22 @@ from .models import Profile
 def index(request):
     return render(request, 'registration/login.html')
 
+# 개인정보 동의
+# @method_decorator(logout_message_required, name='dispatch')
+class AgreementView(View):
+    def get(self, request, *args, **kwargs):
+        request.session['agreement'] = False
+        return render(request, 'registration/agreement.html')
 
+    def post(self, request, *args, **kwargs):
+        if request.POST.get('agreement1', False) and request.POST.get('agreement2', False):
+            request.session['agreement'] = True
+            return redirect('account:signup')
+        else:
+            messages.info(request, "약관에 모두 동의해주세요.")
+            return render(request, 'registration/agreement.html')
+        
+        
 # 회원가입
 def signup(request):
     if request.method == 'POST':
