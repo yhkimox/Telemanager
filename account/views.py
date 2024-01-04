@@ -44,14 +44,8 @@ def signup(request):
             return redirect(settings.LOGIN_URL)
     else:
         form = SignupForm()
-<<<<<<< HEAD
-
-    return render(request, 'registration/signup.html', {'form': form})
-
-=======
             
     return render(request, 'registration/signup.html',{'form':form})
->>>>>>> 0369360af28d751e9aeb44f8ed914c88633396d4
 
 @login_required
 def profile_update(request):
