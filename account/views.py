@@ -45,8 +45,6 @@ def signup(request):
 
     return render(request, 'registration/signup.html', {'form': form})
 
-
-
 @login_required
 def profile_update(request):
     if request.method == 'POST':
