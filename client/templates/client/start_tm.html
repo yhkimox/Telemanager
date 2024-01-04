@@ -4,7 +4,7 @@
 {% load static %}
 
 {% block static %}
-    <!-- 외부 CSS 파일에 대한 링크 -->
+    <!-- External CSS file link -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
 {% endblock %}
 
@@ -53,18 +53,20 @@
                             <td><input type='checkbox' name='file_ids' value='{{ file.id }}'></td>
                             <td>{{ file.file.name|cut:"_"|slice:"1:" }}</td>
                         </tr>
-                        {% endfor %}
-                    </thead>
-                </table>
-                <button id='goBack' onclick='goBack()'>뒤로가기</button>
-            </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button id='goBack' onclick='goBack()'>뒤로가기</button>
+        </div>
 
         <!-- 채팅 대화창 -->
         <div class='chat-container'>
             <div class='user-info'>
                 <img src='../../../static/images/냥.jpg' alt='User Avatar' width='30' height='30'>
-                <span>User123</span>
+                {% for client in selectedClients %}
+                <span>{{ client.name }}</span>
                 <div class='user-status-indicator'></div>
+                {% endfor %}
             </div>
 
             <div class='chat-messages' id='chat-messages'>
@@ -78,21 +80,22 @@
                 <button class='send-button' onclick='sendMessage()'>Send</button>
             </div>
         </div>
-        {% comment %} <div>
+        {% comment %} 
+        <div>
             <audio controls>녹음된 소리를 재생할 audio 엘리먼트</audio>
-                    <br><br><br><br><br>
-                    <div class="button-container">
-                        <!-- 시작할 때 드러날 버튼들 -->
-                        <button id="recordbutton" onclick="showButton('startrecord');" style="background-image: url('{% static 'loading_recording/icons8-recording-60.png' %}');" class="button-image"></button>
-                        <button id="playbutton" onclick="playAudio(); showButton('playvoice');" style="background-image: url('{% static 'loading_recording/icon8-play-60.png' %}');" class="button-image"></button>
-                        <!-- 시작할 때 숨어있을 이미지, 버튼들 -->
-                        <button id="no_record" style="display: none; background-image: url('{% static 'loading_recording/icons8-no-record-60.gif' %}');" class="button-image"></button>
-                        <button id="stop_record" onclick="showButton('stoprecord');" style="display: none; background-image: url('{% static 'loading_recording/icons8-voice-recognition-60.gif' %}');" class="button-image"></button>
-                        <button id="no_play" style="display: none; background-image: url('{% static 'loading_recording/icons8-hearing-60.png' %}');" class="button-image"></button>
-                        <button id="playing" onclick="showButton('stoprecord');" style="display: none; background-image: url('{% static 'loading_recording/icons8-speech-bubble-60.gif' %}');" class="button-image"></button>
-                    </div>
-                </div>
-        </div> {% endcomment %}
+            <br><br><br><br><br>
+            <div class="button-container">
+                <!-- 시작할 때 드러날 버튼들 -->
+                <button id="recordbutton" onclick="showButton('startrecord');" style="background-image: url('{% static 'loading_recording/icons8-recording-60.png' %}');" class="button-image"></button>
+                <button id="playbutton" onclick="playAudio(); showButton('playvoice');" style="background-image: url('{% static 'loading_recording/icon8-play-60.png' %}');" class="button-image"></button>
+                <!-- 시작할 때 숨어있을 이미지, 버튼들 -->
+                <button id="no_record" style="display: none; background-image: url('{% static 'loading_recording/icons8-no-record-60.gif' %}');" class="button-image"></button>
+                <button id="stop_record" onclick="showButton('stoprecord');" style="display: none; background-image: url('{% static 'loading_recording/icons8-voice-recognition-60.gif' %}');" class="button-image"></button>
+                <button id="no_play" style="display: none; background-image: url('{% static 'loading_recording/icons8-hearing-60.png' %}');" class="button-image"></button>
+                <button id="playing" onclick="showButton('stoprecord');" style="display: none; background-image: url('{% static 'loading_recording/icons8-speech-bubble-60.gif' %}');" class="button-image"></button>
+            </div>
+        </div>
+        {% endcomment %}
     </div>
 </div>
 
@@ -212,122 +215,6 @@
             sendMessage();
         }
     });
-            
-    /*function showButton(val) {
-        var startrecordButton = document.getElementById('recordbutton');
-        var playButton = document.getElementById('playbutton');
-        var cantrecordimg = document.getElementById('no_record');
-        var stoprecordButton = document.getElementById('stop_record');
-        var cantplayimg = document.getElementById('no_play');
-        var playingimg = document.getElementById('playing');
-       
-   
-        if (val === 'startrecord') {
-            startrecordButton.style.display = 'none';
-            playButton.style.display = 'none';
-            cantrecordimg.style.display = 'none';
-            stoprecordButton.style.display = 'block';
-            playingimg.style.display = 'none';
-            cantplayimg.style.display = 'block';
-        } else if (val === 'stoprecord') {
-            startrecordButton.style.display = 'block';
-            playButton.style.display = 'block';
-            cantrecordimg.style.display = 'none';
-            stoprecordButton.style.display = 'none';
-            playingimg.style.display = 'none';
-            cantplayimg.style.display = 'none';
-        } else if (val === 'playvoice') {
-            startrecordButton.style.display = 'none';
-            playButton.style.display = 'none';
-            cantrecordimg.style.display = 'block';
-            stoprecordButton.style.display = 'none';
-            playingimg.style.display = 'block';
-            cantplayimg.style.display = 'none';
-        }
-    }
-
-    // 엘리먼트 취득
-    const $audioEl = document.querySelector("audio");
-    const $startRecordBtn = document.getElementById("recordbutton");
-    const $stopRecordBtn = document.getElementById("stop_record");
-
-    // 녹음중 상태 변수
-    let isRecording = false;
-
-    // MediaRecorder 변수 생성
-    let mediaRecorder = null;
-
-    // 녹음 데이터 저장 배열
-    const audioArray = [];
-
-    // 버튼 기능 설정
-    document.addEventListener("DOMContentLoaded", function () {
-        // 초기에 알파 버튼만 보이게 설정
-        showButton('recordbutton');
-        showButton('playbutton');
-
-        // 시작 버튼에 클릭 이벤트 추가
-        $startRecordBtn.addEventListener('click', function () {
-            if (!isRecording) {
-                // 마이크 mediaStream 생성: Promise를 반환하므로 async/await 사용
-                navigator.mediaDevices.getUserMedia({ audio: true })
-                    .then(async (mediaStream) => {
-                        // MediaRecorder 생성
-                        mediaRecorder = new MediaRecorder(mediaStream);
-
-                        // 이벤트핸들러: 녹음 데이터 취득 처리
-                        mediaRecorder.ondataavailable = (event) => {
-                            console.log('Received audio data:', event.data);
-                            audioArray.push(event.data);
-                        }
-
-                        // 이벤트핸들러: 녹음 종료 처리 & 재생하기
-                        mediaRecorder.onstop = async (event) => {
-                            const blob = new Blob(audioArray, { type: "audio/ogg; codecs=opus" });
-                            audioArray.splice(0);
-                            const formData = new FormData();
-                            formData.append('audio_data', blob);
-                            const response = await fetch('/client/save_audio/', {
-                                method: 'POST',
-                                body: formData,
-                                credentials: 'include',
-                            });
-                            const responseData = await response.json();
-                            console.log(responseData.message);
-
-                            const blobURL = window.URL.createObjectURL(blob);
-                            $audioEl.src = blobURL;
-                            $audioEl.play();
-                            showButton('stoprecord');
-                        };
-
-                        // 녹음 시작
-                        mediaRecorder.start();
-                        isRecording = true;
-                        showButton('startrecord');
-                    })
-                    .catch((error) => {
-                        console.error('Error accessing microphone:', error);
-                    });
-            }
-        });
-
-        // 종료 버튼에 클릭 이벤트 추가
-        $stopRecordBtn.addEventListener('click', function () {
-            if (isRecording) {
-                mediaRecorder.stop();
-                isRecording = false;
-            }
-        });
-    });
-
-
-    // 재생 버튼 클릭 시 오디오 재생
-    function playAudio() {
-        if ($audioEl.src) {
-            $audioEl.play();
-        }
-    }*/
 </script>
 
 {% endblock %}
