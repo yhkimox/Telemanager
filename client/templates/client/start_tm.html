@@ -78,6 +78,7 @@
                 <button class='send-button' onclick='sendMessage()'>Send</button>
             </div>
         </div>
+<<<<<<< HEAD
 
         {% comment %}
         <div>
@@ -96,6 +97,23 @@
             </div>
         </div>
         {% endcomment %}
+=======
+        {% comment %} <div>
+            <audio controls>녹음된 소리를 재생할 audio 엘리먼트</audio>
+                    <br><br><br><br><br>
+                    <div class="button-container">
+                        <!-- 시작할 때 드러날 버튼들 -->
+                        <button id="recordbutton" onclick="showButton('startrecord');" style="background-image: url('{% static 'loading_recording/icons8-recording-60.png' %}');" class="button-image"></button>
+                        <button id="playbutton" onclick="playAudio(); showButton('playvoice');" style="background-image: url('{% static 'loading_recording/icon8-play-60.png' %}');" class="button-image"></button>
+                        <!-- 시작할 때 숨어있을 이미지, 버튼들 -->
+                        <button id="no_record" style="display: none; background-image: url('{% static 'loading_recording/icons8-no-record-60.gif' %}');" class="button-image"></button>
+                        <button id="stop_record" onclick="showButton('stoprecord');" style="display: none; background-image: url('{% static 'loading_recording/icons8-voice-recognition-60.gif' %}');" class="button-image"></button>
+                        <button id="no_play" style="display: none; background-image: url('{% static 'loading_recording/icons8-hearing-60.png' %}');" class="button-image"></button>
+                        <button id="playing" onclick="showButton('stoprecord');" style="display: none; background-image: url('{% static 'loading_recording/icons8-speech-bubble-60.gif' %}');" class="button-image"></button>
+                    </div>
+                </div>
+        </div> {% endcomment %}
+>>>>>>> c353218212724ee94ba2d2e7b7306fb628b6d12e
     </div>
 </div>
 
@@ -152,8 +170,13 @@
             sendMessage();
         }
     });
+<<<<<<< HEAD
     {% comment %}
     function showButton(val) {
+=======
+            
+    /*function showButton(val) {
+>>>>>>> c353218212724ee94ba2d2e7b7306fb628b6d12e
         var startrecordButton = document.getElementById('recordbutton');
         var playButton = document.getElementById('playbutton');
         var cantrecordimg = document.getElementById('no_record');
@@ -267,8 +290,12 @@
         if ($audioEl.src) {
             $audioEl.play();
         }
+<<<<<<< HEAD
     }
     {% endcomment %}
+=======
+    }*/
+>>>>>>> c353218212724ee94ba2d2e7b7306fb628b6d12e
 </script>
 
 {% endblock %}

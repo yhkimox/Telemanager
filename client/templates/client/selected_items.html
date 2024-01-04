@@ -18,6 +18,14 @@
         margin-right: 10px; /* 오른쪽 마진을 추가하여 input 요소 사이에 간격을 조절합니다 */
     }
 
+    #textInput {
+        flex: 1; /* textarea가 남은 공간을 차지하도록 함 */
+        margin-right: 10px; /* 오른쪽 여백 추가 */
+        margin-top: 20px; /* 위쪽 여백 추가 */
+        height: 100px; /* 원하는 높이로 조절하세요 */
+    }
+
+
     #load {
         width: 100%;
         height: 100%;
@@ -37,6 +45,11 @@
         left: 50%;
         z-index: 100;
     }
+
+    .container {
+        padding-bottom: 20px; /* textarea가 확장될 때 페이지 하단과 겹치지 않도록 여백 추가 */
+    }
+    
    
 </style>
  
@@ -49,10 +62,12 @@
         {% csrf_token %}
         <h3 class='centered'>TM Message</h3>
         <br><br>
-        <span>어떤 목적의 마케팅을 보내드릴까요?</span>
-   
         <div class='input-left'>
-            <textarea name="input_data" id="textInput" class="input-left" placeholder="TM 목적 입력" rows="4"></textarea>
+            <a>어떤 목적의 마케팅을 보내드릴까요?</a>
+        </div>
+        
+        <div class='input-left'>
+            <textarea name="input_data" id="textInput" class="input-left" placeholder="TM 목적 입력" rows="4" oninput="autoResize()"></textarea>
             <input type="submit" value="Send">
         </div>
         <br><br><br>
