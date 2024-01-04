@@ -26,13 +26,8 @@ urlpatterns = [
 
 
     path('delete_selected/', views.DeleteSelectedClientsView.as_view(), name='delete_selected'),
-<<<<<<< HEAD
-    path('audio/', audio, name='audio'),
-    #path('save_audio/', views.save_audio, name='save_audio'),
-=======
     # path('audio/', audio, name='audio'),
     # path('save_audio/', views.save_audio, name='save_audio'),
->>>>>>> c353218212724ee94ba2d2e7b7306fb628b6d12e
 ]
 
 

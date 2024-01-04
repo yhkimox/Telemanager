@@ -29,11 +29,10 @@
         {% else %}
         <span class="header-text">
             {{user}}님,
-            <span class ="logout-form" method="post" action="{% url 'account:logout' %}">
-                {% csrf_token %}
-                <a type="submit">Logout</a>
+            <span class="logout-form" onclick="logoutUser()">
+                <a href="/">Logout</a>
             </span>
-            </span>
+        </span>
         {% endif %}
 
         <a href="#menu">메뉴</a>
@@ -93,6 +92,13 @@
             var mainSection = document.getElementById('main');
             mainSection.scrollIntoView({ behavior: 'smooth' });
         });
+        function logoutUser() {
+            // 로그아웃 폼을 서브밋
+            document.getElementById('function logoutUser() {
+                // 로그아웃 폼을 서브밋
+                document.getElementById('logoutForm').submit();
+            }').submit();
+        }
     </script>
     {% endif %}
     <script src="{% static 'js/jquery.min.js' %}"></script>
