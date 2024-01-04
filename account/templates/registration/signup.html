@@ -8,32 +8,52 @@
 {% endblock %}
 
 {% block content %}
-<!--main-->
-<div id="main" class="container">
-    <hr>
-    <br><br>
+    <!--main-->
+    <div id="main" class="container">
+        <hr>
+        <br><br>
 
-    <!-- Form -->
-    <div class="col align-center">
-        <h3>회원가입</h3>
-        <br>
-        <div class="inner">
-            <form method="post" action="#">
-                <div class="row uniform">
-                    {% csrf_token %}
-                    <table>
-                        {{ form.as_table }}
-                    </table>
-                </div>
-                <br>
-                <!-- login -->
-                <div class="12u$">
-                    <ul class="actions">
-                        <li><input type="submit" value="Submit"></li>
-                    </ul>
-                </div>
-            </form>
+        <!-- Form -->
+        <div class="col align-center">
+            <h3>회원가입</h3>
+            <br>
+            <div class="inner">
+                <form method="post" action="#">
+                    <div class="row uniform">
+                        {% csrf_token %}
+                        <table>
+                            {{ form.as_table }}
+                        </table>
+                        <div id="password-error" style="color: red;"></div>
+                    </div>
+                    <br>
+                    <!-- login -->
+                    <div class="12u$">
+                        <ul class="actions">
+                            <li><input type="submit" value="Submit" id="submit-btn"></li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Submit 버튼 클릭 시 비밀번호 일치 여부 검사
+            document.getElementById("submit-btn").addEventListener("click", function (event) {
+                var password1 = document.getElementById("id_password1").value;
+                var password2 = document.getElementById("id_password2").value;
+                var errorDiv = document.getElementById("password-error");
+
+                if (password1 !== password2) {
+                    errorDiv.innerText = "비밀번호가 일치하지 않습니다.";
+                    event.preventDefault();  // 폼 제출 방지
+                } else {
+                    errorDiv.innerText = "";  // 오류 메시지 초기화
+                }
+            });
+        });
+    </script>
 {% endblock %}
+

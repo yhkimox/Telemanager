@@ -21,7 +21,6 @@ from account.forms import PasswordChangeForm
 from django.urls import reverse_lazy
 import csv
 from django.contrib.auth.decorators import login_required
-
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login, logout
 from client.models import Client
