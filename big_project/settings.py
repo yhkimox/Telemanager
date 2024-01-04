@@ -162,3 +162,16 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
+
+ALLOW_URL_LIST = [
+    '3.36.69.216',
+    '127.0.0.1',
+]
+
+FILE_COUNT_LIMIT = 1         # 업로드 하는 파일에 대한 개수 제한
+
+FILE_SIZE_LIMIT_CLIENT = 10485760    # 업로드 하는 파일의 최대 사이즈 제한 10 * 1024 * 1024 (10MB)
+WHITE_LIST_CLIENT = ['xlsx', 'xls']  # 허용하는 확장자 제한
+
+FILE_SIZE_LIMIT_COMPANY = 31457280   # 업로드 하는 파일의 최대 사이즈 제한 30 * 1024 * 1024 (30MB)
+WHITE_LIST_COMPANY = ['csv']         # 허용하는 확장자 제한

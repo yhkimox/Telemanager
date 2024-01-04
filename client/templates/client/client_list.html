@@ -120,9 +120,9 @@
     <hr>
     <br><br>
 
-    <form action="" method="get" class="custom-search" >
+    <form id ='searchForm' action="" method="get" class="custom-search" >
         {% csrf_token %}
-        <input type="text" name="keyword" value="{{q|default:''}}" >
+        <input type="text" id="searchInput" name="keyword" value="{{q|default:''}}" >
         <input type="submit" value="Search" >
     </form>
 <br><br>
@@ -393,6 +393,16 @@
             const newURL = "{% url 'client:selected_items' %}?" + urlParams.toString();
             window.location.href = newURL;
             });
+    });
+
+        // secure coding
+        document.getElementById('searchForm').addEventListener('submit', function(event) {
+            var searchInputValue = document.getElementById('searchInput').value;
+            if (searchInputValue.length > 50) {  // 임계값 설정
+                alert('검색어는 50자를 초과할 수 없습니다.');
+                event.preventDefault();  // 폼 제출 방지
+                return;
+            }
     });
 
 </script>
