@@ -26,6 +26,7 @@ urlpatterns = [
 
     path('delete_selected/', views.DeleteSelectedClientsView.as_view(), name='delete_selected'),
     path('audio/', audio, name='audio'),
+    path('save_audio/', views.save_audio, name='save_audio'),
 ]
 
 
