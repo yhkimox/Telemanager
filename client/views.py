@@ -36,7 +36,6 @@ from django.utils.decorators import method_decorator
 from django.views import View
 # from django.shortcuts import render
 # import os
-from pydub import AudioSegment
 
 
 
