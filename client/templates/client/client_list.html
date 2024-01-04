@@ -146,6 +146,7 @@
                     <th>TM 목적</th>
                     <th>감성</th>
                     <th>고객관리</th>
+                    <th>고객정보</th>
                 </tr>
             </thead>
             <tbody>
@@ -170,6 +171,7 @@
                         <td>
                             <a href="{% url 'client:edit_client' client.id %}">수정</a> 
                         </td>
+                        <td>{{ client.info }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
