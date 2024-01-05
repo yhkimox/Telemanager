@@ -44,7 +44,7 @@
             {% endfor %}
             <div id="clientInfo">
                 {% for client in selectedClients %}
-                    <span onclick="showClientName('{{ client.name }}')">{{ client.name }}</span>
+                    <span onclick="showClientName('{{ client.name }}', '{{ client.chatbot_id }}')">{{ client.name }}</span>
                 {% endfor %}
             </div>
         </div>
@@ -52,7 +52,7 @@
         <!-- 채팅 대화창 -->
         <div class='chat-container'>
             <div class='user-info'>
-                <img src='../../../static/images/user.jpg' alt='User Avatar' width='30' height='30'>
+                <img src='../../../static/images/user.png' alt='User Avatar' width='30' height='30'>
                 <span id="clickedClientName"></span>
                 <div class='user-status-indicator'></div>
             </div>
@@ -105,14 +105,33 @@
     let currentQuestionIndex = 1;  // 0번째 질문은 이미 보여주었으므로 1부터 시작
     let exitConversation = false; // 대화 중단 원할시 True, 대화 계속 하길 원할시 False
     let finalConversation = false; // 대화가 종료 되었을 경우 True, 대화가 끝나지 않을 경우 false
+    let currentChatbotId = null;
 
-    function showClientName(clientName) {
+    function showClientName(clientName, chatbotId) {
         // 클릭한 클라이언트의 이름을 표시하는 부분을 업데이트
         const clickedClientNameElement = document.getElementById('clickedClientName');
         clickedClientNameElement.textContent = clientName;
+        currentChatbotId = chatbotId;
         // 해당 클라이언트에 맞는 질문을 가져와서 표시
-        const clientQuestions = getClientQuestions(clientName);
+        const clientQuestions = getClientQuestions(chatbotId);
         updateChatMessages(clientQuestions);
+    }
+
+    async function getClientQuestions(chatbotId) {
+        try {
+            const response = await fetch(`/client/start_tm/get_client_questions/${chatbotId}/`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            const data = await response.json();
+            return data.questions;  // 서버에서 가져온 질문 배열 반환
+        } catch (error) {
+            console.error("에러 발생:", error);
+            throw error;
+        }
     }
 
     async function sendMessage() {
