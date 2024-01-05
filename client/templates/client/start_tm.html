@@ -148,7 +148,8 @@
     const chatMessages = document.getElementById('chat-messages');
     const initialMessage = document.getElementById('initialMessage');
     const questions = [{% for q in question %}'{{ q }}', {% endfor %}];
-    let current_client = 65;
+    const chatbots_ids = [{% for q in chatbots_ids %}'{{ q }}', {% endfor %}];
+
 
     let currentQuestionIndex = 1;  // 0번째 질문은 이미 보여주었으므로 1부터 시작
     let exitConversation = false; // 대화 중단 원할시 True, 대화 계속 하길 원할시 False
@@ -291,29 +292,38 @@
 
             // 결과 확인
             console.log(all_messages);
-
+            console.log()
             // 데이터 백앤드로 전송하기
-            fetch('/client/start_tm/message_results/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrf_token,  // Django에서 사용하는 CSRF 토큰을 포함시켜야 함
-                },
-                body: JSON.stringify({
-                    'all_messages': all_messages,
-                    'current_client': current_client,
-                }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
+            let send_message_results = await save_all_messages(all_messages);
+            console.log(send_message_results);
+            
         }
         
     }
+
+    // 모든 채팅 데이터 백앤드로 전달하기
+    async function save_all_messages(AllMessages) {
+        try {
+            const response = await fetch('/client/start_tm/message_results/', {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    //'X-CSRFToken': csrf_token,  // Django에서 사용하는 CSRF 토큰을 포함시켜야 함
+                },
+                body: JSON.stringify({
+                    'all_messages': all_messages,
+                    'chatbots_ids': chatbots_ids,
+                }),
+            });
+            const data = await response.json();
+    
+            return data.result;  // 예시로 결과 값 반환
+        } catch (error) {
+            console.error("채팅 저장하는 부분(save_all_messages) 에러 발생:", error);
+            throw error;  // 에러를 다시 던지면 이후에도 에러 처리 가능
+        }
+    }
+
 
     // 텍스트 백앤드 전달하여 감정 분류 및 결과 값 받기
     async function executeBackendTextProcessing(userMessage) {
