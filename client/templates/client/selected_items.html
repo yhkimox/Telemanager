@@ -10,7 +10,6 @@
 {% block content %}
  
 <style>
-   
     .input-left {
         display: flex;
         height: 50px;
@@ -68,7 +67,7 @@
         </div>
         
         <div class='input-left'>
-            <textarea name="input_data" id="textInput" class="input-left" placeholder="TM 목적 입력" rows="4" oninput="autoResize()"></textarea>
+            <textarea name="input_data" id="textInput" class="input-left" placeholder="TM 목적 입력" rows="4"></textarea>
             <input type="submit" value="Send">
         </div>
         <br><br><br>
@@ -242,6 +241,19 @@
             this.value += '\n'; // 줄바꿈 추가
         }
     });
+
+    // textarea의 높이를 동적으로 조절하는 함수
+    function adjustTextareaHeight() {
+        const textarea = document.getElementById('textInput');
+        textarea.style.height = 'auto'; // 높이를 초기화
+        textarea.style.height = textarea.scrollHeight + 'px'; // 현재 스크롤 높이로 설정
+    }
+
+    // textarea의 내용이 변경될 때마다 높이 조절 함수 호출
+    document.getElementById('textInput').addEventListener('input', adjustTextareaHeight);
+
+    // 초기 로딩 시 한 번 높이 조절
+    window.addEventListener('load', adjustTextareaHeight);
 
 </script>
 

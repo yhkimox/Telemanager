@@ -36,11 +36,32 @@ from django.views import View
 import json
 # from django.shortcuts import render
 # import os
-from pydub import AudioSegment
+# from pydub import AudioSegment
+## For URL Checking
+from django.conf import settings
+from django.http import HttpResponseForbidden
+# from pydub import AudioSegment
+
+from transformers import BertForSequenceClassification
+import torch
+from transformers import pipeline
+from transformers import BertTokenizer
 
 open_api_key = os.environ.get('OPENAI_API_KEY')
 
-class ClientListView(LoginRequiredMixin, ListView):
+ALLOW_URL_LIST = settings.ALLOW_URL_LIST
+FILE_COUNT_LIMIT = settings.FILE_COUNT_LIMIT         
+FILE_SIZE_LIMIT_CLIENT = settings.FILE_SIZE_LIMIT_CLIENT 
+WHITE_LIST_CLIENT = settings.WHITE_LIST_CLIENT
+
+class IPRequiredMixin:
+    def dispatch(self, request, *args, **kwargs):
+        client_ip = request.META.get('REMOTE_ADDR')
+        if client_ip not in settings.ALLOW_URL_LIST:
+            return HttpResponseForbidden(render(request, 'index.html'))
+        return super().dispatch(request, *args, **kwargs)
+    
+class ClientListView(IPRequiredMixin, LoginRequiredMixin, ListView):
     model = Client
     template_name = 'client/client_list.html'  
     
@@ -51,9 +72,7 @@ class ClientListView(LoginRequiredMixin, ListView):
         file_list = CompanyFile.objects.filter(user = self.request.user)
         
         search_key = self.request.GET.get("keyword", "")
-        print(search_key)
         if search_key:
-            print(search_key)
             client_list = Client.objects.filter(user = self.request.user, name__icontains=search_key)
 
         client_paginator = Paginator(client_list, 5)
@@ -89,7 +108,8 @@ class ClientListView(LoginRequiredMixin, ListView):
 
 
 
-class DeleteSelectedClientsView(View):
+class DeleteSelectedClientsView(IPRequiredMixin, View):
+    
     def post(self, request):
         selected_ids = request.POST.getlist('client_ids')  
         Client.objects.filter(id__in=selected_ids).delete()  
@@ -106,15 +126,21 @@ def normalize_gender(gender_str):
     else:
         return None  
 
-def error_page(request):
-    return render(request, 'client/error.html', {'error_message': '잘못된 요청입니다.'})
-      
 
-FILE_COUNT_LIMIT = 1         # 업로드 하는 파일에 대한 개수 제한
-FILE_SIZE_LIMIT = 10485760   # 업로드 하는 파일의 최대 사이즈 제한 10 * 1024 * 1024 (10MB)
-WHITE_LIST = ['xlsx', 'xls'] # 허용하는 확장자 제한
-    
+def error_page(request):  
+    return render(request, 'client/error.html', {'error_message': '잘못된 요청입니다.'})
+
+
 def upload_excel(request): 
+
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+
+    
+    
     if request.method == 'POST' and request.FILES['excel_file']:
         check_file = request.FILES['excel_file']
         
@@ -127,12 +153,12 @@ def upload_excel(request):
         file_extension = check_file.name.split('.')[-1].lower()
 
         # 파일 형식 체크
-        if file_extension not in WHITE_LIST:
+        if file_extension not in WHITE_LIST_CLIENT:
             return render(request, 'client/error.html', {'error_message': '잘못된 파일 형식입니다. xlsx, xls 형식의 파일을 제출해주십시오.'})
 
         # 파일 크기 체크
-        if check_file.size > FILE_SIZE_LIMIT:
-            return render(request, 'client/error.html', {'error_message': f'파일 크기는 최대 {FILE_SIZE_LIMIT / (1024 * 1024)} MB까지만 허용됩니다.'})
+        if check_file.size > FILE_SIZE_LIMIT_CLIENT:
+            return render(request, 'client/error.html', {'error_message': f'파일 크기는 최대 {FILE_SIZE_LIMIT_CLIENT / (1024 * 1024)} MB까지만 허용됩니다.'})
         
         
         tmgoal = request.POST.get('tmgoal')
@@ -140,12 +166,13 @@ def upload_excel(request):
         df = pd.read_excel(check_file)
         
         print(df.columns)
-
+        
         for index, row in df.iterrows():
             user = request.user
             name = str(row['name'])
             number = row['number']
             email = row['email']
+            
             print(name, number, email)
             # 기존에 손님 데이터와 중복되는 데이터인지 확인
             existing_client = Client.objects.filter(name=name, number=number, email=email, user= user).first()
@@ -183,6 +210,15 @@ def upload_excel(request):
             #else:
             #    print("User is not authenticated.")
             
+            # info 필드에 추가 정보 저장
+            info = ""
+
+            # 제외된 키를 제외한 모든 키와 값을 추가
+            for key, value in row.items():
+                if key not in ['name', 'number','gender', 'email', 'birth_date','location']:  # 원하는 키를 제외한 리스트
+                    info += f"{key}: {value}, "
+            
+        
             Client.objects.create(
                 user=user,
                 name=name,
@@ -193,6 +229,7 @@ def upload_excel(request):
                 tm_date=temp_date,
                 gender=normalized_gender,
                 email=email,
+                info = info.strip()
             )
         print(f"Client {Client.id} created successfully.")  # 디버깅 메시지 잘뜬다.
         print(tmgoal)
@@ -202,8 +239,15 @@ def upload_excel(request):
     
     return render(request, 'client/upload.html')
 
-
 def edit_client(request, client_id):
+    
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+
+    
     client = get_object_or_404(Client, id=client_id, user=request.user)
     
     if request.method == 'POST':
@@ -218,6 +262,14 @@ def edit_client(request, client_id):
 
 @login_required
 def delete_client(request, client_id):
+    
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+
+    
     client = get_object_or_404(Client, id=client_id, user=request.user)
     
     if request.method == 'POST':
@@ -228,6 +280,14 @@ def delete_client(request, client_id):
 
 
 def selected_items(request):
+
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+
+    
     selected_clients = request.GET.get('selected_clients', '').split(',')
     selected_files = request.GET.get('selected_files', '').split(',')
 
@@ -253,8 +313,18 @@ def selected_items(request):
 
     return render(request, 'client/selected_items.html', context)
 
-# start_tm 페이지 렌더링 부분(아웃바운드 목적 적고 send 누를 때 실행)
+
+
 def start_tm(request):
+    
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+
+
+    # global start_tm_hf
     whisper = OpenAI()
     input_data = ''
     selected_clients = []
@@ -289,18 +359,19 @@ def start_tm(request):
         # 질문지 생성해주는 hugginface 모델 불러오기
         llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0, openai_api_key=open_api_key)
        
-        model_name = "jhgan/ko-sroberta-multitask"
-        model_kwargs = {'device': 'cpu'}
-        encode_kwargs = {'normalize_embeddings': False}
-        hf = HuggingFaceEmbeddings(
-            model_name=model_name,
-            model_kwargs=model_kwargs,
-            encode_kwargs=encode_kwargs,
+        # start_tm 페이지 렌더링 부분(아웃바운드 목적 적고 send 누를 때 실행)
+        start_tm_model_name = "jhgan/ko-sroberta-multitask"
+        start_tm_model_kwargs = {'device': 'cpu'}
+        start_tm_encode_kwargs = {'normalize_embeddings': False}
+        start_tm_hf = HuggingFaceEmbeddings(
+            model_name=start_tm_model_name,
+            model_kwargs=start_tm_model_kwargs,
+            encode_kwargs=start_tm_encode_kwargs,
             # cache_dir=True
             )
        
         chatbots = [] # 챗봇 리스트 생성
-        
+        chatbot_ids = [] # 챗봇 고유 아이디 번호
         
         # audio 폴더 생성하기(계정 폴더)
         # 폴더가 존재하지 않으면 폴더를 생성
@@ -314,7 +385,7 @@ def start_tm(request):
         
         for c in clients:
             clients_info = [] # 고객 정보가 들어간 리스트
-
+            
             # 열 정보만 가져오기
             excluded_fields = ['user', 'tm_date']
             user_defined_fields = [field.name for field in Client._meta.get_fields() if not field.auto_created]
@@ -330,7 +401,7 @@ def start_tm(request):
                 pass
             
             # 질문지 생성부분
-            ments = make_phrases(client_values, input_data, embeding_file_url, hf, llm)
+            ments = make_phrases(client_values, input_data, embeding_file_url, start_tm_hf, llm)
             print(ments)
             print(f"{c}의 문구 생성 완료")
            
@@ -338,17 +409,21 @@ def start_tm(request):
             chatbot = ChatBot(
                 owner = request.user,
                 client = c,
-                outbound_message=ments,
+                outbound_message=ments['answer'],
                 messages=[],
+                outbound_purpose=ments['question'],
             )
             chatbot.save()
             chatbots.append(chatbot)
+            chatbot_ids.append(chatbot.id)
            
             questions = ments['answer'].split("\n")
             
             # # 생성된 문구별 각각 음성 파일로 저장하는 부분
             for i, q in enumerate(questions):
-                print(q)
+                if len(q)<1:
+                    continue
+                print(q, len(q))
                 question_tm.append(q) # hj
             #     try:
             #         q = q[q.index('"'):]
@@ -370,6 +445,7 @@ def start_tm(request):
         'selectedFiles': files,
         'input_data': input_data,  # 추가
         'chatbots': chatbots,
+        'chatbots_ids':chatbot_ids,
         'mentsanswer' : ments['answer'], # 20240102 yh 대답 부분이 필요해서 추가함.
         'question' : question_tm # hj
     }
@@ -392,14 +468,14 @@ def start_tm(request):
         
 # 문구 생성 부분
 def make_phrases(user_info, purpose, embeding_url, hf, llm):
-    
+
     system_template = f"""당신은 최고의 아웃바운드 상담사입니다.
     다음과 같은 맥락을 사용하여 마지막 질문에 대답하십시오.
     만약 답을 모르면 모른다고만 말하고 답을 지어내려고 하지 마십시오.
     답변은 최대 세 문장으로 하고 가능한 한 간결하게 유지하십시오.
     답변을 할 때, 고객에 대한 정보는 이와 같습니다.
-    {user_info}. 형식은 [(키, 값),(키, 값),(키, 값),...]형태로 이루어져 있습니다.
-    고객의 정보를 활용하여 맞춤형으로 작성해 주십시오.
+    고객에 대한 정보 : {user_info}.
+    고객의 정보를 활용하여 맞춤형으로 문구를 작성해 주십시오.(친근하게 이름을 부르며)
     {{summaries}}
     질문: {{question}}
     도움이 되는 답변:"""
@@ -409,14 +485,15 @@ def make_phrases(user_info, purpose, embeding_url, hf, llm):
         SystemMessagePromptTemplate.from_template(system_template),
         HumanMessagePromptTemplate.from_template("{question}")
     ]
-    
+
     # prompt 내에 변수처럼 쓸 수 있게끔 해두는 장치
     prompt = ChatPromptTemplate.from_messages(messages)
     
     chain_type_kwargs = {"prompt": prompt}
 
     vectordb_hf = Chroma(persist_directory=embeding_url, embedding_function=hf)
-    retriever_hf = vectordb_hf.as_retriever(search_type='mmr')
+    # retriever_hf = vectordb_hf.as_retriever(search_type='mmr')
+    retriever_hf = vectordb_hf.as_retriever()
     
     chain = RetrievalQAWithSourcesChain.from_chain_type(
         llm=llm,
@@ -426,34 +503,87 @@ def make_phrases(user_info, purpose, embeding_url, hf, llm):
         chain_type_kwargs=chain_type_kwargs # langchain type argument에다가 지정한 prompt를 넣어줌, 별도의 prompt를 넣음
     )
     
-    query = purpose  # Provide the input as a dictionary
+    query = f'''{[user_info[0], user_info[-1]]}고객의 특징을 바탕으로 맞춤형으로 목적에 맞게 답해줘. 카드 이름도 같이 명시해줘
+    목적 : {purpose}'''  # Provide the input as a dictionary
     result = chain(query)
     # print(result['answer'])
     
     return result
 
 # 문구 감정 분류 및 결과 내보내는 함수
+sentence_model = BertForSequenceClassification.from_pretrained("klue/bert-base", num_labels=3)
+# Load model weights with map_location to 'cpu'
+sentence_model.load_state_dict(torch.load("./models/BERT_sentiment_analysis_model.pt", map_location='cpu'))
+# Move the model to the specified device (either 'cpu' or 'cuda')
+sentence_model = sentence_model.to('cpu')
+sentence_tokenizer = BertTokenizer.from_pretrained('klue/bert-base')  # tokenizer 이름은 위에서 받은 사전학습된 모델의 이름이랑 항상 같아야 함
+# 여기에서 user_message를 사용하여 필요한 작업 수행
+pipe = pipeline("text-classification", model=sentence_model, tokenizer=sentence_tokenizer, function_to_apply='softmax', top_k=1)
+
 @csrf_exempt
 def text_processing(request):
+
+    
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+
+
+    global pipe
+    
     if request.method == "POST":
-        try:
-            # POST 요청으로 받은 데이터
-            data = json.loads(request.body)
-            user_message = data.get("userMessage", "")
+        # try:
+        # POST 요청으로 받은 데이터
+        data = json.loads(request.body)
+        user_message = data.get("userMessage", "")
 
-            # 여기에서 user_message를 사용하여 필요한 작업 수행
-            # 작업 결과를 result에 할당 (예: True 또는 False)
-
-            result = "임시 테스트 입니다."  # 예시로 True 값을 할당
-            print(user_message)
-            print(result)
-
-            # 결과를 JSON 형식으로 응답
-            return JsonResponse({"result": result})
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
+        # 여기에서 user_message를 사용하여 필요한 작업 수행    
+        # 0중립, 1긍정, 2부정  
+        label_dict = {'LABEL_0' : '중립', 'LABEL_1' : '긍정', 'LABEL_2' : '부정'}
+        values = pipe(user_message)
+        result = label_dict[values[0][0]['label']] # [긍정, 중립, 부정] 이 셋중 하나 값 가짐
+        
+        # 결과를 JSON 형식으로 응답
+        return JsonResponse({"result": result})
+        # except Exception as e:
+        #     return JsonResponse({"error": str(e)}, status=500)
     else:
         return JsonResponse({"error": "POST 요청만 지원합니다."}, status=400)
+
+
+@csrf_exempt
+def message_results(request): # 프론트앤드에서 채팅 내용 모두 저장하기
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        all_messages = data.get('all_messages')
+        chatbots_id = data.get('chatbots_id')
+        print(f"파이썬에서 받은 데이터")
+        print(all_messages)
+        print(chatbots_id)
+        print("파이썬 끝")
+        # 모델에 저장
+        # chatbot = ChatBot.objects.get(id=chatbots_id)
+        # chatbot.messages = all_messages
+        # chatbot.save()
+
+        # return JsonResponse({"result": "All Message Save Success."})
+        if chatbots_id is not None:
+            try:
+                # 모델에 저장
+                chatbot = ChatBot.objects.get(id=chatbots_id)
+                for i in range(0, len(all_messages), 2):
+                    role = all_messages[i] if i < len(all_messages) else None
+                    content = all_messages[i + 1] if i + 1 < len(all_messages) else None
+                    chatbot.add_message(role, content)
+                return JsonResponse({"result": "All Message Save Success."})
+            except ChatBot.DoesNotExist:
+                return JsonResponse({"error": f"ChatBot with id {chatbots_id} does not exist."}, status=404)
+        else:
+            return JsonResponse({"error": "chatbots_id is required in the request."}, status=400)
+
+    return JsonResponse({'status': 'error'})
 
 # # 녹음한 파일을 저장하는 function
 # @csrf_exempt

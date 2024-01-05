@@ -120,9 +120,9 @@
     <hr>
     <br><br>
 
-    <form action="" method="get" class="custom-search" >
+    <form id ='searchForm' action="" method="get" class="custom-search" >
         {% csrf_token %}
-        <input type="text" name="keyword" value="{{q|default:''}}" >
+        <input type="text" id="searchInput" name="keyword" value="{{q|default:''}}" >
         <input type="submit" value="Search" >
     </form>
 <br><br>
@@ -136,15 +136,14 @@
                 <tr>
                     <th><div><input type="checkbox" id="select-all"><label for="select-all"></label></div></th>
                     <th>이름</th>
-                    <th>주소</th>
+                    <!--<th>주소</th>-->
                     <th>전화번호</th>
-                    <th>생년월일</th>
                     <th>나이</th>
                     <th>성별</th>
-                    <th>이메일</th>
                     <th>상담날짜</th>
                     <th>TM 목적</th>
                     <th>감성</th>
+                    <th>고객정보</th>
                     <th>고객관리</th>
                 </tr>
             </thead>
@@ -157,16 +156,31 @@
                                 <label for="copy_{{ client.id }}"></label>
                             </div>
                         </td>
-                        <td>{{ client.name }}</td>
-                        <td>{{ client.location }}</td>
-                        <td>{{ client.number }}</td>
-                        <td>{{ client.birth_date }}</td>
-                        <td>{{ client.age }}</td>
+                        <td>{{ client.name|slice:"0:1" }}{% for i in client.name|slice:"1:" %}*{% endfor %}</td>
+                    <!--   <td>{{ client.location }}</td> --> 
+                        <td>{{ client.number|slice:"0:4" }}****-****</td>
+                        <td>
+                            {% if client.age < 10 %}
+                                유아
+                            {% elif client.age < 20 %}
+                                10대
+                            {% elif client.age < 30 %}
+                                20대
+                            {% elif client.age < 40 %}
+                                30대
+                            {% elif client.age < 50 %}
+                                40대
+                            {% elif client.age < 60 %}
+                                50대
+                            {% else %}
+                                60대 이상
+                            {% endif %}
+                        </td>
                         <td>{{ client.gender }}</td>
-                        <td>{{ client.email }}</td>
                         <td>{{ client.tm_date|date:"Y. m. d P" }}</td>
                         <td>추가해야함</td>
                         <td>O/X</td>
+                        <td>{{ client.info }}</td>
                         <td>
                             <a href="{% url 'client:edit_client' client.id %}">수정</a> 
                         </td>
@@ -391,6 +405,16 @@
             const newURL = "{% url 'client:selected_items' %}?" + urlParams.toString();
             window.location.href = newURL;
             });
+    });
+
+        // secure coding
+        document.getElementById('searchForm').addEventListener('submit', function(event) {
+            var searchInputValue = document.getElementById('searchInput').value;
+            if (searchInputValue.length > 50) {  // 임계값 설정
+                alert('검색어는 50자를 초과할 수 없습니다.');
+                event.preventDefault();  // 폼 제출 방지
+                return;
+            }
     });
 
 </script>

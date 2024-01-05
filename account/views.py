@@ -7,7 +7,7 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from .models import CompanyFile
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import View
+from django.views.generic import View, FormView
 from django.urls import reverse_lazy, reverse
 import os
 from django.contrib.auth.models import User
@@ -21,19 +21,49 @@ from account.forms import PasswordChangeForm
 from django.urls import reverse_lazy
 import csv
 from django.contrib.auth.decorators import login_required
-
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login, logout
 from client.models import Client
 from django.contrib.auth.views import LoginView
 from .models import Profile
+import shutil
+from django.conf import settings
+from django.http import HttpResponseForbidden
+from django.views.generic import TemplateView
+from django.contrib.auth.forms import AuthenticationForm
 
+ALLOW_URL_LIST = settings.ALLOW_URL_LIST
+FILE_COUNT_LIMIT = settings.FILE_COUNT_LIMIT         
+FILE_SIZE_LIMIT_CLIENT = settings.FILE_SIZE_LIMIT_CLIENT 
+WHITE_LIST_CLIENT = settings.WHITE_LIST_CLIENT
+FILE_SIZE_LIMIT_COMPANY = settings.FILE_SIZE_LIMIT_COMPANY 
+WHITE_LIST_COMPANY = settings.WHITE_LIST_COMPANY
+
+
+
+class IPRequiredMixin:
+    def dispatch(self, request, *args, **kwargs):
+        client_ip = request.META.get('REMOTE_ADDR')
+        if client_ip not in ALLOW_URL_LIST:
+            return redirect('account:urlerror')
+        return super().dispatch(request, *args, **kwargs)
+
+class ProfileView(IPRequiredMixin, TemplateView):
+    template_name = 'registration/profile.html'
+    
 def index(request):
+    
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+    
     return render(request, 'registration/login.html')
 
 # 개인정보 동의
 # @method_decorator(logout_message_required, name='dispatch')
-class AgreementView(View):
+class AgreementView(IPRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         request.session['agreement'] = False
         return render(request, 'registration/agreement.html')
@@ -49,6 +79,13 @@ class AgreementView(View):
         
 # 회원가입
 def signup(request):
+
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+    
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
@@ -65,6 +102,13 @@ def signup(request):
 
 @login_required
 def profile_update(request):
+
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+    
     if request.method == 'POST':
         form = ProfileUpdateForm(request.POST, instance=request.user)
         if form.is_valid():
@@ -76,10 +120,11 @@ def profile_update(request):
     return render(request, 'registration/profile_update.html', {'form': form})
 
 # 비밀번호 변경
-class PasswordChangeView(PasswordChangeView):
+class PasswordChangeView(IPRequiredMixin, PasswordChangeView):
     success_url = reverse_lazy('account:login')
     template_name = 'account/password_change_form.html'
     form_class = PasswordChangeForm
+    
 
     def form_valid(self, form):
         form.save()
@@ -88,7 +133,7 @@ class PasswordChangeView(PasswordChangeView):
 
 
 # 비밀번호 찾기
-class UserPasswordResetView(PasswordResetView):
+class UserPasswordResetView(IPRequiredMixin, PasswordResetView):
     template_name = 'registration/password_reset.html'  # 템플릿을 변경하려면 이와 같은 형식으로 입력
     success_url = reverse_lazy('account:password_reset_done')
     form_class = PasswordResetForm
@@ -105,14 +150,28 @@ class UserPasswordResetView(PasswordResetView):
         # 존재하지 않는 이메일인 경우에 대한 처리
         return JsonResponse({'email_not_exists': True})
 
-
 def error_page(request):
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+    
     return render(request, 'upload/error.html', {'error_message': '잘못된 요청입니다.'})
 
-WHITE_LIST = ['csv'] # 허용하는 확장자 제한
+def urlerror_page(request):
+   
+    return render(request, 'urlcheck/error2.html', {'error_message': '유효하지 않은 URL 입니다.'})
+
 
 @login_required
 def file_upload(request):
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+    
     if request.method == 'POST':
         form = CompanyFileForm(request.POST, request.FILES)
         if form.is_valid():
@@ -123,8 +182,12 @@ def file_upload(request):
             # 파일 확장자 검사
             file_extension = uploaded_file.name.split('.')[-1].lower()
             print(file_extension)
-            if file_extension not in WHITE_LIST:
+            if file_extension not in WHITE_LIST_COMPANY:
                 return render(request, 'upload/error.html', {'error_message': '잘못된 파일 형식입니다. csv 형식의 파일을 제출해주십시오.'})
+            
+            # 파일 크기 체크
+            if uploaded_file.size > FILE_SIZE_LIMIT_COMPANY:
+                return render(request, 'upload/error.html', {'error_message': f'파일 크기는 최대 {FILE_SIZE_LIMIT_COMPANY / (1024 * 1024)} MB까지만 허용됩니다.'})
             
 
             fs = FileSystemStorage(location='media/company_data_files/')
@@ -185,12 +248,26 @@ def file_upload(request):
 # 파일 목록을 출력하는 view입니다.
 @login_required
 def file_list(request):
+    
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+    
     files = CompanyFile.objects.filter(user=request.user)
     return render(request, 'upload/list.html', {'files': files})
 
 
 @login_required
 def edit_file(request, file_id):
+    
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+    
     file = get_object_or_404(CompanyFile, id=file_id, user=request.user)
 
     if request.method == 'POST':
@@ -206,6 +283,13 @@ def edit_file(request, file_id):
 
 @login_required
 def delete_file(request, file_id):
+
+    client_ip = request.META.get('REMOTE_ADDR')
+
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+    
     file = get_object_or_404(CompanyFile, id=file_id, user=request.user)
 
     if request.method == 'POST':
@@ -217,6 +301,7 @@ def delete_file(request, file_id):
 
 
 class DeleteSelectedFilesView(LoginRequiredMixin, View):
+    
     def post(self, request):
         selected_ids = request.POST.getlist('file_ids')  
         #CompanyFile.objects.filter(id__in=selected_ids).delete()  
@@ -250,11 +335,48 @@ class DeleteSelectedFilesView(LoginRequiredMixin, View):
                 
                 
         return redirect(reverse('client:list'))  
+    
 
-def before(request):
-    return render(request, 'registration/before.html')
+def before(request, message=None):
+    
+    client_ip = request.META.get('REMOTE_ADDR')
 
-class CustomLoginView(LoginView):
+    # 허용 목록에 IP 주소가 있는지 확인
+    if client_ip not in ALLOW_URL_LIST:
+        return redirect('account:urlerror')
+    
+    message = request.GET.get('message')
+    
+    context = {'message': message}
+    return render(request, 'registration/before.html', context)
+
+# class CustomLoginView(IPRequiredMixin, LoginView):
+    
+#     def form_valid(self, form):
+#         # 로그인 시도 횟수를 증가시킵니다.
+#         user = form.get_user()
+#         print(user)
+#         profile = Profile.objects.get(user=user)
+#         if profile:
+#             profile.increase_login_attempts()
+        
+#         # 기존 로그인 로직을 수행합니다.
+#         super().form_valid(form)
+        
+#         # 로그인한 사용자를 가져옵니다.
+#         user = self.request.user
+
+#         # is_approved 값에 따라 리디렉션합니다.
+#         if profile and not profile.is_approved:
+#             logout(self.request)   # logout 시켜줌
+#             return redirect('account:before')  # before.html로 리디렉션
+#         else:
+#             profile.reset_login_attempts()  # 로그인 시도 횟수 초기화
+#             return redirect('index')  # views.index 함수로 리디렉션
+
+
+class CustomLoginView(IPRequiredMixin, LoginView):
+
     def form_valid(self, form):
         # 기존 로그인 로직을 수행합니다.
         super().form_valid(form)
@@ -262,11 +384,33 @@ class CustomLoginView(LoginView):
         # 로그인한 사용자를 가져옵니다.
         user = self.request.user
         
-        print(user)
         # is_approved 값에 따라 리디렉션합니다.
         profile = Profile.objects.get(user=user)
         if profile and not profile.is_approved:
             logout(self.request)   # logout 시켜줌
             return redirect('account:before')  # before.html로 리디렉션
         else:
+            profile.reset_login_attempts()
             return redirect('index')  # views.index 함수로 리디렉션
+        
+    def form_invalid(self, form):
+        username = form.cleaned_data.get('username')
+    
+        try:
+            profile = Profile.objects.get(user__username=username)
+            
+            profile.increase_login_attempts()
+
+            if profile.login_attempts >= 5:
+                profile.is_approved = False
+                profile.save()
+                logout(self.request)
+                message = "비밀번호 5번 오류로 계정이 이용 불가능합니다. 운영자에게 문의 바랍니다."
+                return redirect(reverse('account:before') + f'?message={message}')
+
+        except Profile.DoesNotExist:
+        # 입력받은 아이디에 해당하는 프로필이 없는 경우 처리
+            print(f"아이디 {username}에 해당하는 프로필이 없습니다.")
+
+        # 기본적으로는 다시 로그인 페이지로 리디렉션합니다.
+        return super().form_invalid(form)
