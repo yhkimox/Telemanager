@@ -200,10 +200,12 @@ def file_upload(request):
                 user_file.file = combined_name
                 user_file.save()
 
-                ##################################################
-                # print(user_file)
-                encoding = detect_encoding(f'./media/company_data_files/{combined_name}')
-                loader = CSVLoader(file_path=f'./media/company_data_files/{combined_name}', encoding='utf-8')
+                # 파일의 인코딩 검출
+                file_path = f'./media/company_data_files/{combined_name}'
+                detected_encoding = detect_encoding(file_path)
+                
+                # CSVLoader로 파일 로드
+                loader = CSVLoader(file_path=file_path, encoding=detected_encoding)
                 data = loader.load()
 
                 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
