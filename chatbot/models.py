@@ -14,6 +14,7 @@ class ChatBot(models.Model):
     outbound_purpose = models.TextField(default='Default')   # 아웃바운드 목적
     outbound_message = models.TextField()   # 아웃바운드 문구
     
+    outbound_end = models.TextField() # 아웃바운드 끝났는지 여부
     
     messages = models.JSONField()    # 챗봇 내역을 저장하는 필드
     

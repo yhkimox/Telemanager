@@ -137,11 +137,15 @@
 
         // 대화 불러오기
         let All_Chats = await getClientAllMessages(chatbots_id);
-        //console.log("html에서 불러온 채팅 전부");
-        //console.log(All_Chats);
+        console.log("html에서 불러온 채팅 전부");
+        console.log(All_Chats);
+        console.log(All_Chats.outbound_end);
         //console.log(All_Chats.result);
         //console.log(All_Chats.outbound_message);
 
+        if (All_Chats.outbound_end) {
+            console.log("대화가 끝난 상태");
+        }
         // 대화 첫화면에 보이게 하기
         // chat-messages 요소를 가져오기
         var chatMessagesContainer = document.getElementById('chat-messages');

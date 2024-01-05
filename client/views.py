@@ -573,6 +573,7 @@ def message_results(request): # 프론트앤드에서 채팅 내용 모두 저�
                     content = all_messages[i + 1] if i + 1 < len(all_messages) else None
                     chatbot.add_message(role, content)
                 print(chatbot.messages)
+                chatbot.outbound_end = "End"
                 return JsonResponse({"result": "All Message Save Success."})
             except ChatBot.DoesNotExist:
                 return JsonResponse({"error": f"ChatBot with id {chatbots_id} does not exist."}, status=404)
@@ -595,7 +596,9 @@ def sendAllMessages(request): # 프론트앤드에서 채팅 내용 모두 저�
         # print(chatbot.outbound_message)
         # print(chatbot.outbound_message.split("\n")[0])
         # print("끝")
-        return JsonResponse({"result": chatbot.messages, "outbound_message":chatbot.outbound_message.split("\n")[0]})
+        return JsonResponse({"result": chatbot.messages, 
+                             "outbound_message":chatbot.outbound_message.split("\n")[0],
+                             "outbound_end":chatbot.outbound_end})
 
     return JsonResponse({'status': 'error'})
 # # 녹음한 파일을 저장하는 function
