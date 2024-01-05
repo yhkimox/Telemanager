@@ -36,7 +36,7 @@ from django.views import View
 import json
 # from django.shortcuts import render
 # import os
-from pydub import AudioSegment
+# from pydub import AudioSegment
 ## For URL Checking
 from django.conf import settings
 from django.http import HttpResponseForbidden
@@ -315,16 +315,7 @@ def selected_items(request):
     return render(request, 'client/selected_items.html', context)
 
 
-# start_tm 페이지 렌더링 부분(아웃바운드 목적 적고 send 누를 때 실행)
-start_tm_model_name = "jhgan/ko-sroberta-multitask"
-start_tm_model_kwargs = {'device': 'cpu'}
-start_tm_encode_kwargs = {'normalize_embeddings': False}
-start_tm_hf = HuggingFaceEmbeddings(
-    model_name=start_tm_model_name,
-    model_kwargs=start_tm_model_kwargs,
-    encode_kwargs=start_tm_encode_kwargs,
-    # cache_dir=True
-    )
+
 def start_tm(request):
     
     client_ip = request.META.get('REMOTE_ADDR')
@@ -334,7 +325,7 @@ def start_tm(request):
         return redirect('account:urlerror')
 
 
-    global start_tm_hf
+    # global start_tm_hf
     whisper = OpenAI()
     input_data = ''
     selected_clients = []
@@ -369,7 +360,16 @@ def start_tm(request):
         # 질문지 생성해주는 hugginface 모델 불러오기
         llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0, openai_api_key=open_api_key)
        
-        
+        # start_tm 페이지 렌더링 부분(아웃바운드 목적 적고 send 누를 때 실행)
+        start_tm_model_name = "jhgan/ko-sroberta-multitask"
+        start_tm_model_kwargs = {'device': 'cpu'}
+        start_tm_encode_kwargs = {'normalize_embeddings': False}
+        start_tm_hf = HuggingFaceEmbeddings(
+            model_name=start_tm_model_name,
+            model_kwargs=start_tm_model_kwargs,
+            encode_kwargs=start_tm_encode_kwargs,
+            # cache_dir=True
+            )
        
         chatbots = [] # 챗봇 리스트 생성
         
@@ -410,8 +410,9 @@ def start_tm(request):
             chatbot = ChatBot(
                 owner = request.user,
                 client = c,
-                outbound_message=ments,
+                outbound_message=ments['answer'],
                 messages=[],
+                outbound_purpose=ments['question'],
             )
             chatbot.save()
             chatbots.append(chatbot)
@@ -420,6 +421,7 @@ def start_tm(request):
             
             # # 생성된 문구별 각각 음성 파일로 저장하는 부분
             for i, q in enumerate(questions):
+                q = q[q.index('"'):]
                 print(q)
                 question_tm.append(q) # hj
             #     try:
@@ -456,8 +458,8 @@ def make_phrases(user_info, purpose, embeding_url, hf, llm):
     만약 답을 모르면 모른다고만 말하고 답을 지어내려고 하지 마십시오.
     답변은 최대 세 문장으로 하고 가능한 한 간결하게 유지하십시오.
     답변을 할 때, 고객에 대한 정보는 이와 같습니다.
-    {user_info}. 형식은 [(키, 값),(키, 값),(키, 값),...]형태로 이루어져 있습니다.
-    고객의 정보를 활용하여 맞춤형으로 작성해 주십시오.
+    고객에 대한 정보 : {user_info}.
+    고객의 정보를 활용하여 맞춤형으로 문구를 작성해 주십시오.(친근하게 이름을 부르며)
     {{summaries}}
     질문: {{question}}
     도움이 되는 답변:"""
@@ -484,7 +486,8 @@ def make_phrases(user_info, purpose, embeding_url, hf, llm):
         chain_type_kwargs=chain_type_kwargs # langchain type argument에다가 지정한 prompt를 넣어줌, 별도의 prompt를 넣음
     )
     
-    query = purpose  # Provide the input as a dictionary
+    query = f'''고객의 특징을 바탕으로 맞춤형으로 목적에 맞게 답해줘.
+    목적 : {purpose}'''  # Provide the input as a dictionary
     result = chain(query)
     # print(result['answer'])
     
