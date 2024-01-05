@@ -151,7 +151,48 @@
             console.log("대화가 끝난 상태");
         
             // 여기에 대화 기록 전부 보여줘야 함
+            // 서버에서 받아온 모든 채팅 메시지에 대해 반복
+            for (var i = 0; i < All_Chats.result.length; i++) {
+                var chat = All_Chats.result[i];
+                console.log(chat);
+                console.log(chat.role);
+                console.log(chat.content);
 
+                // role 표시
+                var newMessageElement = document.createElement('div');
+                newMessageElement.className = 'message';
+
+                // 새로운 메시지 버블을 생성하고 내용을 설정
+                var newMessageBubble = document.createElement('div');
+                newMessageBubble.className = 'message-bubble';
+                newMessageBubble.textContent = chat.role;
+
+                // 새로운 메시지 버블을 메시지 요소에 추가
+                newMessageElement.appendChild(newMessageBubble);
+
+                // 서버에서 받아온 role 값에 따라 클래스 추가
+                newMessageElement.classList.add('received')
+                // chat-messages에 새로운 메시지 요소를 추가
+                chatMessagesContainer.appendChild(newMessageElement);
+
+                // content 표시
+                var newMessageElement = document.createElement('div');
+                newMessageElement.className = 'message';
+
+                // 새로운 메시지 버블을 생성하고 내용을 설정
+                var newMessageBubble = document.createElement('div');
+                newMessageBubble.className = 'message-bubble';
+                newMessageBubble.textContent = chat.content;
+
+                // 새로운 메시지 버블을 메시지 요소에 추가
+                newMessageElement.appendChild(newMessageBubble);
+
+                // 서버에서 받아온 role 값에 따라 클래스 추가
+                newMessageElement.classList.add('sent')
+                // chat-messages에 새로운 메시지 요소를 추가
+                chatMessagesContainer.appendChild(newMessageElement);
+                
+            }
 
 
         } else {
