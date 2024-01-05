@@ -485,7 +485,7 @@ def make_phrases(user_info, purpose, embeding_url, hf, llm):
         chain_type_kwargs=chain_type_kwargs # langchain type argument에다가 지정한 prompt를 넣어줌, 별도의 prompt를 넣음
     )
     
-    query = f'''고객의 특징을 바탕으로 맞춤형으로 목적에 맞게 답해줘.
+    query = f'''{user_info}고객의 특징을 바탕으로 맞춤형으로 목적에 맞게 답해줘.
     목적 : {purpose}'''  # Provide the input as a dictionary
     result = chain(query)
     # print(result['answer'])
