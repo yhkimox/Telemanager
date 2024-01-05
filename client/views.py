@@ -421,7 +421,6 @@ def start_tm(request):
             
             # # 생성된 문구별 각각 음성 파일로 저장하는 부분
             for i, q in enumerate(questions):
-                q = q[q.index('"'):]
                 print(q)
                 question_tm.append(q) # hj
             #     try:
