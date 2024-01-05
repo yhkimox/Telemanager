@@ -7,7 +7,7 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from .models import CompanyFile
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import View
+from django.views.generic import View, FormView
 from django.urls import reverse_lazy, reverse
 import os
 from django.contrib.auth.models import User
@@ -30,6 +30,7 @@ import shutil
 from django.conf import settings
 from django.http import HttpResponseForbidden
 from django.views.generic import TemplateView
+from django.contrib.auth.forms import AuthenticationForm
 
 ALLOW_URL_LIST = settings.ALLOW_URL_LIST
 FILE_COUNT_LIMIT = settings.FILE_COUNT_LIMIT         
@@ -336,7 +337,7 @@ class DeleteSelectedFilesView(LoginRequiredMixin, View):
         return redirect(reverse('client:list'))  
     
 
-def before(request):
+def before(request, message=None):
     
     client_ip = request.META.get('REMOTE_ADDR')
 
@@ -344,10 +345,38 @@ def before(request):
     if client_ip not in ALLOW_URL_LIST:
         return redirect('account:urlerror')
     
-    return render(request, 'registration/before.html')
+    message = request.GET.get('message')
+    
+    context = {'message': message}
+    return render(request, 'registration/before.html', context)
+
+# class CustomLoginView(IPRequiredMixin, LoginView):
+    
+#     def form_valid(self, form):
+#         # 로그인 시도 횟수를 증가시킵니다.
+#         user = form.get_user()
+#         print(user)
+#         profile = Profile.objects.get(user=user)
+#         if profile:
+#             profile.increase_login_attempts()
+        
+#         # 기존 로그인 로직을 수행합니다.
+#         super().form_valid(form)
+        
+#         # 로그인한 사용자를 가져옵니다.
+#         user = self.request.user
+
+#         # is_approved 값에 따라 리디렉션합니다.
+#         if profile and not profile.is_approved:
+#             logout(self.request)   # logout 시켜줌
+#             return redirect('account:before')  # before.html로 리디렉션
+#         else:
+#             profile.reset_login_attempts()  # 로그인 시도 횟수 초기화
+#             return redirect('index')  # views.index 함수로 리디렉션
+
 
 class CustomLoginView(IPRequiredMixin, LoginView):
-    
+
     def form_valid(self, form):
         # 기존 로그인 로직을 수행합니다.
         super().form_valid(form)
@@ -355,11 +384,33 @@ class CustomLoginView(IPRequiredMixin, LoginView):
         # 로그인한 사용자를 가져옵니다.
         user = self.request.user
         
-        print(user)
         # is_approved 값에 따라 리디렉션합니다.
         profile = Profile.objects.get(user=user)
         if profile and not profile.is_approved:
             logout(self.request)   # logout 시켜줌
             return redirect('account:before')  # before.html로 리디렉션
         else:
+            profile.reset_login_attempts()
             return redirect('index')  # views.index 함수로 리디렉션
+        
+    def form_invalid(self, form):
+        username = form.cleaned_data.get('username')
+    
+        try:
+            profile = Profile.objects.get(user__username=username)
+            
+            profile.increase_login_attempts()
+
+            if profile.login_attempts >= 5:
+                profile.is_approved = False
+                profile.save()
+                logout(self.request)
+                message = "비밀번호 5번 오류로 계정이 이용 불가능합니다. 운영자에게 문의 바랍니다."
+                return redirect(reverse('account:before') + f'?message={message}')
+
+        except Profile.DoesNotExist:
+        # 입력받은 아이디에 해당하는 프로필이 없는 경우 처리
+            print(f"아이디 {username}에 해당하는 프로필이 없습니다.")
+
+        # 기본적으로는 다시 로그인 페이지로 리디렉션합니다.
+        return super().form_invalid(form)

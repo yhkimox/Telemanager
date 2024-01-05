@@ -156,7 +156,7 @@
                                 <label for="copy_{{ client.id }}"></label>
                             </div>
                         </td>
-                        <td>{{ client.name }}</td>
+                        <td>{{ client.name|slice:"0:1" }}{% for i in client.name|slice:"1:" %}*{% endfor %}</td>
                     <!--   <td>{{ client.location }}</td> --> 
                         <td>{{ client.number|slice:"0:4" }}****-****</td>
                         <td>
