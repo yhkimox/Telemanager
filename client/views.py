@@ -574,6 +574,7 @@ def message_results(request): # 프론트앤드에서 채팅 내용 모두 저�
                     chatbot.add_message(role, content)
                 print(chatbot.messages)
                 chatbot.outbound_end = "End"
+                chatbot.save()
                 return JsonResponse({"result": "All Message Save Success."})
             except ChatBot.DoesNotExist:
                 return JsonResponse({"error": f"ChatBot with id {chatbots_id} does not exist."}, status=404)
