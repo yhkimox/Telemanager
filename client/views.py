@@ -581,6 +581,25 @@ def message_results(request): # 프론트앤드에서 채팅 내용 모두 저�
 
     return JsonResponse({'status': 'error'})
 
+
+
+@csrf_exempt
+def sendAllMessages(request): # 프론트앤드에서 채팅 내용 모두 저장하기
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        chatbots_id = data.get('chatbots_id')
+        if chatbots_id is not None:
+            try:
+                # 모델에 저장
+                chatbot = ChatBot.objects.get(id=chatbots_id)
+                print(chatbot.messages)
+                return JsonResponse({"result": chatbot.messages})
+            except ChatBot.DoesNotExist:
+                return JsonResponse({"error": f"ChatBot with id {chatbots_id} does not exist."}, status=404)
+        else:
+            return JsonResponse({"error": "chatbots_id is required in the request."}, status=400)
+
+    return JsonResponse({'status': 'error'})
 # # 녹음한 파일을 저장하는 function
 # @csrf_exempt
 # @require_POST

@@ -44,7 +44,7 @@
             {% endfor %}
             <div id="clientInfo">
                 {% for client in selectedClients %}
-                    <span onclick="showClientName('{{ client.name }}', '{{ client.chatbot_id }}')">{{ client.name }}</span>
+                    <span onclick="showClientName('{{ client.name }}')">{{ client.name }}</span>
                 {% endfor %}
             </div>
         </div>
@@ -99,40 +99,82 @@
     const initialMessage = document.getElementById('initialMessage');
     const questions = [{% for q in question %}'{{ q }}', {% endfor %}];
     const chatbots_ids = [{% for q in chatbots_ids %}'{{ q }}', {% endfor %}]; //생성된 챗봇 모델 고유 아이디 가져오기
-    console.log(chatbots_ids[0]);
-    let chatbots_id = chatbots_ids[0];
+    let chatbots_id;
 
     let currentQuestionIndex = 1;  // 0번째 질문은 이미 보여주었으므로 1부터 시작
     let exitConversation = false; // 대화 중단 원할시 True, 대화 계속 하길 원할시 False
     let finalConversation = false; // 대화가 종료 되었을 경우 True, 대화가 끝나지 않을 경우 false
     let currentChatbotId = null;
 
-    function showClientName(clientName, chatbotId) {
+    async function showClientName(clientName, chatbotId) {
         // 클릭한 클라이언트의 이름을 표시하는 부분을 업데이트
         const clickedClientNameElement = document.getElementById('clickedClientName');
         clickedClientNameElement.textContent = clientName;
-        currentChatbotId = chatbotId;
-        // 해당 클라이언트에 맞는 질문을 가져와서 표시
-        const clientQuestions = getClientQuestions(chatbotId);
-        updateChatMessages(clientQuestions);
-    }
 
-    async function getClientQuestions(chatbotId) {
-        try {
-            const response = await fetch(`/client/start_tm/get_client_questions/${chatbotId}/`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-
-            const data = await response.json();
-            return data.questions;  // 서버에서 가져온 질문 배열 반환
-        } catch (error) {
-            console.error("에러 발생:", error);
-            throw error;
+        // 메시지 깔끔하게 정리하는 부분
+        var chatMessages = document.getElementById('chat-messages');
+        // Check if the chat-messages element exists
+        if (chatMessages) {
+            // Remove all child elements of chat-messages
+            while (chatMessages.firstChild) {
+                chatMessages.removeChild(chatMessages.firstChild);
+            }
         }
+
+        // 클릭한 클라이언트의 정보 가져오기
+        var spans = document.getElementById('clientInfo').getElementsByTagName('span');
+        // 클릭한 클라이언트의 인덱스 찾기
+        var clickedIndex = -1; // 초기값을 -1로 설정
+        for (var i = 0; i < spans.length; i++) {
+            if (spans[i].textContent === clientName) {
+                clickedIndex = i;
+                break; // 클라이언트를 찾았으면 루프를 종료
+            }
+        }
+        // 클라이언트의 인덱스를 출력 또는 사용
+        console.log('Clicked Client Index:', clickedIndex);
+        chatbots_id = chatbots_ids[clickedIndex]; // 전역 변수에 할당
+
+        // 대화 불러오기
+        let All_Chats = await getClientAllMessages(chatbots_id);
+        console.log("불러온 채팅 전부");
+        console.log(All_Chats);
     }
+
+
+
+async function getClientAllMessages(chatbot_id) {
+    try {
+        let save_response = await fetch('/client/start_tm/sendAllMessages/', {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                'chatbots_id': chatbots_id,
+            }),
+        });
+        const data = await save_response.json();
+    
+        return data.result;  // 예시로 결과 값 반환
+    } catch (error) {
+        console.error("채팅 불러오는 부분(sendAllMessages) 에러 발생:", error);
+        throw error;  // 에러를 다시 던지면 이후에도 에러 처리 가능
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     async function sendMessage() {
         const userMessage = chatInput.value.trim();
