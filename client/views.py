@@ -36,7 +36,7 @@ from django.views import View
 import json
 # from django.shortcuts import render
 # import os
-from pydub import AudioSegment
+# from pydub import AudioSegment
 ## For URL Checking
 from django.conf import settings
 from django.http import HttpResponseForbidden
@@ -315,16 +315,7 @@ def selected_items(request):
     return render(request, 'client/selected_items.html', context)
 
 
-# start_tm 페이지 렌더링 부분(아웃바운드 목적 적고 send 누를 때 실행)
-start_tm_model_name = "jhgan/ko-sroberta-multitask"
-start_tm_model_kwargs = {'device': 'cpu'}
-start_tm_encode_kwargs = {'normalize_embeddings': False}
-start_tm_hf = HuggingFaceEmbeddings(
-    model_name=start_tm_model_name,
-    model_kwargs=start_tm_model_kwargs,
-    encode_kwargs=start_tm_encode_kwargs,
-    # cache_dir=True
-    )
+
 def start_tm(request):
     
     client_ip = request.META.get('REMOTE_ADDR')
@@ -334,7 +325,7 @@ def start_tm(request):
         return redirect('account:urlerror')
 
 
-    global start_tm_hf
+    # global start_tm_hf
     whisper = OpenAI()
     input_data = ''
     selected_clients = []
@@ -369,7 +360,16 @@ def start_tm(request):
         # 질문지 생성해주는 hugginface 모델 불러오기
         llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0, openai_api_key=open_api_key)
        
-        
+        # start_tm 페이지 렌더링 부분(아웃바운드 목적 적고 send 누를 때 실행)
+        start_tm_model_name = "jhgan/ko-sroberta-multitask"
+        start_tm_model_kwargs = {'device': 'cpu'}
+        start_tm_encode_kwargs = {'normalize_embeddings': False}
+        start_tm_hf = HuggingFaceEmbeddings(
+            model_name=start_tm_model_name,
+            model_kwargs=start_tm_model_kwargs,
+            encode_kwargs=start_tm_encode_kwargs,
+            # cache_dir=True
+            )
        
         chatbots = [] # 챗봇 리스트 생성
         
@@ -410,8 +410,9 @@ def start_tm(request):
             chatbot = ChatBot(
                 owner = request.user,
                 client = c,
-                outbound_message=ments,
+                outbound_message=ments['answer'],
                 messages=[],
+                outbound_purpose=ments['question'],
             )
             chatbot.save()
             chatbots.append(chatbot)
@@ -420,7 +421,9 @@ def start_tm(request):
             
             # # 생성된 문구별 각각 음성 파일로 저장하는 부분
             for i, q in enumerate(questions):
-                print(q)
+                if len(q)<1:
+                    continue
+                print(q, len(q))
                 question_tm.append(q) # hj
             #     try:
             #         q = q[q.index('"'):]
@@ -450,14 +453,14 @@ def start_tm(request):
         
 # 문구 생성 부분
 def make_phrases(user_info, purpose, embeding_url, hf, llm):
-    
+
     system_template = f"""당신은 최고의 아웃바운드 상담사입니다.
     다음과 같은 맥락을 사용하여 마지막 질문에 대답하십시오.
     만약 답을 모르면 모른다고만 말하고 답을 지어내려고 하지 마십시오.
     답변은 최대 세 문장으로 하고 가능한 한 간결하게 유지하십시오.
     답변을 할 때, 고객에 대한 정보는 이와 같습니다.
-    {user_info}. 형식은 [(키, 값),(키, 값),(키, 값),...]형태로 이루어져 있습니다.
-    고객의 정보를 활용하여 맞춤형으로 작성해 주십시오.
+    고객에 대한 정보 : {user_info}.
+    고객의 정보를 활용하여 맞춤형으로 문구를 작성해 주십시오.(친근하게 이름을 부르며)
     {{summaries}}
     질문: {{question}}
     도움이 되는 답변:"""
@@ -467,14 +470,15 @@ def make_phrases(user_info, purpose, embeding_url, hf, llm):
         SystemMessagePromptTemplate.from_template(system_template),
         HumanMessagePromptTemplate.from_template("{question}")
     ]
-    
+
     # prompt 내에 변수처럼 쓸 수 있게끔 해두는 장치
     prompt = ChatPromptTemplate.from_messages(messages)
     
     chain_type_kwargs = {"prompt": prompt}
 
     vectordb_hf = Chroma(persist_directory=embeding_url, embedding_function=hf)
-    retriever_hf = vectordb_hf.as_retriever(search_type='mmr')
+    # retriever_hf = vectordb_hf.as_retriever(search_type='mmr')
+    retriever_hf = vectordb_hf.as_retriever()
     
     chain = RetrievalQAWithSourcesChain.from_chain_type(
         llm=llm,
@@ -484,7 +488,8 @@ def make_phrases(user_info, purpose, embeding_url, hf, llm):
         chain_type_kwargs=chain_type_kwargs # langchain type argument에다가 지정한 prompt를 넣어줌, 별도의 prompt를 넣음
     )
     
-    query = purpose  # Provide the input as a dictionary
+    query = f'''{[user_info[0], user_info[-1]]}고객의 특징을 바탕으로 맞춤형으로 목적에 맞게 답해줘. 카드 이름도 같이 명시해줘
+    목적 : {purpose}'''  # Provide the input as a dictionary
     result = chain(query)
     # print(result['answer'])
     
@@ -531,6 +536,22 @@ def text_processing(request):
         #     return JsonResponse({"error": str(e)}, status=500)
     else:
         return JsonResponse({"error": "POST 요청만 지원합니다."}, status=400)
+
+
+@csrf_exempt
+def message_results(request): # 프론트앤드에서 채팅 내용 모두 저장하기
+    if request.method == 'POST':
+        data = request.json()
+        all_messages = data.get('all_messages')
+        current_client = data.get('current_client')
+        # 모델에 저장
+        chatbot = get_object_or_404(ChatBot, owner=request.user, client=current_client)
+        chatbot.messages = all_messages
+        chatbot.save()
+
+        return JsonResponse({'status': 'success'})
+
+    return JsonResponse({'status': 'error'})
 
 # # 녹음한 파일을 저장하는 function
 # @csrf_exempt

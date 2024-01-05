@@ -28,7 +28,8 @@ urlpatterns = [
     path('delete_selected/', views.DeleteSelectedClientsView.as_view(), name='delete_selected'),
     # path('audio/', audio, name='audio'),
     # path('save_audio/', views.save_audio, name='save_audio'),
-    path('start_tm/text_processing/', text_processing, name='text_processing'),
+    path('start_tm/text_processing/', text_processing, name='text_processing'), # 텍스트 감정분류(아웃바운드 챗봇)
+    path('start_tm/message_results/', text_processing, name='message_results'), # 챗봇 채팅 내역 전달부분
 ]
 
 
