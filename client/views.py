@@ -372,7 +372,7 @@ def start_tm(request):
             )
        
         chatbots = [] # 챗봇 리스트 생성
-        
+        chatbot_ids = [] # 챗봇 고유 아이디 번호
         
         # audio 폴더 생성하기(계정 폴더)
         # 폴더가 존재하지 않으면 폴더를 생성
@@ -386,7 +386,7 @@ def start_tm(request):
         
         for c in clients:
             clients_info = [] # 고객 정보가 들어간 리스트
-
+            
             # 열 정보만 가져오기
             excluded_fields = ['user', 'tm_date']
             user_defined_fields = [field.name for field in Client._meta.get_fields() if not field.auto_created]
@@ -416,6 +416,7 @@ def start_tm(request):
             )
             chatbot.save()
             chatbots.append(chatbot)
+            chatbot_ids.append(chatbot.id)
            
             questions = ments['answer'].split("\n")
             
@@ -445,6 +446,7 @@ def start_tm(request):
         'selectedFiles': files,
         'input_data': input_data,  # 추가
         'chatbots': chatbots,
+        'chatbots_ids':chatbot_ids,
         'mentsanswer' : ments['answer'], # 20240102 yh 대답 부분이 필요해서 추가함.
         'question' : question_tm # hj
     }
@@ -549,7 +551,7 @@ def message_results(request): # 프론트앤드에서 채팅 내용 모두 저�
         chatbot.messages = all_messages
         chatbot.save()
 
-        return JsonResponse({'status': 'success'})
+        return JsonResponse({"result": "All Message Save Success."})
 
     return JsonResponse({'status': 'error'})
 
