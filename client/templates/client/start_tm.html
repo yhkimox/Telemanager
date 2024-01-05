@@ -9,6 +9,24 @@
 {% endblock %}
 
 {% block content %}
+
+<style>
+    .chat-menu {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .chart {
+        background-color: #fff;
+        width: 200px;
+        height: 450px;
+        text-align: center;
+        border-radius: 5px; /* 둥근 모서리 설정 */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 효과 추가 */
+    }
+</style>
+
 <div id="main" class="container">
     <hr>
     <br><br>
@@ -17,56 +35,26 @@
     <a>tm 목적:  {{ input_data }}</a>
 
     <!-- main -->
-    <div id='main' class='containered' style='display: flex; justify-content: space-between; align-items: flex-start;'>
-        <div id='chart' style='width: 200px; border: 1px solid #ccc; text-align: center;'>
-            <h3 style='font-size: 1rem;'>선택된 고객 목록</h3>
-            <table border='1'>
-                <thead>
-                    <tr>
-                        <th><input type='checkbox' id='select-all'></th>
-                        <th>이름</th>
-                        <th>주소</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for client in selectedClients %}
-                        <tr>
-                            <td><input type='checkbox' name='client_ids' value='{{ client.id }}'></td>
-                            <td>{{ client.name }}</td>
-                            <td>{{ client.location }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-
-            <h3 style='font-size: 1rem;'>선택된 파일 목록</h3>
-            <table border='1'>
-                <thead>
-                    <tr>
-                        <th><input type='checkbox' id='select-all2'></th>
-                        <th>파일 이름</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for file in selectedFiles %}
-                        <tr>
-                            <td><input type='checkbox' name='file_ids' value='{{ file.id }}'></td>
-                            <td>{{ file.file.name|cut:"_"|slice:"1:" }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <button id='goBack' onclick='goBack()'>뒤로가기</button>
+    <div class='chat-menu'>
+        <div class='chart'>
+            <a>회사파일 |</a>
+            {% for file in selectedFiles %}
+                <input type='checkbox' name='file_ids' value='{{ file.id }}'>
+                {{ file.file.name|cut:"_"|slice:"1:" }}
+            {% endfor %}
+            <div id="clientInfo">
+                {% for client in selectedClients %}
+                    <span onclick="showClientName('{{ client.name }}')">{{ client.name }}</span>
+                {% endfor %}
+            </div>
         </div>
 
         <!-- 채팅 대화창 -->
         <div class='chat-container'>
             <div class='user-info'>
-                <img src='../../../static/images/냥.jpg' alt='User Avatar' width='30' height='30'>
-                {% for client in selectedClients %}
-                <span>{{ client.name }}</span>
+                <img src='../../../static/images/user.jpg' alt='User Avatar' width='30' height='30'>
+                <span id="clickedClientName"></span>
                 <div class='user-status-indicator'></div>
-                {% endfor %}
             </div>
 
             <div class='chat-messages' id='chat-messages'>
@@ -80,6 +68,9 @@
                 <button class='send-button' onclick='sendMessage()'>Send</button>
             </div>
         </div>
+    </div>
+    <button id='goBack' onclick='goBack()'>뒤로가기</button>
+</div>
         {% comment %} 
         <div>
             <audio controls>녹음된 소리를 재생할 audio 엘리먼트</audio>
@@ -96,8 +87,7 @@
             </div>
         </div>
         {% endcomment %}
-    </div>
-</div>
+    
 
 <script>
     function goBack() {
@@ -111,7 +101,15 @@
 
     let currentQuestionIndex = 1;  // 0번째 질문은 이미 보여주었으므로 1부터 시작
 
-    // 기존 코드
+    function showClientName(clientName) {
+        // 클릭한 클라이언트의 이름을 표시하는 부분을 업데이트
+        const clickedClientNameElement = document.getElementById('clickedClientName');
+        clickedClientNameElement.textContent = clientName;
+        // 해당 클라이언트에 맞는 질문을 가져와서 표시
+        const clientQuestions = getClientQuestions(clientName);
+        updateChatMessages(clientQuestions);
+    }
+
     async function sendMessage() {
         const userMessage = chatInput.value.trim();
 
@@ -190,23 +188,6 @@
             throw error;  // 에러를 다시 던지면 이후에도 에러 처리 가능
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     // 엔터 키를 누를 때 sendMessage 호출

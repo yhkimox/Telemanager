@@ -38,7 +38,6 @@ import json
 # import os
 from pydub import AudioSegment
 
-
 open_api_key = os.environ.get('OPENAI_API_KEY')
 
 class ClientListView(LoginRequiredMixin, ListView):
@@ -374,8 +373,22 @@ def start_tm(request):
         'mentsanswer' : ments['answer'], # 20240102 yh 대답 부분이 필요해서 추가함.
         'question' : question_tm # hj
     }
+    
+    try:
+        # text_processing 또는 다른 함수에서 전달한 데이터
+        data_to_send = {
+            "question": question_tm,
+            # 다른 필요한 데이터들...
+        }
+
+        # 세션에 데이터 저장
+        request.session['data_to_send'] = data_to_send
+
  
-    return render(request, 'client/start_tm.html', context)
+        return render(request, 'client/start_tm.html', context)
+    
+    except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
         
 # 문구 생성 부분
 def make_phrases(user_info, purpose, embeding_url, hf, llm):

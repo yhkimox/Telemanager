@@ -30,10 +30,6 @@ def index(request):
         posts = Post.objects.filter(title__icontains=search_key)
        
     return render(request, 'post/post_list.html', {'posts':posts, 'q':search_key})
-
-
-    # posts = Post.objects.all()
-    # return render(request, 'post/post_list.html', {'posts': posts})
  
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
