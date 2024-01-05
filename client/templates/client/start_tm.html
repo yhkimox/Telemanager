@@ -139,29 +139,34 @@
         let All_Chats = await getClientAllMessages(chatbots_id);
         console.log("불러온 채팅 전부");
         console.log(All_Chats);
+        console.log(All_Chats.result);
+        console.log(All_Chats.outbound_message);
+
+        // 대화 화면에 보이게 하기
+
     }
 
 
 
-async function getClientAllMessages(chatbot_id) {
-    try {
-        let save_response = await fetch('/client/start_tm/sendAllMessages/', {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                'chatbots_id': chatbots_id,
-            }),
-        });
-        const data = await save_response.json();
-    
-        return data.result;  // 예시로 결과 값 반환
-    } catch (error) {
-        console.error("채팅 불러오는 부분(sendAllMessages) 에러 발생:", error);
-        throw error;  // 에러를 다시 던지면 이후에도 에러 처리 가능
+    async function getClientAllMessages(chatbot_id) {
+        try {
+            let save_response = await fetch('/client/start_tm/sendAllMessages/', {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    'chatbots_id': chatbots_id,
+                }),
+            });
+            const data = await save_response.json();
+        
+            return data;  // 예시로 결과 값 반환
+        } catch (error) {
+            console.error("채팅 불러오는 부분(sendAllMessages) 에러 발생:", error);
+            throw error;  // 에러를 다시 던지면 이후에도 에러 처리 가능
+        }
     }
-}
 
 
 

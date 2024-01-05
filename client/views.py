@@ -593,7 +593,8 @@ def sendAllMessages(request): # 프론트앤드에서 채팅 내용 모두 저�
                 # 모델에 저장
                 chatbot = ChatBot.objects.get(id=chatbots_id)
                 print(chatbot.messages)
-                return JsonResponse({"result": chatbot.messages})
+                print(chatbot.outbound_message)
+                return JsonResponse({"result": chatbot.messages, "outbound_message":chatbot.outbound_message})
             except ChatBot.DoesNotExist:
                 return JsonResponse({"error": f"ChatBot with id {chatbots_id} does not exist."}, status=404)
         else:
