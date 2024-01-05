@@ -282,8 +282,8 @@
                 }),
             });
             const data = await save_response.json();
-            console.log("@@@@@@@@@@@@@@@@");
-            console.log(data);
+            
+            //console.log(data);
     
             return data.result;  // 예시로 결과 값 반환
         } catch (error) {
@@ -328,8 +328,11 @@
             sendMessage();
         }
     });
-
+</script>
     /*{% comment %}
+    function showButton(val) {
+
+            
     function showButton(val) {
         var startrecordButton = document.getElementById('recordbutton');
         var playButton = document.getElementById('playbutton');
