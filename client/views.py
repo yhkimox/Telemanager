@@ -545,9 +545,9 @@ def message_results(request): # 프론트앤드에서 채팅 내용 모두 저�
     if request.method == 'POST':
         data = request.json()
         all_messages = data.get('all_messages')
-        current_client = data.get('current_client')
+        chatbots_id = data.get('chatbots_id')
         # 모델에 저장
-        chatbot = get_object_or_404(ChatBot, owner=request.user, client=current_client)
+        chatbot = ChatBot.objects.get(id=chatbots_id)
         chatbot.messages = all_messages
         chatbot.save()
 

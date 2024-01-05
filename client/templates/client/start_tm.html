@@ -149,6 +149,7 @@
     const initialMessage = document.getElementById('initialMessage');
     const questions = [{% for q in question %}'{{ q }}', {% endfor %}];
     const chatbots_ids = [{% for q in chatbots_ids %}'{{ q }}', {% endfor %}];
+    console.log(chatbots_ids[0]);
 
 
     let currentQuestionIndex = 1;  // 0번째 질문은 이미 보여주었으므로 1부터 시작
@@ -312,7 +313,7 @@
                 },
                 body: JSON.stringify({
                     'all_messages': all_messages,
-                    'chatbots_ids': chatbots_ids,
+                    'chatbots_ids': chatbots_ids[0],
                 }),
             });
             const data = await response.json();
