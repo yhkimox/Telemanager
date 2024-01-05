@@ -421,9 +421,9 @@ def start_tm(request):
             
             # # 생성된 문구별 각각 음성 파일로 저장하는 부분
             for i, q in enumerate(questions):
-                print(q, len(q))
                 if len(q)<1:
                     continue
+                print(q, len(q))
                 question_tm.append(q) # hj
             #     try:
             #         q = q[q.index('"'):]
@@ -535,6 +535,22 @@ def text_processing(request):
         #     return JsonResponse({"error": str(e)}, status=500)
     else:
         return JsonResponse({"error": "POST 요청만 지원합니다."}, status=400)
+
+
+@csrf_exempt
+def message_results(request): # 프론트앤드에서 채팅 내용 모두 저장하기
+    if request.method == 'POST':
+        data = request.json()
+        all_messages = data.get('all_messages')
+        current_client = data.get('current_client')
+        # 모델에 저장
+        chatbot = get_object_or_404(ChatBot, owner=request.user, client=current_client)
+        chatbot.messages = all_messages
+        chatbot.save()
+
+        return JsonResponse({'status': 'success'})
+
+    return JsonResponse({'status': 'error'})
 
 # # 녹음한 파일을 저장하는 function
 # @csrf_exempt
