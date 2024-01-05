@@ -31,7 +31,7 @@ from django.conf import settings
 from django.http import HttpResponseForbidden
 from django.views.generic import TemplateView
 from django.contrib.auth.forms import AuthenticationForm
-
+import chardet
 ALLOW_URL_LIST = settings.ALLOW_URL_LIST
 FILE_COUNT_LIMIT = settings.FILE_COUNT_LIMIT         
 FILE_SIZE_LIMIT_CLIENT = settings.FILE_SIZE_LIMIT_CLIENT 
@@ -202,6 +202,7 @@ def file_upload(request):
 
                 ##################################################
                 # print(user_file)
+                encoding = detect_encoding(f'./media/company_data_files/{combined_name}')
                 loader = CSVLoader(file_path=f'./media/company_data_files/{combined_name}', encoding='utf-8')
                 data = loader.load()
 
@@ -244,7 +245,11 @@ def file_upload(request):
     files = CompanyFile.objects.filter(user=request.user)
     return render(request, 'upload/information.html', {'form': form, 'files': files})
 
-
+def detect_encoding(file_path):
+    with open(file_path, 'rb') as f:
+        result = chardet.detect(f.read())
+        return result['encoding']
+    
 # 파일 목록을 출력하는 view입니다.
 @login_required
 def file_list(request):
