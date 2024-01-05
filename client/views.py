@@ -453,7 +453,7 @@ def start_tm(request):
         
 # 문구 생성 부분
 def make_phrases(user_info, purpose, embeding_url, hf, llm):
-    
+
     system_template = f"""당신은 최고의 아웃바운드 상담사입니다.
     다음과 같은 맥락을 사용하여 마지막 질문에 대답하십시오.
     만약 답을 모르면 모른다고만 말하고 답을 지어내려고 하지 마십시오.
@@ -470,14 +470,15 @@ def make_phrases(user_info, purpose, embeding_url, hf, llm):
         SystemMessagePromptTemplate.from_template(system_template),
         HumanMessagePromptTemplate.from_template("{question}")
     ]
-    
+
     # prompt 내에 변수처럼 쓸 수 있게끔 해두는 장치
     prompt = ChatPromptTemplate.from_messages(messages)
     
     chain_type_kwargs = {"prompt": prompt}
 
     vectordb_hf = Chroma(persist_directory=embeding_url, embedding_function=hf)
-    retriever_hf = vectordb_hf.as_retriever(search_type='mmr')
+    # retriever_hf = vectordb_hf.as_retriever(search_type='mmr')
+    retriever_hf = vectordb_hf.as_retriever()
     
     chain = RetrievalQAWithSourcesChain.from_chain_type(
         llm=llm,
@@ -487,7 +488,7 @@ def make_phrases(user_info, purpose, embeding_url, hf, llm):
         chain_type_kwargs=chain_type_kwargs # langchain type argument에다가 지정한 prompt를 넣어줌, 별도의 prompt를 넣음
     )
     
-    query = f'''{user_info}고객의 특징을 바탕으로 맞춤형으로 목적에 맞게 답해줘.
+    query = f'''{[user_info[0], user_info[-1]]}고객의 특징을 바탕으로 맞춤형으로 목적에 맞게 답해줘. 카드 이름도 같이 명시해줘
     목적 : {purpose}'''  # Provide the input as a dictionary
     result = chain(query)
     # print(result['answer'])
