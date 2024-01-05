@@ -543,9 +543,13 @@ def text_processing(request):
 @csrf_exempt
 def message_results(request): # 프론트앤드에서 채팅 내용 모두 저장하기
     if request.method == 'POST':
-        data = request.json()
+        data = json.loads(request.body)
         all_messages = data.get('all_messages')
         chatbots_id = data.get('chatbots_id')
+        print(f"파이썬에서 받은 데이터")
+        print(all_messages)
+        print(chatbots_id)
+        print("파이썬 끝")
         # 모델에 저장
         chatbot = ChatBot.objects.get(id=chatbots_id)
         chatbot.messages = all_messages

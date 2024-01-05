@@ -148,9 +148,9 @@
     const chatMessages = document.getElementById('chat-messages');
     const initialMessage = document.getElementById('initialMessage');
     const questions = [{% for q in question %}'{{ q }}', {% endfor %}];
-    const chatbots_ids = [{% for q in chatbots_ids %}'{{ q }}', {% endfor %}];
+    const chatbots_ids = [{% for q in chatbots_ids %}'{{ q }}', {% endfor %}]; //생성된 챗봇 모델 고유 아이디 가져오기
     console.log(chatbots_ids[0]);
-
+    let chatbots_id = chatbots_ids[0];
 
     let currentQuestionIndex = 1;  // 0번째 질문은 이미 보여주었으므로 1부터 시작
     let exitConversation = false; // 대화 중단 원할시 True, 대화 계속 하길 원할시 False
@@ -231,38 +231,6 @@
                 }
             }
 
-
-
-
-            /*// '네'에 대한 응답을 자동으로 추가
-            if (results === '부정') {
-                const neMessage = document.createElement('div');
-                neMessage.className = 'message received';
-                neMessage.innerHTML = `<div class="message-bubble">혹시 대화를 종료하기를 원하시나요?</div>`;
-                chatMessages.appendChild(neMessage);
-                exitConversation = True;
-            } else {
-                // 긍정 혹은 중립일 경우 실행되는 부분
-                if (currentQuestionIndex < questions.length) {
-                    const neMessage = document.createElement('div');
-                    neMessage.className = 'message received';
-                    neMessage.innerHTML = `<div class="message-bubble">${questions[currentQuestionIndex]}</div>`;
-                    chatMessages.appendChild(neMessage);
-                    currentQuestionIndex += 1;
-                } else {
-                    // 모든 질문에 대한 응답이 끝났을 경우 채팅 종료
-                    const endMessage = document.createElement('div');
-                    endMessage.className = 'message received';
-                    endMessage.innerHTML = '<div class="message-bubble">채팅이 종료되었습니다.</div>';
-                    chatMessages.appendChild(endMessage);
-                    // 추가로 필요한 동작 수행 (채팅 종료 등)
-                }
-            }*/
-
-
-
-
-
             // 입력창 초기화 및 포커스 유지
             chatInput.value = '';
             chatInput.focus();
@@ -280,7 +248,7 @@
             // 결과를 저장할 배열 선언
             let all_messages = [];
             // 각 message 요소에 대해 반복
-            messageElements.forEach(function(messageElement) {
+            messageElements.forEach(async function(messageElement) {
                 // 각 message 요소 안에 있는 message-bubble 요소 선택
                 var messageBubble = messageElement.querySelector('.message-bubble');
 
@@ -289,34 +257,33 @@
                     var text = messageBubble.textContent.trim();
                     all_messages.push(text);
                 }
+            // 데이터 백앤드로 전송하기
             });
-
             // 결과 확인
             console.log(all_messages);
             console.log()
-            // 데이터 백앤드로 전송하기
             let send_message_results = await save_all_messages(all_messages);
             console.log(send_message_results);
-            
         }
         
     }
 
     // 모든 채팅 데이터 백앤드로 전달하기
-    async function save_all_messages(AllMessages) {
+    async function save_all_messages(all_messages) {
         try {
-            const response = await fetch('/client/start_tm/message_results/', {
+            let save_response = await fetch('/client/start_tm/message_results/', {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
-                    //'X-CSRFToken': csrf_token,  // Django에서 사용하는 CSRF 토큰을 포함시켜야 함
                 },
                 body: JSON.stringify({
                     'all_messages': all_messages,
-                    'chatbots_ids': chatbots_ids[0],
+                    'chatbots_id': chatbots_id,
                 }),
             });
-            const data = await response.json();
+            const data = await save_response.json();
+            console.log("@@@@@@@@@@@@@@@@");
+            console.log(data);
     
             return data.result;  // 예시로 결과 값 반환
         } catch (error) {

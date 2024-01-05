@@ -2,7 +2,7 @@ from django.urls import path, reverse, reverse_lazy
 from django.views.generic import TemplateView, ListView, CreateView, DetailView, UpdateView, DeleteView
 from . import views
 from .models import *
-from .views import ClientListView, text_processing
+from .views import ClientListView, text_processing, message_results
 from django.shortcuts import render
 
 
@@ -29,7 +29,7 @@ urlpatterns = [
     # path('audio/', audio, name='audio'),
     # path('save_audio/', views.save_audio, name='save_audio'),
     path('start_tm/text_processing/', text_processing, name='text_processing'), # 텍스트 감정분류(아웃바운드 챗봇)
-    path('start_tm/message_results/', text_processing, name='message_results'), # 챗봇 채팅 내역 전달부분
+    path('start_tm/message_results/', message_results, name='message_results'), # 챗봇 채팅 내역 전달부분
 ]
 
 
