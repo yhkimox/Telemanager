@@ -22,7 +22,9 @@
             {% csrf_token %}
             {{ form.as_p }}
             <div class="table-wrapper">
+                <a href="{% url 'account:password_change' %}">암호 변경하기</a>
                 <button type="submit" id="submitBtn">저장</button>
+                <a href="{% url 'account:profile' %}">취소</a>
             </div>
         </form>
     </div>
@@ -33,7 +35,7 @@
     -->
     
     <!-- 모달 창 -->
-    <div class="modal fade" id="myModal">
+    {% comment %} <div class="modal fade" id="myModal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -50,6 +52,6 @@
     </div>
     <a href="{% url 'account:password_change' %}">암호 변경하기</a>
    
-    <a href="{% url 'account:profile' %}">취소</a>
+    <a href="{% url 'account:profile' %}">취소</a> {% endcomment %}
 </div>
 {% endblock %}
