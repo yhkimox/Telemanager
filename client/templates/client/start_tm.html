@@ -138,29 +138,38 @@
         // 대화 불러오기
         let All_Chats = await getClientAllMessages(chatbots_id);
         console.log("html에서 불러온 채팅 전부");
-        console.log(All_Chats);
+        //console.log(All_Chats);
         console.log(All_Chats.outbound_end);
-        //console.log(All_Chats.result);
+        console.log(All_Chats.result);
         //console.log(All_Chats.outbound_message);
 
-        if (All_Chats.outbound_end) {
-            console.log("대화가 끝난 상태");
-        }
-        // 대화 첫화면에 보이게 하기
+
+        
         // chat-messages 요소를 가져오기
         var chatMessagesContainer = document.getElementById('chat-messages');
-        // 새로운 메시지 요소를 생성
-        var newMessageElement = document.createElement('div');
-        newMessageElement.className = 'message received';
-        // 새로운 메시지 버블을 생성하고 내용을 설정
-        var newMessageBubble = document.createElement('div');
-        newMessageBubble.className = 'message-bubble';
-        newMessageBubble.textContent = All_Chats.outbound_message;
-        // 새로운 메시지 버블을 메시지 요소에 추가
-        newMessageElement.appendChild(newMessageBubble);
-        // chat-messages에 새로운 메시지 요소를 추가
-        chatMessagesContainer.appendChild(newMessageElement);
+        if (All_Chats.outbound_end) {
+            console.log("대화가 끝난 상태");
+        
+            // 여기에 대화 기록 전부 보여줘야 함
 
+
+
+        } else {
+            // 대화 첫화면에 보이게 하기
+            // 새로운 메시지 요소를 생성
+            var newMessageElement = document.createElement('div');
+            newMessageElement.className = 'message received';
+            // 새로운 메시지 버블을 생성하고 내용을 설정
+            var newMessageBubble = document.createElement('div');
+            newMessageBubble.className = 'message-bubble';
+            newMessageBubble.textContent = All_Chats.outbound_message;
+            // 새로운 메시지 버블을 메시지 요소에 추가
+            newMessageElement.appendChild(newMessageBubble);
+            // chat-messages에 새로운 메시지 요소를 추가
+            chatMessagesContainer.appendChild(newMessageElement);
+
+        }
+        
     }
 
 
