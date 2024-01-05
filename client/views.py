@@ -403,7 +403,7 @@ def start_tm(request):
             
             # 질문지 생성부분
             ments = make_phrases(client_values, input_data, embeding_file_url, start_tm_hf, llm)
-            print(ments)
+            # print(ments)
             print(f"{c}의 문구 생성 완료")
            
             # 데이터 저장하기
@@ -546,16 +546,11 @@ def message_results(request): # 프론트앤드에서 채팅 내용 모두 저�
         data = json.loads(request.body)
         all_messages = data.get('all_messages')
         chatbots_id = data.get('chatbots_id')
-        print(f"파이썬에서 받은 데이터")
-        print(all_messages)
-        print(chatbots_id)
-        print("파이썬 끝")
-        # 모델에 저장
-        # chatbot = ChatBot.objects.get(id=chatbots_id)
-        # chatbot.messages = all_messages
-        # chatbot.save()
-
-        # return JsonResponse({"result": "All Message Save Success."})
+        # print(f"파이썬에서 받은 데이터")
+        # print(all_messages)
+        # print(chatbots_id)
+        # print("파이썬 끝")
+        
         if chatbots_id is not None:
             try:
                 # 모델에 저장
@@ -564,6 +559,7 @@ def message_results(request): # 프론트앤드에서 채팅 내용 모두 저�
                     role = all_messages[i] if i < len(all_messages) else None
                     content = all_messages[i + 1] if i + 1 < len(all_messages) else None
                     chatbot.add_message(role, content)
+                print(chatbot.messages)
                 return JsonResponse({"result": "All Message Save Success."})
             except ChatBot.DoesNotExist:
                 return JsonResponse({"error": f"ChatBot with id {chatbots_id} does not exist."}, status=404)
