@@ -588,17 +588,14 @@ def sendAllMessages(request): # 프론트앤드에서 채팅 내용 모두 저�
     if request.method == 'POST':
         data = json.loads(request.body)
         chatbots_id = data.get('chatbots_id')
-        if chatbots_id is not None:
-            try:
-                # 모델에 저장
-                chatbot = ChatBot.objects.get(id=chatbots_id)
-                print(chatbot.messages)
-                print(chatbot.outbound_message)
-                return JsonResponse({"result": chatbot.messages, "outbound_message":chatbot.outbound_message})
-            except ChatBot.DoesNotExist:
-                return JsonResponse({"error": f"ChatBot with id {chatbots_id} does not exist."}, status=404)
-        else:
-            return JsonResponse({"error": "chatbots_id is required in the request."}, status=400)
+        # print("파이썬에서 받은거")
+        # print(chatbots_id)
+        chatbot = ChatBot.objects.get(id=chatbots_id)
+        # print(chatbot.messages)
+        # print(chatbot.outbound_message)
+        # print(chatbot.outbound_message.split("\n")[0])
+        # print("끝")
+        return JsonResponse({"result": chatbot.messages, "outbound_message":chatbot.outbound_message.split("\n")[0]})
 
     return JsonResponse({'status': 'error'})
 # # 녹음한 파일을 저장하는 function
