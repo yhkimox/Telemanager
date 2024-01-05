@@ -593,13 +593,16 @@ def sendAllMessages(request): # 프론트앤드에서 채팅 내용 모두 저�
         # print("파이썬에서 받은거")
         # print(chatbots_id)
         chatbot = ChatBot.objects.get(id=chatbots_id)
+        n = len([i for i in chatbot.outbound_message.split("\n") if len(i)>0])
         # print(chatbot.messages)
         # print(chatbot.outbound_message)
         # print(chatbot.outbound_message.split("\n")[0])
         # print("끝")
         return JsonResponse({"result": chatbot.messages, 
                              "outbound_message":chatbot.outbound_message.split("\n")[0],
-                             "outbound_end":chatbot.outbound_end})
+                             "outbound_end":chatbot.outbound_end,
+                             "q_len":n,
+                             })
 
     return JsonResponse({'status': 'error'})
 # # 녹음한 파일을 저장하는 function

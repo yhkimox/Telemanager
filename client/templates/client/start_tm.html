@@ -102,11 +102,12 @@
     let chatbots_id;
 
     let currentQuestionIndex = 1;  // 0번째 질문은 이미 보여주었으므로 1부터 시작
+    let lastQuestionIndex; // 마지막 질문 인덱스
     let exitConversation = false; // 대화 중단 원할시 True, 대화 계속 하길 원할시 False
     let finalConversation = false; // 대화가 종료 되었을 경우 True, 대화가 끝나지 않을 경우 false
     let currentChatbotId = null;
 
-    async function showClientName(clientName, chatbotId) {
+    async function showClientName(clientName) {
         // 클릭한 클라이언트의 이름을 표시하는 부분을 업데이트
         const clickedClientNameElement = document.getElementById('clickedClientName');
         clickedClientNameElement.textContent = clientName;
@@ -137,11 +138,36 @@
 
         // 대화 불러오기
         let All_Chats = await getClientAllMessages(chatbots_id);
-        console.log("html에서 불러온 채팅 전부");
+        //console.log("html에서 불러온 채팅 전부");
         //console.log(All_Chats);
-        console.log(All_Chats.outbound_end);
-        console.log(All_Chats.result);
+        //console.log(All_Chats.outbound_end);
+        //console.log(All_Chats.result);
         //console.log(All_Chats.outbound_message);
+
+
+        // 초기 대화값의 인덱스 설정
+        // HTML 엔터티 디코딩 함수
+        function decodeEntities(encodedString) {
+            var textArea = document.createElement('textarea');
+            textArea.innerHTML = encodedString;
+            return textArea.value;
+        }
+        var tmp_index = questions.indexOf(All_Chats.outbound_message);
+        if (All_Chats.outbound_end==='End') { //대화 안끝났으면 false로 초기화 해주기
+            finalConversation=true
+        } else {
+            finalConversation=false
+            for (var i = 0; i < questions.length; i++) {
+                if (decodeEntities(questions[i])===All_Chats.outbound_message) {
+                    console.log("Start ment indexOf");
+                    currentQuestionIndex = i+1 // 첫 대화의 초기 값 세팅   
+                    console.log(i);
+                }
+            }
+            lastQuestionIndex = All_Chats.q_len+currentQuestionIndex; // 문구의 마지막 인덱스 
+            console.log(lastQuestionIndex);
+        }
+
 
 
         
@@ -245,11 +271,11 @@
 
 
 
-
-
-
     async function sendMessage() {
         const userMessage = chatInput.value.trim();
+        
+
+
 
         if (userMessage !== '') {
             // 사용자의 입력을 채팅창에 동적으로 추가
@@ -275,7 +301,7 @@
                     exitConversation = true;
                 } else {
                     // 긍정 혹은 중립일 경우 실행되는 부분
-                    if (currentQuestionIndex < questions.length) {
+                    if (currentQuestionIndex < lastQuestionIndex) {
                         const neMessage = document.createElement('div');
                         neMessage.className = 'message received';
                         neMessage.innerHTML = `<div class="message-bubble">${questions[currentQuestionIndex]}</div>`;
@@ -305,7 +331,7 @@
                 } else {
                     exitConversation = false;
                     // 긍정 혹은 중립일 경우 실행되는 부분
-                    if (currentQuestionIndex < questions.length) {
+                    if (currentQuestionIndex < lastQuestionIndex) {
                         const neMessage = document.createElement('div');
                         neMessage.className = 'message received';
                         neMessage.innerHTML = `<div class="message-bubble">${questions[currentQuestionIndex]}</div>`;
@@ -326,10 +352,10 @@
             chatInput.value = '';
             chatInput.focus();
         }
-
-
+        //console.log("길이 테스트");
+        //console.log(questions.length, currentQuestionIndex);
         // 대화 질문 끝까지 안내 나갔을 경우
-        if (questions.length === currentQuestionIndex){
+        if ((lastQuestionIndex-1) === currentQuestionIndex){
             finalConversation = true;
         }
         // 대화가 끝났을 경우 채팅 내용 백앤드에 저장되게 실행
