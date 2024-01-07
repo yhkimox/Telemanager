@@ -3,8 +3,13 @@ from django import forms
 from .models import Profile
 from django.contrib.auth.models import User
 from .models import CompanyFile
+from captcha.fields import CaptchaField
+from django_recaptcha.fields import ReCaptchaField
+from django_recaptcha.widgets import ReCaptchaV2Checkbox 
 
 class SignupForm(UserCreationForm):
+    
+    captcha = ReCaptchaField(widget=ReCaptchaV2Checkbox)
     
     class Meta(UserCreationForm.Meta):
         fields = UserCreationForm.Meta.fields + ('email', 'username')

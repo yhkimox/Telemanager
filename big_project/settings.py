@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     "post",
     'import_export',
     'django_extensions',
+    'captcha',
+    'django_recaptcha',
 ]
 
 MIDDLEWARE = [
@@ -175,3 +177,7 @@ WHITE_LIST_CLIENT = ['xlsx', 'xls']  # 허용하는 확장자 제한
 
 FILE_SIZE_LIMIT_COMPANY = 31457280   # 업로드 하는 파일의 최대 사이즈 제한 30 * 1024 * 1024 (30MB)
 WHITE_LIST_COMPANY = ['csv']         # 허용하는 확장자 제한
+
+RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_PUBLIC_KEY', 'default_value_if_not_set')
+RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_PRIVATE_KEY', 'default_value_if_not_set')
+SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']

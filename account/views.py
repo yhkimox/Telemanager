@@ -32,6 +32,8 @@ from django.http import HttpResponseForbidden
 from django.views.generic import TemplateView
 from django.contrib.auth.forms import AuthenticationForm
 import chardet
+from captcha.fields import CaptchaField
+from django_recaptcha.fields import ReCaptchaField
 ALLOW_URL_LIST = settings.ALLOW_URL_LIST
 FILE_COUNT_LIMIT = settings.FILE_COUNT_LIMIT         
 FILE_SIZE_LIMIT_CLIENT = settings.FILE_SIZE_LIMIT_CLIENT 
@@ -79,16 +81,20 @@ class AgreementView(IPRequiredMixin, View):
         
 # 회원가입
 def signup(request):
-
     client_ip = request.META.get('REMOTE_ADDR')
 
     # 허용 목록에 IP 주소가 있는지 확인
     if client_ip not in ALLOW_URL_LIST:
         return redirect('account:urlerror')
-    
+
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
+            # CAPTCHA 검증
+            if not form.cleaned_data.get('captcha'):
+                form.add_error(None, 'CAPTCHA 검증에 실패했습니다.')
+                return render(request, 'registration/signup.html', {'form': form})
+
             user = form.save(commit=False)
             user.save()
 
@@ -97,8 +103,9 @@ def signup(request):
             return redirect(settings.LOGIN_URL)
     else:
         form = SignupForm()
-            
-    return render(request, 'registration/signup.html',{'form':form})
+
+    return render(request, 'registration/signup.html', {'form': form})
+
 
 @login_required
 def profile_update(request):
