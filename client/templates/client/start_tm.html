@@ -110,6 +110,7 @@
     async function showClientName(clientName) {
         // 클릭한 클라이언트의 이름을 표시하는 부분을 업데이트
         const clickedClientNameElement = document.getElementById('clickedClientName');
+        var sendButton = document.querySelector('.send-button');
         clickedClientNameElement.textContent = clientName;
 
         // 메시지 깔끔하게 정리하는 부분
@@ -143,6 +144,14 @@
         //console.log(All_Chats.outbound_end);
         //console.log(All_Chats.result);
         //console.log(All_Chats.outbound_message);
+
+        if (All_Chats.outbound_end==='End') { //대화 안끝났으면 false로 초기화 해주기
+            finalConversation=true
+            sendButton.disabled = true;
+        } else {
+            finalConversation=false
+            sendButton.disabled = false;
+        }
 
 
         // 초기 대화값의 인덱스 설정
@@ -381,6 +390,9 @@
             console.log()
             let send_message_results = await save_all_messages(all_messages);
             console.log(send_message_results);
+
+            var sendButton = document.querySelector('.send-button');
+            sendButton.disabled = true;
         }
         
     }
