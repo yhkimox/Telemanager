@@ -57,9 +57,9 @@ WHITE_LIST_CLIENT = settings.WHITE_LIST_CLIENT
 
 class IPRequiredMixin:
     def dispatch(self, request, *args, **kwargs):
-        client_ip = request.META.get('REMOTE_ADDR')
-        if client_ip not in settings.ALLOW_URL_LIST:
-            return HttpResponseForbidden(render(request, 'index.html'))
+        # client_ip = request.META.get('REMOTE_ADDR')
+        # if client_ip not in settings.ALLOW_URL_LIST:
+        #     return HttpResponseForbidden(render(request, 'index.html'))
         return super().dispatch(request, *args, **kwargs)
     
 class ClientListView(IPRequiredMixin, LoginRequiredMixin, ListView):
@@ -134,11 +134,11 @@ def error_page(request):
 
 def upload_excel(request): 
 
-    client_ip = request.META.get('REMOTE_ADDR')
+    # client_ip = request.META.get('REMOTE_ADDR')
 
-    # 허용 목록에 IP 주소가 있는지 확인
-    if client_ip not in ALLOW_URL_LIST:
-        return redirect('account:urlerror')
+    # # 허용 목록에 IP 주소가 있는지 확인
+    # if client_ip not in ALLOW_URL_LIST:
+    #     return redirect('account:urlerror')
 
     
     
@@ -242,11 +242,11 @@ def upload_excel(request):
 
 def edit_client(request, client_id):
     
-    client_ip = request.META.get('REMOTE_ADDR')
+    # client_ip = request.META.get('REMOTE_ADDR')
 
-    # 허용 목록에 IP 주소가 있는지 확인
-    if client_ip not in ALLOW_URL_LIST:
-        return redirect('account:urlerror')
+    # # 허용 목록에 IP 주소가 있는지 확인
+    # if client_ip not in ALLOW_URL_LIST:
+    #     return redirect('account:urlerror')
 
     
     client = get_object_or_404(Client, id=client_id, user=request.user)
@@ -264,11 +264,11 @@ def edit_client(request, client_id):
 @login_required
 def delete_client(request, client_id):
     
-    client_ip = request.META.get('REMOTE_ADDR')
+    # client_ip = request.META.get('REMOTE_ADDR')
 
-    # 허용 목록에 IP 주소가 있는지 확인
-    if client_ip not in ALLOW_URL_LIST:
-        return redirect('account:urlerror')
+    # # 허용 목록에 IP 주소가 있는지 확인
+    # if client_ip not in ALLOW_URL_LIST:
+    #     return redirect('account:urlerror')
 
     
     client = get_object_or_404(Client, id=client_id, user=request.user)
@@ -282,11 +282,11 @@ def delete_client(request, client_id):
 
 def selected_items(request):
 
-    client_ip = request.META.get('REMOTE_ADDR')
+    # client_ip = request.META.get('REMOTE_ADDR')
 
-    # 허용 목록에 IP 주소가 있는지 확인
-    if client_ip not in ALLOW_URL_LIST:
-        return redirect('account:urlerror')
+    # # 허용 목록에 IP 주소가 있는지 확인
+    # if client_ip not in ALLOW_URL_LIST:
+    #     return redirect('account:urlerror')
 
     
     selected_clients = request.GET.get('selected_clients', '').split(',')
@@ -318,11 +318,11 @@ def selected_items(request):
 
 def start_tm(request):
     
-    client_ip = request.META.get('REMOTE_ADDR')
+    # client_ip = request.META.get('REMOTE_ADDR')
 
-    # 허용 목록에 IP 주소가 있는지 확인
-    if client_ip not in ALLOW_URL_LIST:
-        return redirect('account:urlerror')
+    # # 허용 목록에 IP 주소가 있는지 확인
+    # if client_ip not in ALLOW_URL_LIST:
+    #     return redirect('account:urlerror')
 
 
     # global start_tm_hf
@@ -528,11 +528,11 @@ pipe = pipeline("text-classification", model=sentence_model, tokenizer=sentence_
 def text_processing(request):
 
     
-    client_ip = request.META.get('REMOTE_ADDR')
+    # client_ip = request.META.get('REMOTE_ADDR')
 
-    # 허용 목록에 IP 주소가 있는지 확인
-    if client_ip not in ALLOW_URL_LIST:
-        return redirect('account:urlerror')
+    # # 허용 목록에 IP 주소가 있는지 확인
+    # if client_ip not in ALLOW_URL_LIST:
+    #     return redirect('account:urlerror')
 
 
     global pipe
