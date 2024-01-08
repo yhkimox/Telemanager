@@ -18,11 +18,11 @@ WHITE_LIST_CLIENT = settings.WHITE_LIST_CLIENT
 ### 데코레이터 정의 - def 에 적용
 def check_ip_allowed(view_func):
     def _wrapped_view(request, *args, **kwargs):
-        # URL CHECK
-        client_ip = request.META.get('REMOTE_ADDR')
+        # # URL CHECK
+        # client_ip = request.META.get('REMOTE_ADDR')
         
-        if client_ip not in ALLOW_URL_LIST:
-            return redirect('account:urlerror')  # 특정 URL로 리디렉션
+        # if client_ip not in ALLOW_URL_LIST:
+        #     return redirect('account:urlerror')  # 특정 URL로 리디렉션
         
         return view_func(request, *args, **kwargs)
     return _wrapped_view

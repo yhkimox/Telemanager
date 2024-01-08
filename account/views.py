@@ -34,6 +34,8 @@ from django.contrib.auth.forms import AuthenticationForm
 import chardet
 from captcha.fields import CaptchaField
 from django_recaptcha.fields import ReCaptchaField
+from .utils import read_word_file
+
 ALLOW_URL_LIST = settings.ALLOW_URL_LIST
 FILE_COUNT_LIMIT = settings.FILE_COUNT_LIMIT         
 FILE_SIZE_LIMIT_CLIENT = settings.FILE_SIZE_LIMIT_CLIENT 
@@ -45,9 +47,9 @@ WHITE_LIST_COMPANY = settings.WHITE_LIST_COMPANY
 
 class IPRequiredMixin:
     def dispatch(self, request, *args, **kwargs):
-        client_ip = request.META.get('REMOTE_ADDR')
-        if client_ip not in ALLOW_URL_LIST:
-            return redirect('account:urlerror')
+        # client_ip = request.META.get('REMOTE_ADDR')
+        # if client_ip not in ALLOW_URL_LIST:
+        #     return redirect('account:urlerror')
         return super().dispatch(request, *args, **kwargs)
 
 class ProfileView(IPRequiredMixin, TemplateView):
@@ -55,11 +57,11 @@ class ProfileView(IPRequiredMixin, TemplateView):
     
 def index(request):
     
-    client_ip = request.META.get('REMOTE_ADDR')
+    # client_ip = request.META.get('REMOTE_ADDR')
 
-    # 허용 목록에 IP 주소가 있는지 확인
-    if client_ip not in ALLOW_URL_LIST:
-        return redirect('account:urlerror')
+    # # 허용 목록에 IP 주소가 있는지 확인
+    # if client_ip not in ALLOW_URL_LIST:
+    #     return redirect('account:urlerror')
     
     return render(request, 'registration/login.html')
 
@@ -81,11 +83,11 @@ class AgreementView(IPRequiredMixin, View):
         
 # 회원가입
 def signup(request):
-    client_ip = request.META.get('REMOTE_ADDR')
+    # client_ip = request.META.get('REMOTE_ADDR')
 
-    # 허용 목록에 IP 주소가 있는지 확인
-    if client_ip not in ALLOW_URL_LIST:
-        return redirect('account:urlerror')
+    # # 허용 목록에 IP 주소가 있는지 확인
+    # if client_ip not in ALLOW_URL_LIST:
+    #     return redirect('account:urlerror')
 
     if request.method == 'POST':
         form = SignupForm(request.POST)
@@ -110,11 +112,11 @@ def signup(request):
 @login_required
 def profile_update(request):
 
-    client_ip = request.META.get('REMOTE_ADDR')
+    # client_ip = request.META.get('REMOTE_ADDR')
 
-    # 허용 목록에 IP 주소가 있는지 확인
-    if client_ip not in ALLOW_URL_LIST:
-        return redirect('account:urlerror')
+    # # 허용 목록에 IP 주소가 있는지 확인
+    # if client_ip not in ALLOW_URL_LIST:
+    #     return redirect('account:urlerror')
     
     if request.method == 'POST':
         form = ProfileUpdateForm(request.POST, instance=request.user)
@@ -158,11 +160,11 @@ class UserPasswordResetView(IPRequiredMixin, PasswordResetView):
         return JsonResponse({'email_not_exists': True})
 
 def error_page(request):
-    client_ip = request.META.get('REMOTE_ADDR')
+    # client_ip = request.META.get('REMOTE_ADDR')
 
-    # 허용 목록에 IP 주소가 있는지 확인
-    if client_ip not in ALLOW_URL_LIST:
-        return redirect('account:urlerror')
+    # # 허용 목록에 IP 주소가 있는지 확인
+    # if client_ip not in ALLOW_URL_LIST:
+    #     return redirect('account:urlerror')
     
     return render(request, 'upload/error.html', {'error_message': '잘못된 요청입니다.'})
 
@@ -173,11 +175,11 @@ def urlerror_page(request):
 
 @login_required
 def file_upload(request):
-    client_ip = request.META.get('REMOTE_ADDR')
+    # client_ip = request.META.get('REMOTE_ADDR')
 
-    # 허용 목록에 IP 주소가 있는지 확인
-    if client_ip not in ALLOW_URL_LIST:
-        return redirect('account:urlerror')
+    # # 허용 목록에 IP 주소가 있는지 확인
+    # if client_ip not in ALLOW_URL_LIST:
+    #     return redirect('account:urlerror')
     
     if request.method == 'POST':
         form = CompanyFileForm(request.POST, request.FILES)
@@ -263,11 +265,11 @@ def detect_encoding(file_path):
 @login_required
 def file_list(request):
     
-    client_ip = request.META.get('REMOTE_ADDR')
+    # client_ip = request.META.get('REMOTE_ADDR')
 
-    # 허용 목록에 IP 주소가 있는지 확인
-    if client_ip not in ALLOW_URL_LIST:
-        return redirect('account:urlerror')
+    # # 허용 목록에 IP 주소가 있는지 확인
+    # if client_ip not in ALLOW_URL_LIST:
+    #     return redirect('account:urlerror')
     
     files = CompanyFile.objects.filter(user=request.user)
     return render(request, 'upload/list.html', {'files': files})
@@ -276,11 +278,11 @@ def file_list(request):
 @login_required
 def edit_file(request, file_id):
     
-    client_ip = request.META.get('REMOTE_ADDR')
+    # client_ip = request.META.get('REMOTE_ADDR')
 
-    # 허용 목록에 IP 주소가 있는지 확인
-    if client_ip not in ALLOW_URL_LIST:
-        return redirect('account:urlerror')
+    # # 허용 목록에 IP 주소가 있는지 확인
+    # if client_ip not in ALLOW_URL_LIST:
+    #     return redirect('account:urlerror')
     
     file = get_object_or_404(CompanyFile, id=file_id, user=request.user)
 
@@ -298,11 +300,11 @@ def edit_file(request, file_id):
 @login_required
 def delete_file(request, file_id):
 
-    client_ip = request.META.get('REMOTE_ADDR')
+    # client_ip = request.META.get('REMOTE_ADDR')
 
-    # 허용 목록에 IP 주소가 있는지 확인
-    if client_ip not in ALLOW_URL_LIST:
-        return redirect('account:urlerror')
+    # # 허용 목록에 IP 주소가 있는지 확인
+    # if client_ip not in ALLOW_URL_LIST:
+    #     return redirect('account:urlerror')
     
     file = get_object_or_404(CompanyFile, id=file_id, user=request.user)
 
@@ -353,11 +355,11 @@ class DeleteSelectedFilesView(LoginRequiredMixin, View):
 
 def before(request, message=None):
     
-    client_ip = request.META.get('REMOTE_ADDR')
+    # client_ip = request.META.get('REMOTE_ADDR')
 
-    # 허용 목록에 IP 주소가 있는지 확인
-    if client_ip not in ALLOW_URL_LIST:
-        return redirect('account:urlerror')
+    # # 허용 목록에 IP 주소가 있는지 확인
+    # if client_ip not in ALLOW_URL_LIST:
+    #     return redirect('account:urlerror')
     
     message = request.GET.get('message')
     
@@ -428,3 +430,15 @@ class CustomLoginView(IPRequiredMixin, LoginView):
 
         # 기본적으로는 다시 로그인 페이지로 리디렉션합니다.
         return super().form_invalid(form)
+    
+
+def login_view(request):
+    # 다른 부분 처리...
+
+    # read_word_file 함수 호출 및 결과를 context에 추가
+    context = {
+        # 다른 context 변수들...
+        'word_content': read_word_file("../../../media/file/개인정보 수집 및 활용 동의서.docx"),
+    }
+
+    return render(request, 'registration/login.html', context)

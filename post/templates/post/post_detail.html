@@ -22,6 +22,22 @@
         background-color: #eeeeee; /* 밝은 청회색 배경색 추가, 원하는 색상으로 조절하세요 */
         border-radius: 5px; /* 텍스트 상자를 조금 둥글게 만들기, 원하는 정도로 조절하세요 */
     }
+
+    .comment-section {
+        border: 1px solid #dddddd; /* 테두리 추가, 원하는 색상 및 두께로 조절하세요 */
+        border-radius: 5px; /* 테두리를 조금 둥글게 만들기, 원하는 정도로 조절하세요 */
+        padding: 10px; /* 주변에 여백을 주고 싶다면 padding을 추가하세요 */
+        margin-top: 20px; /* 위쪽 여백 추가 */
+        display: none; /* 초기에는 숨김 처리 */
+    }
+
+    .comment-list {
+        border-bottom: 1px solid #dddddd; /* 댓글 목록과 댓글 쓰기 사이에 구분선 추가 */
+    }
+
+    .delete-button-container {
+        text-align: right; /* 버튼을 오른쪽에 정렬하는 스타일 */
+    }
 </style>
 
 <div id="main" class="container">
@@ -30,7 +46,8 @@
 
     <h1>{{ post.title }}</h1>
     <div>
-        <a> {{ post.author.username }}  | </a>
+        <a> {{ post.author.username }} </a>
+        <a> | </a>
         <a> {{ post.created }} </a>
     </div>
 
@@ -39,45 +56,66 @@
 
     
     <a href="/post/">Back to Post List</a>
+    <a> | </a>
     {% if user.is_authenticated and user == post.author %}
         <a href="{% url 'post:post_delete' pk=post.pk %}">Delete Post</a>
+        <a> | </a>
         <a href="{% url 'post:post_edit' pk=post.pk %}">Edit Post</a>
     {% endif %}
 
-    <br>
-    <h4>댓글 쓰기</h4>
+    <br><br>
+    <div class="comment-section">
+
+        {% for comment in post.comment_set.all %}
+            <div class="container">
+                <div class="card" id="contain2">
+                    <div class="card-body">
+                        <i class="fas fa-user-circle" id="peopleicon"></i>
+                        <p2 class="writer"> {{ comment.user }}  | </p2>
+                        <p2 class="coment_update"> {{ comment.updated }} </p2>
+                        <br>
+                        <p2 class="coment_content"> {{ comment.content }}</p2>
+
+                        <div class="delete-button-container">
+                            {% if user.is_authenticated and user == comment.user %}
+                            <!-- 현재 로그인한 사용자와 댓글 작성자가 일치하면 삭제 버튼 표시 -->
+                            <form method="post" action="{% url 'post:delete_comment' pk=post.pk comment_id=comment.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <br><br>
+    
     {% if user.is_authenticated == True %}
         <form action="{% url 'post:comment' post.id %}" method="POST" class="content_form">
             {% csrf_token %}
             <div class="form_community_detail"></div>
-            <textarea class="form-content" name="content"></textarea>
+            <textarea class="form-content" name="content" placeholder="댓글을 작성해주세요."></textarea>
             <input type="submit" value="작성" class="btn btn-outline-secondary btn-sm" id="comment_submit">
         </form>
     {% endif %}
 
-    <span class="comment_list">댓글 목록</span>
-
-    {% for comment in post.comment_set.all %}
-        <div class="container">
-            <div class="card" id="contain2">
-                <div class="card-body">
-                    <i class="fas fa-user-circle" id="peopleicon"></i>
-                    <p2 class="writer"> {{ comment.user }}  | </p2>
-                    <p2 class="coment_content"> {{ comment.content }}</p2>
-                    <br>
-                    <p2 class="coment_update"> {{ comment.updated }} </p2>
-                    <br>
-                    {% if user.is_authenticated and user == comment.user %}
-                    <!-- 현재 로그인한 사용자와 댓글 작성자가 일치하면 삭제 버튼 표시 -->
-                    <form method="post" action="{% url 'post:delete_comment' pk=post.pk comment_id=comment.id %}">
-                      {% csrf_token %}
-                      <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                    </form>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    {% endfor %}
 </div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var commentSection = document.querySelector('.comment-section');
+
+        // comment-section의 하위에 .container가 없으면 숨김 처리
+        if (!commentSection.querySelector('.container')) {
+            commentSection.style.display = 'none';
+        } else {
+            commentSection.style.display = 'block';
+        }
+    });
+</script>
 {% endblock %}
->>>>>>> cf8f4635bc2fbd75f418f1f18b8ebccc57e7ad1f
+

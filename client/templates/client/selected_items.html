@@ -12,17 +12,22 @@
 <style>
     .input-left {
         display: flex;
-        height: 50px;
+        //height: 50px;
         flex-direction: row; /* 요소들을 가로로 나란히 배치합니다 */
         align-items: center; /* 요소들을 세로로 가운데 정렬합니다 */
         margin-right: 10px; /* 오른쪽 마진을 추가하여 input 요소 사이에 간격을 조절합니다 */
+        order: 2; /* .input-left의 기본 순서를 2로 설정합니다 */
+        position: relative; /* 상대적인 위치 설정 */
+        
     }
 
     #textInput {
         flex: 1; /* textarea가 남은 공간을 차지하도록 함 */
         margin-right: 10px; /* 오른쪽 여백 추가 */
-        margin-top: 20px; /* 위쪽 여백 추가 */
-        height: 100px; /* 원하는 높이로 조절하세요 */
+        margin-top: 5px; /* 위쪽 여백 추가 */
+        //height: 100px; /* 원하는 높이로 조절하세요 */
+        resize: vertical; /* 수직 크기 조절을 허용합니다 */
+        overflow-y: auto; /* 내용이 textarea의 크기를 초과할 경우 스크롤을 추가합니다 */
     }
 
 
@@ -62,12 +67,12 @@
         {% csrf_token %}
         <h3 class='centered'>TM Message</h3>
         <br><br>
-        <div class='input-left'>
+        <div class='input-left_s'>
             <a>어떤 목적의 마케팅을 보내드릴까요?</a>
         </div>
         
         <div class='input-left'>
-            <textarea name="input_data" id="textInput" class="input-left" placeholder="TM 목적 입력" rows="4"></textarea>
+            <textarea name="input_data" id="textInput" placeholder="TM 목적 입력" rows="4"></textarea>
             <input type="submit" value="Send">
         </div>
         <br><br><br>
@@ -256,7 +261,7 @@
     });
 
     // 초기 로딩 시 한 번 높이 조절
-    window.addEventListener('load', adjustTextareaHeight);
+    //window.addEventListener('load', adjustTextareaHeight);
 
 </script>
 
