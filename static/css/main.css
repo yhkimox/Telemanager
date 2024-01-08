@@ -302,6 +302,49 @@
 	margin-right: 20px;
 }
 
+/* 추가한 스타일 */
+.post_content {
+	width: 100%;
+	margin: 0px auto;
+	padding: 10px;
+	font-size: 18px;
+	line-height: 1.6;
+	display: block;
+	border: 1px solid #000000;
+	box-sizing: border-box;
+	background-color: #eeeeee;
+	border-radius: 5px;
+	height: 200px; /* Set your desired max height */
+	overflow: auto;
+}
+
+.comment-section {
+	border: 1px solid #dddddd;
+	border-radius: 5px;
+	padding: 10px;
+	margin-top: 20px;
+	display: none;
+}
+
+.comment-list {
+	border-bottom: 1px solid #dddddd;
+}
+
+.delete-button-container {
+	text-align: right;
+}
+
+.form-content {
+	width: 80%; /* 조절 가능: 댓글 입력창의 너비를 조절합니다 */
+	height: 50px; /* 원하는 높이로 설정하세요 */
+	resize: vertical; /* 세로 크기 조절 허용 */
+}
+
+.btn-comment-submit {
+	width: 18%; /* 조절 가능: 버튼의 너비를 조절합니다 */
+	margin-left: 2%; /* 조절 가능: 두 요소 간의 간격을 조절합니다 */
+}
+
   
 
 

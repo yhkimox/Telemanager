@@ -8,6 +8,38 @@
 {% endblock %}
 
 {% block content %}
+<style>
+    .col2 {
+        margin-bottom: 5px; /* h3와 a 간격 조절 */
+    }
+
+    .col2 a {
+        margin-bottom: 100px; /* a와 p 간격 조절 */
+    }
+    .col2 p {
+        margin-bottom: 5px; /* 문단 간격을 조절합니다. */
+        position: relative;
+        padding-left: 25px; /* 체크 표시 전용 여백을 설정합니다. */
+    }
+
+    .col2 p::before {
+        content: "✔"; /* 체크 표시를 추가합니다. */
+        color: #3498db; /* 체크 표시의 색상을 설정합니다. */
+        position: absolute;
+        left: 5px; /* 체크 표시의 위치를 조절합니다. */
+    }
+
+    /* 마지막 세 개의 요소에 대한 스타일 */
+    .col2 .checked p {
+        content: "✔"; /* 체크 표시를 추가합니다. */
+        color: #3498db; /* 체크 표시의 색상을 설정합니다. */
+        position: absolute;
+        left: 5px; /* 체크 표시의 위치를 조절합니다. */
+        /* 특별한 스타일을 추가합니다. */
+        color: green; /* 텍스트 색상 변경 */
+        font-weight: bold; /* 텍스트 굵게 변경 */
+    }
+</style>
     <!-- 메인 -->
     <div id="main">
         <!-- 섹션 -->
@@ -21,14 +53,20 @@
                         </div>
                     </div>
                     <div class="col col2">
-                        <h3>고객 관리 페이지</h3>
-                        <p>내용</p>
+                        <h3>고객 마케팅</h3>
+                        <a>선택된 고객과 제공하신 마케팅 정보로 </a>
+                        <br>
+                        <a>고객에게 자동으로 아웃바운드 서비스를 제공합니다</a>
+                        <br><br>
+                        <p class="checked">Cost Efficiency Inventory</p>
+                        <p class="checked">Providing Personalized Customer Experience</p>
+                        <p class="checked">"Formulating Data-Driven Strategies</p>
+                        <br>
                         {% if user.is_authenticated %}
                             <a href="/client/" class="button">Learn More</a>    
                         {% else %}
                             <a href="/account/" class="button">Learn More</a>    
                         {% endif %}
-
                     </div>
                 </div>
             </div>
@@ -39,10 +77,10 @@
             <div class="inner">
                 <div class="flex flex-2">
                     <div class="col col2">
-                        <h3>Client TeleMarketing</h3>
+                        <h3>게시판</h3>
                         <p>내용</p>
                         {% if user.is_authenticated %}
-                            <a href="/chatbot/" class="button">Learn More</a>    
+                            <a href="/post/" class="button">Learn More</a>    
                         {% else %}
                             <a href="/account/" class="button">Learn More</a>    
                         {% endif %}
