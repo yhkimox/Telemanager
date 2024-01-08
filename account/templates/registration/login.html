@@ -8,100 +8,74 @@
 {% endblock %}
 
 {% block content %}
-<style>
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0, 0, 0, 0.5);
-    }
-    
-    .modal-content {
-        background-color: #fefefe;
-        margin: 10% auto;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 70%;
-        text-align: center; /* 동의 버튼을 가운데로 정렬 */
-        position: relative;
-        
-    }
-    
-    .close {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-    }
-    
-    .close:hover,
-    .close:focus {
-        color: black;
-        text-decoration: none;
-        cursor: pointer;
-        
-    }
+    <!-- main: 제목 h3, hr br br -->
+    <div id="main" class="container">
+        <hr><br><br>
 
-    .individual-checkbox {
-
-    }
-
-</style>
-
-<!--main
-: 제목 h3
-: hr br br-->
-<div id="main" class="container">
-    <hr><br><br>
-
-    <!-- Form -->
-    <div class="col align-center">
-        <div class="inner">
-            <h3>Login</h3>
-            <br>
-            <form method="post" action="#">
-                <div class="row uniform">
-                    {% csrf_token %}
-                    <table>
-                        {{ form.as_table }}
-                    </table>
-                </div>
-                <a href="#" id="showAgreementModal">회원이 아니신가요?</a>
-                <a> | </a>
-                <a href="{% url 'account:password_reset' %}">비밀번호 찾기</a>
-                <br><br>
-                <ul class="actions">
-                    <li><input type="submit" value="Login"></li>
-                </ul>
-            </form>
-        </div>
-    </div>
-
-    <div id="agreementModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            {% include 'registration/agreement.html' %}
-            <div class="agreement-checkbox">
-                <input type="checkbox" id="agreementCheckbox" name="agreementCheckbox">
-                <label for="agreementCheckbox">전체 약관에 동의합니다.</label>
+        <!-- Form -->
+        <div class="col align-center">
+            <div class="inner">
+                <h3>Login</h3>
+                <br>
+                <form method="post" action="#">
+                    <div class="row uniform">
+                        {% csrf_token %}
+                        <table>
+                            {{ form.as_table }}
+                        </table>
+                    </div>
+                    <a href="#" id="showAgreementModal">회원이 아니신가요?</a>
+                    <a> | </a>
+                    <a href="{% url 'account:password_reset' %}">비밀번호 찾기</a>
+                    <br><br>
+                    <ul class="actions">
+                        <li><input type="submit" value="Login"></li>
+                    </ul>
+                </form>
             </div>
-            <br>
-            <button type="submit">네, 동의합니다</button>
-            <button type="button" class="btn btn-primary" onclick="closeModal()">아니오, 동의하지 않습니다</button>
+        </div>
+
+        <div id="agreementModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <div class="agreement-content">
+                    <div class="scrollable-box">
+                        {{ word_content|safe }}
+                    </div>
+                    <label>
+                        <input type="checkbox" name="agreement1" class="individual-checkbox" required />
+                        <span>
+                            <input type="checkbox" id="agreementCheckbox1" name="agreementCheckbox1" class="hidden-checkbox">
+                            <span>위 내용을 읽었으며, 이용약관에 동의합니다.</span>
+                        </span>
+                    </label>
+                    <br><br>
+                    <div class="scrollable-box">
+                        <!-- 두 번째 약관 내용 -->
+                        <p>
+                            [기관명]은(는) 개인정보보호법 제17조 제1항 제1호에 근거하여, 다음과 같이 [제공 목적 ]을(를) 위하여 개인정보를 제3자에게 제공하는데 동의를 받고자 합니다. : [정보주체 이름]은(는) 위와 같이 개인정보를 수집․ 이용하는 데 대한 동의를 거부할 권리가 있습니다.
+                        </p>
+                    </div>
+                    <label>
+                        <input type="checkbox" name="agreement2" class="individual-checkbox" required />
+                        <span>
+                            <input type="checkbox" id="agreementCheckbox2" name="agreementCheckbox2" class="hidden-checkbox">
+                            <span>위 내용을 읽었으며, 개인정보 수집 및 이용에 동의합니다.</span>
+                        </span>
+                    </label>
+                </div>
+                <div class="agreement-checkbox">
+                    <input type="checkbox" id="agreementCheckbox" name="agreementCheckbox">
+                    <label for="agreementCheckbox">전체 약관에 동의합니다.</label>
+                </div>
+                <br>
+                <button type="button" onclick="handleAgreement()">네, 동의합니다</button>
+                <button type="button" class="btn btn-primary" onclick="closeModal()">아니오, 동의하지 않습니다</button>
+            </div>
         </div>
     </div>
 
-    
-</div>
-
-
-
-<!-- 모달 스크립트 -->
+    <!-- 모달 스크립트 -->
 <script>
     // Get the modal
     var agreementModal = document.getElementById('agreementModal');
@@ -118,10 +92,13 @@
         document.getElementById('banner').style.visibility = 'hidden';
         agreementModal.style.display = 'block';
 
-
         // 이 부분을 추가합니다.
         initializeAgreementModal();
     }
+
+    document.getElementById('disagreeButton').addEventListener('click', function () {
+        window.location.href = "{% url 'account:login' %}";
+    });
 
     // When the user clicks on <span> (x) or outside the modal, close it
     function closeModal() {
@@ -134,28 +111,36 @@
     }
 
     function initializeAgreementModal() {
-        var selectAllCheckbox = document.getElementById('selectAllCheckbox');
+        var selectAllCheckbox = document.getElementById('agreementCheckbox');
         var individualCheckboxes = document.querySelectorAll('.individual-checkbox');
 
+        // 체크박스 초기 상태 설정
+        individualCheckboxes.forEach(function (checkbox) {
+            checkbox.checked = selectAllCheckbox.checked;
+        });
+
+        // 전체 체크박스에 대한 이벤트 핸들러 등록
         selectAllCheckbox.addEventListener('change', function () {
             individualCheckboxes.forEach(function (checkbox) {
                 checkbox.checked = this.checked;
             }, this);
         });
-    
-        // 체크박스 초기 상태 설정
+
+        // 체크박스에 대한 이벤트 핸들러 등록
         individualCheckboxes.forEach(function (checkbox) {
-            checkbox.checked = selectAllCheckbox.checked;
+            checkbox.addEventListener('change', function () {
+                // 개별 체크박스가 변경될 때의 동작을 여기에 추가
+            });
         });
     }
-    
+
     // 모달이 열릴 때마다 초기화
     showAgreementModalBtn.onclick = function () {
         document.body.style.overflow = 'hidden';
         document.documentElement.style.overflowY = 'hidden';
         document.getElementById('banner').style.visibility = 'hidden';
         agreementModal.style.display = 'block';
-    
+
         initializeAgreementModal();
     };
 
@@ -166,14 +151,25 @@
         }
     }
 
-    function closeModal() {
-        // Enable scrolling when the modal is closed
-        document.body.style.overflow = 'auto';
-        document.documentElement.style.overflowY = 'auto';
-        agreementModal.style.display = 'none';
-        // Show the banner when the modal is closed
-        document.getElementById('banner').style.visibility = 'visible';
+    function handleAgreement() {
+        var individualCheckboxes = document.querySelectorAll('.individual-checkbox');
+        var allChecked = true;
+
+        // 모든 체크박스가 체크되었는지 확인
+        individualCheckboxes.forEach(function (checkbox) {
+            if (!checkbox.checked) {
+                allChecked = false;
+            }
+        });
+
+        if (!allChecked) {
+            alert('약관에 동의해야 합니다.');
+        } else {
+            // 동의된 경우 signup 페이지로 이동
+            window.location.href = "{% url 'account:signup' %}";
+        }
     }
 </script>
+
 
 {% endblock %}
