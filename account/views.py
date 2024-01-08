@@ -34,6 +34,8 @@ from django.contrib.auth.forms import AuthenticationForm
 import chardet
 from captcha.fields import CaptchaField
 from django_recaptcha.fields import ReCaptchaField
+from .utils import read_word_file
+
 ALLOW_URL_LIST = settings.ALLOW_URL_LIST
 FILE_COUNT_LIMIT = settings.FILE_COUNT_LIMIT         
 FILE_SIZE_LIMIT_CLIENT = settings.FILE_SIZE_LIMIT_CLIENT 
@@ -428,3 +430,15 @@ class CustomLoginView(IPRequiredMixin, LoginView):
 
         # 기본적으로는 다시 로그인 페이지로 리디렉션합니다.
         return super().form_invalid(form)
+    
+
+def login_view(request):
+    # 다른 부분 처리...
+
+    # read_word_file 함수 호출 및 결과를 context에 추가
+    context = {
+        # 다른 context 변수들...
+        'word_content': read_word_file("../../../media/file/개인정보 수집 및 활용 동의서.docx"),
+    }
+
+    return render(request, 'registration/login.html', context)

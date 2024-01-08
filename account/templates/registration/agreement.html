@@ -2,16 +2,6 @@
 
 {% load static %}
 {% block contents %}
-<style>
-    .scrollable-box {
-        border: 1px solid #ccc; /* 테두리 스타일 및 색상 지정 */
-        padding: 10px; /* 테두리와 내용 사이의 간격 지정 */
-        margin-bottom: 10px; /* 컨테이너 간의 간격 지정 (원하는 간격으로 조절) */
-        margin-left: 20px;
-        margin-right: 20px;
-    }
-</style>
-
 
 <form action="{% url 'account:agreement' %}" method="POST" id="agreementForm">
     {% csrf_token %}
@@ -60,16 +50,23 @@
 </form>
 
 <script>
-    document.getElementById('selectAllCheckbox').addEventListener('change', function () {
-        var checkboxes = document.querySelectorAll('.individual-checkbox');
-        checkboxes.forEach(function (checkbox) {
-            checkbox.checked = this.checked;
-        }, this);
+    const checkboxes = document.querySelectorAll('.individual-checkbox');
+
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            // 모든 체크박스가 선택되었는지 확인
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+
+            // 모든 체크박스가 선택되었다면 다른 액션을 수행
+            if (allChecked) {
+                // 여기에 선택되었을 때의 동작 추가
+                console.log('모든 체크박스가 선택되었습니다.');
+            }
+        });
     });
 
     document.getElementById('disagreeButton').addEventListener('click', function () {
         window.location.href = "{% url 'account:login' %}";
     });
-
 </script>
 {% endblock %}
