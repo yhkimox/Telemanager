@@ -22,13 +22,15 @@
             {% csrf_token %}
             {{ form.as_p }}
             <div class="table-wrapper">
-                <a href="{% url 'account:password_change' %}">암호 변경하기</a>
                 <button type="submit" id="submitBtn">저장</button>
-                <a href="{% url 'account:profile' %}">취소</a>
+                
             </div>
         </form>
     </div>
     <hr>
+    <a href="{% url 'account:password_change' %}">암호 변경하기</a>
+    <a> | </a>
+    <a href="{% url 'account:profile' %}">취소</a>
  
     <!-- 모달 버튼
     <a hx-get="#" hx-target="#myModal" hx-trigger="click">암호 변경하기</a>
