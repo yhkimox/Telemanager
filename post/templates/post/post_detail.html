@@ -33,8 +33,10 @@
 
     .comment-list {
         border-bottom: 1px solid #dddddd; /* 댓글 목록과 댓글 쓰기 사이에 구분선 추가 */
-        margin-bottom: 20px; /* 아래쪽 여백 추가 */
-        padding-bottom: 20px; /* 아래쪽 여백 추가 */
+    }
+
+    .delete-button-container {
+        text-align: right; /* 버튼을 오른쪽에 정렬하는 스타일 */
     }
 </style>
 
@@ -73,14 +75,16 @@
                         <p2 class="coment_update"> {{ comment.updated }} </p2>
                         <br>
                         <p2 class="coment_content"> {{ comment.content }}</p2>
-                        <br>
-                        {% if user.is_authenticated and user == comment.user %}
-                        <!-- 현재 로그인한 사용자와 댓글 작성자가 일치하면 삭제 버튼 표시 -->
-                        <form method="post" action="{% url 'post:delete_comment' pk=post.pk comment_id=comment.id %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                        </form>
-                        {% endif %}
+
+                        <div class="delete-button-container">
+                            {% if user.is_authenticated and user == comment.user %}
+                            <!-- 현재 로그인한 사용자와 댓글 작성자가 일치하면 삭제 버튼 표시 -->
+                            <form method="post" action="{% url 'post:delete_comment' pk=post.pk comment_id=comment.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
