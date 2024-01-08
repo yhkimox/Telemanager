@@ -41,10 +41,12 @@ from django.conf import settings
 from django.http import HttpResponseForbidden
 # from pydub import AudioSegment
 
-from transformers import BertForSequenceClassification
+# from transformers import BertForSequenceClassification
+from transformers import AlbertForSequenceClassification
 import torch
 from transformers import pipeline
 from transformers import BertTokenizer
+from transformers import BertTokenizerFast
 
 open_api_key = os.environ.get('OPENAI_API_KEY')
 
@@ -510,12 +512,15 @@ def make_phrases(user_info, purpose, embeding_url, hf, llm):
     return result
 
 # 문구 감정 분류 및 결과 내보내는 함수
-sentence_model = BertForSequenceClassification.from_pretrained("klue/bert-base", num_labels=3)
+# sentence_model = BertForSequenceClassification.from_pretrained("klue/bert-base", num_labels=3)
+sentence_model = AlbertForSequenceClassification.from_pretrained("kykim/albert-kor-base", num_labels=3)
 # Load model weights with map_location to 'cpu'
-sentence_model.load_state_dict(torch.load("./models/BERT_sentiment_analysis_model.pt", map_location='cpu'))
+# sentence_model.load_state_dict(torch.load("./models/BERT_sentiment_analysis_model.pt", map_location='cpu'))
+sentence_model.load_state_dict(torch.load("./models/ALBERT_sentiment_analysis_model.pt", map_location='cpu'))
 # Move the model to the specified device (either 'cpu' or 'cuda')
 sentence_model = sentence_model.to('cpu')
-sentence_tokenizer = BertTokenizer.from_pretrained('klue/bert-base')  # tokenizer 이름은 위에서 받은 사전학습된 모델의 이름이랑 항상 같아야 함
+# sentence_tokenizer = BertTokenizer.from_pretrained('klue/bert-base')  # tokenizer 이름은 위에서 받은 사전학습된 모델의 이름이랑 항상 같아야 함
+sentence_tokenizer = BertTokenizerFast.from_pretrained("kykim/albert-kor-base")
 # 여기에서 user_message를 사용하여 필요한 작업 수행
 pipe = pipeline("text-classification", model=sentence_model, tokenizer=sentence_tokenizer, function_to_apply='softmax', top_k=1)
 

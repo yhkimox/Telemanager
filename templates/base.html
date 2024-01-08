@@ -30,7 +30,7 @@
         <span class="header-text">
             {{user}}님,
             <span class="logout-form" onclick="logoutUser()">
-                <a href="/">Logout</a>
+                <a href="javascript:void(0)">Logout</a>
             </span>
         </span>
         {% endif %}
@@ -42,15 +42,12 @@
     <nav id="menu">
         <ul class="links">
             <li><a href="/">Home</a></li>
-            <li><a href='/client/'>고객관리</a></li>
-            <li><a href='/post/'>게시판</a></li>
             {% if user.is_authenticated %}
                 <li><a href='{%  url 'account:profile' %}'>내 정보</a></li>
-                <form method="post" action="{% url 'account:logout' %}">
-                    {% csrf_token %}
-                    <button type="submit">Logout</button>
-                </form>
             {% endif %}
+            <li><a href='/client/'>고객관리</a></li>
+            <li><a href='/post/'>게시판</a></li>
+            
         </ul>
     </nav>
 
@@ -90,17 +87,57 @@
         document.addEventListener('DOMContentLoaded', function() {
             // 페이지 로드 시에 #main 부분으로 스크롤되도록 설정
             var mainSection = document.getElementById('main');
-            mainSection.scrollIntoView({ behavior: 'smooth' });
+            if (mainSection) {
+                window.scrollTo({
+                    top: mainSection.offsetTop,
+                    behavior: 'smooth'
+                });
+            }
         });
+    
         function logoutUser() {
             // 로그아웃 폼을 서브밋
-            document.getElementById('function logoutUser() {
-                // 로그아웃 폼을 서브밋
-                document.getElementById('logoutForm').submit();
-            }').submit();
+            document.getElementById('logoutForm').submit();
+        }
+
+        function logoutUser() {
+            // 로그아웃을 서버에 요청
+            fetch('/account/logout/', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Django의 LOGIN_REDIRECT_URL로 이동
+                    window.location.href = response.url;
+                } else {
+                    console.error('로그아웃 실패');
+                }
+            })
+            .catch(error => console.error('로그아웃 요청 중 에러 발생:', error));
+        }
+    
+        // CSRF 토큰을 쿠키에서 가져오는 함수
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
         }
     </script>
     {% endif %}
+
     <script src="{% static 'js/jquery.min.js' %}"></script>
     <script src="{% static 'js/jquery.scrollex.min.js' %}"></script>
     <script src="{% static 'js/jquery.scrolly.min.js' %}"></script>

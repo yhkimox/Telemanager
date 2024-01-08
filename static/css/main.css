@@ -124,10 +124,7 @@
 	padding: 20px;
 	max-width: 1300px;
 }
-#main.container {
-	padding-left: 30px;
-	padding-right: 30px;
-}
+
 
 /* 테이블 스타일 */
 .custom-table-wrapper table {

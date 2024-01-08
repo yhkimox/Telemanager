@@ -10,7 +10,6 @@
 {% block content %}
     <!-- 메인 -->
     <div id="main">
-
         <!-- 섹션 -->
         <section class="wrapper style1">
             <div class="inner">
@@ -18,7 +17,7 @@
                 <div class="flex flex-2">
                     <div class="col col1">
                         <div class="image round fit">
-                            <a href="generic.html" class="link"><img src="{% static 'images/스노우맨.jpg' %}" alt="" width="320" height="320"></a>
+                            <a href="#" class="link"><img src="{% static 'images/스노우맨.jpg' %}" alt="" width="320" height="320"></a>
                         </div>
                     </div>
                     <div class="col col2">
@@ -30,7 +29,6 @@
                             <a href="/account/" class="button">Learn More</a>    
                         {% endif %}
 
-                        
                     </div>
                 </div>
             </div>
@@ -51,7 +49,7 @@
                     </div>
                     <div class="col col1 first">
                         <div class="image round fit">
-                            <a href="generic.html" class="link"><img src="{% static 'images/고양2.jpg' %}" alt="" width="320" height="320"></a>
+                            <a href="#" class="link"><img src="{% static 'images/고양2.jpg' %}" alt="" width="320" height="320"></a>
                         </div>
                     </div>
                 </div>
@@ -59,4 +57,71 @@
         </section>
 
     </div>
-{% endblock %}
+    <!-- jQuery를 추가한 후 -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // 애니메이션 대상 요소 선택
+        var col1 = $(".col.col1");
+        var col2 = $(".col.col2");
+
+        // 초기 상태 설정
+        col1.css({
+            opacity: 0,
+            transform: "translateX(-20px)"
+        });
+
+        col2.css({
+            opacity: 0,
+            transform: "translateX(20px)"
+        });
+
+        // 애니메이션 업데이트 함수
+        function updateAnimation(scrollTop) {
+            // col1 애니메이션 업데이트
+            var col1Offset = col1.offset().top;
+            if (col1Offset < scrollTop + window.innerHeight) {
+                var col1Progress = Math.min(1, (scrollTop + window.innerHeight - col1Offset) / window.innerHeight);
+                col1.css({
+                    opacity: col1Progress,
+                    transform: "translateX(" + (-300 + 300 * col1Progress) + "px)"
+                });
+            }
+
+            // col2 애니메이션 업데이트
+            var col2Offset = col2.offset().top;
+            if (col2Offset < scrollTop + window.innerHeight) {
+                var col2Progress = Math.min(1, (scrollTop + window.innerHeight - col2Offset) / window.innerHeight);
+                col2.css({
+                    opacity: col2Progress,
+                    transform: "translateX(" + (300 - 300 * col2Progress) + "px)"
+                });
+            }
+        }
+
+        // 스크롤 이벤트 리스너 등록
+        var lastScrollTop = 0;
+        var ticking = false;
+
+        function onScroll() {
+            var scrollTop = $(window).scrollTop();
+
+            if (!ticking) {
+                requestAnimationFrame(function () {
+                    updateAnimation(scrollTop);
+                    ticking = false;
+                });
+
+                ticking = true;
+            }
+
+            lastScrollTop = scrollTop;
+        }
+
+        $(window).scroll(onScroll);
+    });
+</script>
+
+
+    {% endblock %}
