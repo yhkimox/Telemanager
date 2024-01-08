@@ -36,6 +36,9 @@ from captcha.fields import CaptchaField
 from django_recaptcha.fields import ReCaptchaField
 from .utils import read_word_file
 
+from docx import Document  # python-docx 라이브러리 import
+
+
 ALLOW_URL_LIST = settings.ALLOW_URL_LIST
 FILE_COUNT_LIMIT = settings.FILE_COUNT_LIMIT         
 FILE_SIZE_LIMIT_CLIENT = settings.FILE_SIZE_LIMIT_CLIENT 
@@ -432,13 +435,16 @@ class CustomLoginView(IPRequiredMixin, LoginView):
         return super().form_invalid(form)
     
 
-def login_view(request):
-    # 다른 부분 처리...
 
-    # read_word_file 함수 호출 및 결과를 context에 추가
-    context = {
-        # 다른 context 변수들...
-        'word_content': read_word_file("../../../media/file/개인정보 수집 및 활용 동의서.docx"),
-    }
+def read_docx_to_html(file_path):
+    # .docx 파일 읽기
+    doc = Document(file_path)
 
-    return render(request, 'registration/login.html', context)
+    # .docx 내용을 텍스트로 추출
+    text_content = ""
+    for paragraph in doc.paragraphs:
+        text_content += paragraph.text + "<br>"
+
+    return text_content
+
+
