@@ -25,7 +25,6 @@ from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
 from django.http import HttpResponse
 from openai import OpenAI
-
 # 녹음한 음성을 mp3로 변환하여 저장하기 위한 라이브러리.
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
