@@ -39,6 +39,13 @@
         color: green; /* 텍스트 색상 변경 */
         font-weight: bold; /* 텍스트 굵게 변경 */
     }
+
+    <style>
+        .custom-image {
+            width: 2000px;
+            height: 800px;
+        }
+    </style>
 </style>
     <!-- 메인 -->
     <div id="main">
@@ -48,9 +55,9 @@
                 <!-- 2 열 -->
                 <div class="flex flex-2">
                     <div class="col col1">
-                        <div class="image round fit">
-                            <a href="#" class="link"><img src="{% static 'images/guest.png' %}" alt="" width="320" height="320"></a>
-                        </div>
+                        
+                            <a href="#" class="link"><img src="{% static 'images/guest.png' %}" alt="" width="350" height="350"></a>
+                        
                     </div>
                     <div class="col col2">
                         <h3>고객 마케팅</h3>
