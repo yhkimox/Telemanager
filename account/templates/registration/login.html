@@ -26,7 +26,10 @@
         margin: 10% auto;
         padding: 20px;
         border: 1px solid #888;
-        width: 80%;
+        width: 70%;
+        text-align: center; /* 동의 버튼을 가운데로 정렬 */
+        position: relative;
+        
     }
     
     .close {
@@ -41,6 +44,7 @@
         color: black;
         text-decoration: none;
         cursor: pointer;
+        
     }
 
     .individual-checkbox {
@@ -80,11 +84,19 @@
 
     <div id="agreementModal" class="modal">
         <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
             {% include 'registration/agreement.html' %}
+            <div class="agreement-checkbox">
+                <input type="checkbox" id="agreementCheckbox" name="agreementCheckbox">
+                <label for="agreementCheckbox">전체 약관에 동의합니다.</label>
+            </div>
+            <br>
+            <button type="submit">네, 동의합니다</button>
+            <button type="button" class="btn btn-primary" onclick="closeModal()">아니오, 동의하지 않습니다</button>
         </div>
     </div>
 
-
+    
 </div>
 
 
@@ -152,6 +164,15 @@
         if (event.target == agreementModal) {
             closeModal();
         }
+    }
+
+    function closeModal() {
+        // Enable scrolling when the modal is closed
+        document.body.style.overflow = 'auto';
+        document.documentElement.style.overflowY = 'auto';
+        agreementModal.style.display = 'none';
+        // Show the banner when the modal is closed
+        document.getElementById('banner').style.visibility = 'visible';
     }
 </script>
 
