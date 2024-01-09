@@ -1,27 +1,23 @@
 {% extends 'base.html' %}
 {% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+
 {% block static %}
+    <!-- 외부 CSS 파일에 대한 링크 -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
 {% endblock %}
 
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error</title>
-</head>
-<body>
-    <div class='custom-table-wrapper'>
-        <h3 class='centered'>URL Error</h3>
-        <br>
-        <a href="{% url 'index' %}">Please Check URL</a>
+    <!--main-->
+    <div id="main" class="container">
+        <hr>
+        <br><br>
+        <div class='custom-table-wrapper'>
+            <h3 class='centered'>{{ error_message }}</h3>
+            <a class='centered'>잠시만 기다려주세요</a>
+            <br>
+            <a href="{% url 'client:upload' %}">뒤로가기</a>
+        </div>
     </div>
-</body>
-</html>
-{% endblock %}
 
 
-
+{% endblock %} 
