@@ -142,8 +142,8 @@
                     <th>나이</th>
                     <th>성별</th>
                     <th>상담날짜</th>
-                    <th>TM 목적</th>
-                    <th>감성</th>
+                    {% comment %} <th>TM 목적</th>
+                    <th>감성</th> {% endcomment %}
                     <th>고객정보</th>
                     <th>고객관리</th>
                 </tr>
@@ -179,8 +179,8 @@
                         </td>
                         <td>{{ client.gender }}</td>
                         <td>{{ client.tm_date|date:"Y. m. d P" }}</td>
-                        <td></td>
-                        <td>O/X</td>
+                        {% comment %} <td></td>
+                        <td>O/X</td> {% endcomment %}
                         <td>{{ client.info }}</td>
                         <td>
                             <a href="{% url 'client:edit_client' client.id %}">수정</a> 
