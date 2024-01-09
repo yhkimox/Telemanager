@@ -142,7 +142,8 @@
             var passwordInput2 = document.getElementById("id_password2");
             var usernameErrorDiv = document.getElementById("username-error");
             var passwordErrorDiv = document.getElementById("password-error");
-
+            var password2ErrorDiv = document.getElementById("password2-error");
+    
             function validateUsernameRules(username) {
                 if (username.length < 3) {
                     return "아이디는 최소 3자 이상이어야 합니다.";
@@ -152,7 +153,7 @@
                 }
                 return "";
             }
-
+    
             function validatePasswordRules(password) {
                 if (password.length < 8) {
                     return "비밀번호는 최소 8자 이상이어야 합니다.";
@@ -165,28 +166,40 @@
                 }
                 return "";
             }
-
+    
             function updateUsernameError() {
                 var errorMessage = validateUsernameRules(usernameInput.value);
                 usernameErrorDiv.innerText = errorMessage;
             }
-
+    
             function updatePasswordError() {
-                if (passwordInput1.value !== passwordInput2.value) {
-                    document.getElementById("password2-error").innerText = "비밀번호가 일치하지 않습니다.";
+                var password1Value = passwordInput1.value;
+                var password2Value = passwordInput2.value;
+    
+                if (password1Value.length >= 8 && /\d/.test(password1Value) && /[!@#$%^&*(),.?":{}|<>]/.test(password1Value)) {
+                    passwordErrorDiv.innerText = "";
                 } else {
-                    var errorMessage = validatePasswordRules(passwordInput1.value);
-                    passwordErrorDiv.innerText = errorMessage;
+                    passwordErrorDiv.innerText = "비밀번호 규칙을 확인하세요.";
+                }
+    
+                // 비밀번호2의 값이 비어있지 않을 때만 비교
+                if (password2Value) {
+                    if (password1Value !== password2Value) {
+                        password2ErrorDiv.innerText = "비밀번호가 일치하지 않습니다.";
+                    } else {
+                        password2ErrorDiv.innerText = "";
+                    }
                 }
             }
-
+    
+            // 아이디 입력 시 이벤트 리스너 추가
             usernameInput.addEventListener("input", updateUsernameError);
+    
+            // 비밀번호 입력 시 이벤트 리스너 추가
             passwordInput1.addEventListener("input", updatePasswordError);
-            passwordInput2.addEventListener("input", function () {
-                updatePasswordError();
-                document.getElementById("password2-error").innerText = "";
-            });
-
+            passwordInput2.addEventListener("input", updatePasswordError);
+    
+            // Submit 버튼 클릭 시 이벤트 리스너 추가
             document.getElementById("submit-btn").addEventListener("click", function (event) {
                 updateUsernameError();
                 updatePasswordError();
