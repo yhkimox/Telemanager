@@ -97,6 +97,7 @@
                         </div>
                         <div class="error-message">{{ form.username.errors }}</div>
                         <div class="error-message" style="font-size: 10px; color: #555;">*영문, 숫자를 포함한 3자리 이상으로 입력하세요.</div>
+                        <div id="username-error" style="color: red;font-size: 15px;"></div>
                     </div>
     
                     <div class="form-group">
@@ -114,6 +115,7 @@
                         </div>
                         <div class="error-message">{{ form.password1.errors }}</div>
                         <div style="font-size: 12px; color: #555;">*영문, 숫자, 특수문자를 포함한 8자리 이상으로 입력하세요.</div>
+                        <div id="password-error" style="color: red; font-size: 15px;"></div>
                     </div>
     
                     <div class="form-group">
@@ -122,8 +124,13 @@
                             {{ form.password2 }}
                         </div>
                         <div class="error-message">{{ form.password2.errors }}</div>
+                        <div id="password2-error" style="color: red; font-size: 15px;"></div>
+                        <br>
+                        
                     </div>
+                    {{ form.captcha }}
                     <!-- login -->
+                    <br>
                     <div class="12u$">
                         <ul class="actions">
                             <li><input type="submit" value="Submit" id="submit-btn"></li>
@@ -179,6 +186,7 @@
                     passwordErrorDiv.innerText = errorMessage;
                 }
             }
+            // 아이디 입력 시 이벤트 리스너 추가
 
             usernameInput.addEventListener("input", updateUsernameError);
             passwordInput1.addEventListener("input", updatePasswordError);
@@ -204,7 +212,6 @@
             });
         });
     </script>
-
     <script>
         grecaptcha.ready(function() {
             var siteKey = '{{ settings.RECAPTCHA_PUBLIC_KEY }}';

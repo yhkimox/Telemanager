@@ -16,6 +16,7 @@
     .col2 a {
         margin-bottom: 100px; /* a와 p 간격 조절 */
     }
+
     .col2 p {
         margin-bottom: 5px; /* 문단 간격을 조절합니다. */
         position: relative;
@@ -40,11 +41,53 @@
         font-weight: bold; /* 텍스트 굵게 변경 */
     }
 
-    <style>
-        .custom-image {
-            width: 2000px;
-            height: 800px;
-        }
+    .custom-image {
+        width: 2000px;
+        height: 800px;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 20px auto;
+        text-align: center;
+    }
+
+    .image-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .image-container img {
+        max-width: calc(30% - 20px); /* 20px은 각 이미지 간의 간격입니다. */
+        margin-bottom: 20px;
+        width: 300px;
+        height: 200px;
+    }
+
+    .content {
+        max-width: calc(30% - 20px);
+        text-align: left;
+        margin-bottom: 20px;
+    }
+    .content h3 {
+        text-align: center;
+    }
+
+    .button {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 16px;
+        text-decoration: none;
+        background-color: #3498db;
+        color: #ffffff;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 20px;
+    }
 </style>
     <!-- 메인 -->
     <div id="main">
@@ -54,9 +97,7 @@
                 <!-- 2 열 -->
                 <div class="flex flex-2">
                     <div class="col col1">
-                        
                             <a href="#" class="link"><img src="{% static 'images/guest.png' %}" alt="" width="350" height="350"></a>
-                        
                     </div>
                     <div class="col col2">
                         <h3>고객 마케팅</h3>
@@ -73,35 +114,56 @@
                         {% else %}
                             <a href="/account/" class="button">Learn More</a>    
                         {% endif %}
+
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- 섹션 -->
-        <section class="wrapper style2">
-            <div class="inner">
-                <div class="flex flex-2">
-                    <div class="col col2">
-                        <h3>게시판</h3>
-                        <p>내용</p>
-                        {% if user.is_authenticated %}
-                            <a href="/post/" class="button">Learn More</a>    
-                        {% else %}
+    <!-- 섹션 -->
+    <section class="wrapper style1">
+        <div class="inner">
+            <div class="flex flex-2">
+                <div class="container">
+                    <div class="image-container">
+                        <img src="{% static 'images/main_login.png' %}" alt="Image 1">
+                        <img src="{% static 'images/main_marketing.png' %}" alt="Image 2">
+                        <img src="{% static 'images/main_board.png' %}" alt="Image 3">
+                    
+                        <div class="content">
+                            <h3>LOGIN</h3>
+                            <p>기업별 맞춤화 정보를 제공하기 위해 로그인해주세요 </p>
                             <a href="/account/" class="button">Learn More</a>    
-                        {% endif %}
                     </div>
-                    <div class="col col1 first">
-                        <div class="image round fit">
-                            <a href="#" class="link"><img src="{% static 'images/tele.jpg' %}" alt="" width="320" height="320"></a>
+                        </div>
+                        <div class="content">
+                            <h3>MARKETING</h3>
+                            <span>Bert 모델을 사용하여 아웃바운드 메시지를 작성하고 고객의 감정을 분류하여</span>
+                            <span>마케팅을 자동으로 진행합니다</span>
+                            {% if user.is_authenticated %}
+                                <a href="/client/" class="button">Learn More</a>    
+                            {% else %}
+                                <a href="/account/" class="button">Learn More</a>    
+                            {% endif %}
+                        </div>
+                        <div class="content">
+                            <h3>POST</h3>
+                            <p>자유게시판을 통해 의견을 자유롭게 나누세요</p>
+                            {% if user.is_authenticated %}
+                                <a href="/post/" class="button">Learn More</a>    
+                            {% else %}
+                                <a href="/account/" class="button">Learn More</a>    
+                            {% endif %} 
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
+</div>
 
-    </div>
-    <!-- jQuery를 추가한 후 -->
+<!-- jQuery를 추가한 후 -->
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <script>
@@ -166,6 +228,4 @@
         $(window).scroll(onScroll);
     });
 </script>
-
-
-    {% endblock %}
+{% endblock %}
