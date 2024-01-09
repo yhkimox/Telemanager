@@ -15,6 +15,9 @@ def generic(request):
  
 def elements(request):
     return render(request, 'elements.html')
+
+def personal_info(request):
+    return render(request, 'personal_info.html')
  
 urlpatterns = [
     path('', index),
@@ -30,6 +33,7 @@ urlpatterns = [
     path('password_reset_confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='account/password_reset_confirm.html'), name='password_reset_confirm'),
     path('password_reset_complete/', auth_views.PasswordResetCompleteView.as_view(template_name='account/password_reset_complete.html'), name='password_reset_complete'),
     path('captcha/', include('captcha.urls')),  
+    path('personal_info/', personal_info, name='personal_info'),
 ]
  
 if settings.DEBUG:
