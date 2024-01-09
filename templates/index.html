@@ -66,6 +66,11 @@
         height: 200px;
     }
 
+    .content-wrapper {
+        display: flex;
+        justify-content: space-between;
+    }
+
     .content {
         max-width: calc(30% - 20px);
         text-align: left;
@@ -130,13 +135,13 @@
                         <img src="{% static 'images/main_login.png' %}" alt="Image 1">
                         <img src="{% static 'images/main_marketing.png' %}" alt="Image 2">
                         <img src="{% static 'images/main_board.png' %}" alt="Image 3">
-                    
+                        <div class="content-wrapper">
                         <div class="content">
                             <h3>LOGIN</h3>
                             <p>기업별 맞춤화 정보를 제공하기 위해 로그인해주세요 </p>
                             <a href="/account/" class="button">Learn More</a>    
                     </div>
-                        </div>
+                        
                         <div class="content">
                             <h3>MARKETING</h3>
                             <span>Bert 모델을 사용하여 아웃바운드 메시지를 작성하고 고객의 감정을 분류하여</span>
@@ -157,6 +162,7 @@
                             {% endif %} 
                         </div>
                     </div>
+                </div>
                 </div>
             </div>
         </div>
