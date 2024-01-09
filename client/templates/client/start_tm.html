@@ -160,10 +160,11 @@
         //console.log(All_Chats.outbound_message);
 
         if (All_Chats.outbound_end==='End') { //대화 안끝났으면 false로 초기화 해주기
-            finalConversation=true
+            finalConversation=true;
             sendButton.disabled = true;
         } else {
-            finalConversation=false
+            finalConversation=false;
+            exitConversation=false;
             sendButton.disabled = false;
         }
 
@@ -288,7 +289,6 @@
 
     async function sendMessage() {
         const userMessage = chatInput.value.trim();
-        
 
 
 
