@@ -11,7 +11,7 @@
     <div class="scrollable-container">
         <div class="scrollable-box" style="max-height: 300px; overflow-y: auto;">
             <!-- 여기에 이용약관 내용을 넣으세요 -->
-            {{ "C:/Users/user/Desktop/big_project/big_project/media/file/서비스이용약관.docx" | file_content|safe }}
+            {{ "static/file/서비스이용약관.docx" | file_content|safe }}
             {% for section in sections1 %}
                 <div class="section">
                     {{ section|safe }}
@@ -26,26 +26,9 @@
     </div>
     <br><br>
     <div class="scrollable-container">
-         <div class="scrollable-box"  style="max-height: 300px; overflow-y: auto;">
-            <!-- 여기에 개인정보 처리방침 내용을 넣으세요 -->
-            {{ "C:/Users/user/Desktop/big_project/big_project/media/file/개인정보처리방침.docx" | file_content|safe }}
-            {% for section in sections1 %}
-                <div class="section">
-                    {{ section|safe }}
-                </div>
-            {% endfor %}
-        </div>
-
-        <label>
-            <input type="checkbox" name="agreement2" class="individual-checkbox" required />
-            <span>위 내용을 읽었으며, 개인정보 수집 및 이용에 동의합니다.</span>
-         </label>
-    </div>
-    <br><br>
-    <div class="scrollable-container">
         <div class="scrollable-box"  style="max-height: 300px; overflow-y: auto;">
            <!-- 여기에 개인정보 처리방침 내용을 넣으세요 -->
-           {{ "C:/Users/user/Desktop/big_project/big_project/media/file/개인정보 수집 및 활용 동의서.docx" | file_content|safe }}
+           {{ "static/file/개인정보 수집 및 활용 동의서.docx" | file_content|safe }}
            {% for section in sections1 %}
                <div class="section">
                    {{ section|safe }}
