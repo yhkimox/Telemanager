@@ -146,21 +146,24 @@ class PasswordChangeView(IPRequiredMixin, PasswordChangeView):
 
 # 비밀번호 찾기
 class UserPasswordResetView(IPRequiredMixin, PasswordResetView):
-    template_name = 'registration/password_reset.html'  # 템플릿을 변경하려면 이와 같은 형식으로 입력
-    success_url = reverse_lazy('account:password_reset_done')
+    template_name = 'registration/password_reset.html'
+    success_url = reverse_lazy('password_reset_done')
     form_class = PasswordResetForm
 
     def form_valid(self, form):
         email = self.request.POST.get("email")
         if User.objects.filter(email=email).exists():
             return super().form_valid(form)
-        else:
-            return JsonResponse({'email_not_exists': True})
+        # 존재하지 않는 이메일인 경우에 대한 처리
+        return redirect(reverse('account:password_reset'))
 
     def form_invalid(self, form):
         response = super().form_invalid(form)
-        # 존재하지 않는 이메일인 경우에 대한 처리
-        return JsonResponse({'email_not_exists': True})
+        # 오류가 발생한 경우에만 JsonResponse 반환
+        if self.request.is_ajax():
+            return JsonResponse({'email_not_exists': True})
+        return response
+
 
 def error_page(request):
     # client_ip = request.META.get('REMOTE_ADDR')
