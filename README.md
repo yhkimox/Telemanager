@@ -46,6 +46,8 @@ KT Aivle School Big Project
 
 
 ## 5. 프로젝트 아키텍처
+<img src="/readme_files/5_1.png" style="width:100%;">
+
 ## 6. 데이터
 ## 7. 모델-평가
 |TRAIN / TEST|RAG(LangChain)|감성분류|출처|Total|
