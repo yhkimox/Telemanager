@@ -49,7 +49,6 @@ KT Aivle School Big Project
 <img src="/readme_files/5_1.png" style="width:100%;">
 
 ## 6. 데이터
-## 7. 모델-평가
 |TRAIN / TEST|RAG(LangChain)|감성분류|출처|Total|
 |------------|--------------|--------|----|-----|
 ||카드 회사 크롤링 자체 데이터||자체 데이터||
@@ -61,10 +60,12 @@ KT Aivle School Big Project
 |Test||속성 기반 감정 데이터|AI Hub|246|
 |Total||||12021|
 
+## 7. 모델-평가
 * 카드 고릴라 (https://www.card-gorilla.com/home) 사이트에 있는 카드 정보를 크롤링하여 회사 정보 데이터로 활용
 * LangChain을 기반으로 RAG 기술을 통해 카드 홍보 아웃바운드 마케팅 문구 생성
 * OPENAI를 활용하여 카드 상담에서 일어날 수 있는 발화문 데이터 생성
 
+<img src="/readme_files/6_1.png" style="width:100%;">
 
 |AI 모델|성능(accuracy)|모델 크기|사전학습 모델|
 |-------|--------------|---------|-------------|
