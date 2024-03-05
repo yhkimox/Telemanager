@@ -75,7 +75,7 @@ KT Aivle School Big Project
 |ELECTRA|0.7398|430.9MB|https://huggingface.co/monologg/koelectra-base-v3-discriminator|
 |LSTM|0.72|||
 
-* Pretrained Language Model을 fine-tuning하여 고객 발화문의 감성 분류 모델 구축
+* Pretrained Language Model을 fine-tuning하여 고객 발화문 감성 분류 모델 구축
 * RAG, 모델 학습 코드는 아래 github 참고
 * https://github.com/leeht0113/rag_sentiment_analysis
 
