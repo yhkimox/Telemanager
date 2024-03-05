@@ -1,4 +1,4 @@
-# big_project
+# Big_Project
 kt_aivle_big_project
 
 # TeleManager TM 서비스
@@ -7,7 +7,7 @@ kt_aivle_big_project
 |:---:|:---:|:---:|:---:|:---:|:---:|
 |<img src="/readme_files/GyungMin.png" width="100" height="100"/>|<img src="/readme_files/HyungTae.jpeg" width="100" height="100"/>|<img src="/readme_files/yeahun.jpeg" width="100" height="100"/>|<img src="/readme_files/minseung.png" width="100" height="100"/>|<img src="/readme_files/hyungjung.jpeg" width="100" height="100"/>|<img src="/readme_files/minG.jpeg" width="100" height="100"/>|
 |[![GitHub](/readme_files/gitimage.png)](https://github.com/Leon-real)|[![GitHub](/readme_files/gitimage.png)](https://github.com/leeht0113)|[![GitHub](/readme_files/gitimage.png)](https://github.com/yhkimox)|[![GitHub](/readme_files/gitimage.png)](https://github.com/maatanyy)|[![GitHub](/readme_files/gitimage.png)](https://github.com/hyeon8922)|[![GitHub](/readme_files/gitimage.png)](https://github.com/hahahoho0320)|
-|AI Resercher, Web Back-End|AI Resercher, Web Back-End|AI Resercher, Web Front-End|AI Resercher, Web Back-End|AI Resercher, Web Front-End|AI Resercher, Web Back-End|
+|AI Researcher, Web Back-End|AI Researcher, Web Back-End|AI Researcher, Web Front-End|AI Researcher, Web Back-End|AI Researcher, Web Front-End|AI Researcher, Web Back-End|
 
 ## 1.선정 배경
 ## 2. 주요 내용
