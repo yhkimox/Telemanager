@@ -15,6 +15,7 @@ kt_aivle_big_project
 4. 각 고객에 맞추어 목적에 맞는 문구로 아웃바운드 실시
 
 ## 팀 & 역할 Team&Roles
-|제목|내용|설명|제목|내용|설명|
-|:---|:---:|---:|:---|:---:|---:|
-|중앙에서확장|중앙에서확장|중앙에서확장|중앙에서확장|중앙에서확장|중앙에서확장|
+|김경민|이현태|김예훈|노민성|김현정|조민지|
+|:---:|:---:|:---:|:---:|:---:|:---:|
+|image|image|image|image|image|image|
+|AI Resercher, Web Back-End|AI Resercher, Web Back-End|AI Resercher, Web Front-End|AI Resercher, Web Back-End|AI Resercher, Web Front-End|AI Resercher, Web Back-End|
