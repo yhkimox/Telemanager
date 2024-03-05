@@ -14,7 +14,7 @@ KT Aivle School Big Project
 2. AICC를 통한 상담원 업무 보완 및 확대되는 AICC 시장의 기술 고도화
 <figure class="half">  
     <a href="link"><img src="/readme_files/1_1.png"></a>  
-    <a href="link"><img src="/readme_files/1_2.png"></a>  <figcaption>2개이미지.</figcaption>
+    <a href="link"><img src="/readme_files/1_2.png"></a>
 </figure>
 
 
