@@ -8,6 +8,7 @@ KT Aivle School Big Project
 |<img src="/readme_files/GyungMin.png" width="100" height="100"/>|<img src="/readme_files/HyungTae.jpeg" width="100" height="100"/>|<img src="/readme_files/yeahun.jpeg" width="100" height="100"/>|<img src="/readme_files/minseung.png" width="100" height="100"/>|<img src="/readme_files/hyungjung.jpeg" width="100" height="100"/>|<img src="/readme_files/minG.jpeg" width="100" height="100"/>|
 |[![GitHub](/readme_files/gitimage.png)](https://github.com/Leon-real)|[![GitHub](/readme_files/gitimage.png)](https://github.com/leeht0113)|[![GitHub](/readme_files/gitimage.png)](https://github.com/yhkimox)|[![GitHub](/readme_files/gitimage.png)](https://github.com/maatanyy)|[![GitHub](/readme_files/gitimage.png)](https://github.com/hyeon8922)|[![GitHub](/readme_files/gitimage.png)](https://github.com/hahahoho0320)|
 |<span style="color:red">AI Researcher</span>, Web Back-End|<span style="color:red">AI Researcher</span>, Web Back-End|AI Researcher, <span style="color:red">Web Front-End</span>|AI Researcher, <span style="color:red">Web Back-End</span>|AI Researcher, <span style="color:red">Web Front-End</span>|AI Researcher, <span style="color:red">Web Back-End</span>|
+<span style="color:red">ㅅㄷㄴㅅ</span>
 
 ## 1. 선정 배경
 ## 2. 주요 내용
