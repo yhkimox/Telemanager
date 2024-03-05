@@ -18,4 +18,5 @@ kt_aivle_big_project
 |김경민|이현태|김예훈|노민성|김현정|조민지|
 |:---:|:---:|:---:|:---:|:---:|:---:|
 |<img src="/readme_files/GyungMin.png" width="400" height="100"/>|<img src="/readme_files/HyungTae.jpeg" width="400" height="100"/>|<img src="/readme_files/yeahun.jpeg" width="400" height="100"/>|<img src="/readme_files/minseung.png" width="400" height="100"/>|<img src="/readme_files/hyungjung.jpeg" width="400" height="100"/>|<img src="/readme_files/minG.jpeg" width="400" height="100"/>|
+|https://github.com/Leon-real|https://github.com/leeht0113|https://github.com/yhkimox|https://github.com/maatanyy|https://github.com/hyeon8922|https://github.com/hahahoho0320|
 |AI Resercher, Web Back-End|AI Resercher, Web Back-End|AI Resercher, Web Front-End|AI Resercher, Web Back-End|AI Resercher, Web Front-End|AI Resercher, Web Back-End|
