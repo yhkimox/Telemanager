@@ -17,10 +17,18 @@ KT Aivle School Big Project
     <a href="link"><img src="/readme_files/1_2.png"></a>
 </figure>
 
-
-
 ## 2. 주요 내용
+1. 고객에게 맞춤화된 아웃바운드 문구 생성으로 개인화 마케팅 
+2. 지속적인 발화자의 감정 분석을 통한 고객과 상호작용
+3. 자동화하여 시간 절감 및 업무 효율성 증대
+<figure class="half">  
+    <a href="link"><img src="/readme_files/2_1.png"></a>  
+    <a href="link"><img src="/readme_files/2_2.png"></a>
+</figure>
+
 ## 3. 기대 효과
+<img src="/readme_files/3_1.png"/>
+
 ## 4. 서비스 플로우
 <img src="/readme_files/flow.png"/>
 
