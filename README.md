@@ -10,7 +10,7 @@ KT Aivle School Big Project
 [5. 프로젝트 아키텍처](#5-프로젝트-아키텍처)  
 [6. 데이터](#6-데이터)  
 [7. 모델-평가](#7-모델-평가)  
-[8. 참고 링크](#8-참고-링크)  
+
 
 # TeleManager TM 서비스
 ## 0. 팀 & 역할 Team&Roles
@@ -79,7 +79,6 @@ KT Aivle School Big Project
 * RAG, 모델 학습 코드는 아래 github 참고
 * https://github.com/leeht0113/rag_sentiment_analysis
 
-## 8. 참고 링크
 
 
 
