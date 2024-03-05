@@ -12,7 +12,7 @@ KT Aivle School Big Project
 ## 1. 선정 배경
 1. 감정노동에 시달리는 텔레마케터의 고충을 덜고자 CS 업무의 자동화 시스템 제안 
 2. AICC를 통한 상담원 업무 보완 및 확대되는 AICC 시장의 기술 고도화
-<img src="/readme_files/1_1.png" style="width:48%;"> <img src="/readme_files/1_2.png" style="width:48%;">
+<img src="/readme_files/1_1.png" style="width:48%;" heigh="300"> <img src="/readme_files/1_2.png" style="width:48%;" heigh="300">
 
 
 ## 2. 주요 내용
