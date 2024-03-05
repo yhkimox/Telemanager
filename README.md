@@ -1,6 +1,17 @@
 # Big_Project
 KT Aivle School Big Project
 
+##### 목차
+[0. 팀&역할 Team&Role](#0-팀--역할-teamroles)  
+[1. 선정 배경](#1-선정-배경)  
+[2. 주요 내용](#2-주요-내용)  
+[3. 기대 효과](#3-기대-효과)  
+[4. 서비스 플로우](#4-서비스-플로우)  
+[5. 프로젝트 아키텍처](#5-프로젝트-아키텍처)  
+[6. 데이터](#6-데이터)  
+[7. 모델-평가](#7-모델-평가)  
+[8. 참고 링크](#8-참고-링크)  
+
 # TeleManager TM 서비스
 ## 0. 팀 & 역할 Team&Roles
 |**김경민**|**이현태**|**김예훈**|**노민성**|**김현정**|**조민지**|
@@ -37,6 +48,34 @@ KT Aivle School Big Project
 ## 5. 프로젝트 아키텍처
 ## 6. 데이터
 ## 7. 모델-평가
+|TRAIN / TEST|RAG(LangChain)|감성분류|출처|Total|
+|------------|--------------|--------|----|-----|
+||카드 회사 크롤링 자체 데이터||자체 데이터||
+|Train||속성 기반 감성 분석 말뭉치 2021|국립국어원|5591|
+|||속성 기반 감성 분석 말뭉치 2021 데이터 증강|국립국어원|3730|
+|||속성 기반 감정 데이터|AI Hub|1834|
+|||OPENAI를 통한 감성 분류 자체 데이터 & 데이터 증강|자체 데이터|220|
+|Total||||11775|
+|Test||속성 기반 감정 데이터|AI Hub|246|
+|Total||||12021|
+
+* 카드 고릴라 (https://www.card-gorilla.com/home) 사이트에 있는 카드 정보를 크롤링하여 회사 정보 데이터로 활용
+* LangChain을 기반으로 RAG 기술을 통해 카드 홍보 아웃바운드 마케팅 문구 생성
+* OPENAI를 활용하여 카드 상담에서 일어날 수 있는 발화문 데이터 생성
+
+
+|AI 모델|성능(accuracy)|모델 크기|사전학습 모델|
+|-------|--------------|---------|-------------|
+|ALBERT|0.8984|50.3MB|https://huggingface.co/kykim/albert-kor-base|
+|BERT|0.8821|422.1MB|https://huggingface.co/klue/bert-base|
+|CNN|0.76|||
+|ELECTRA|0.7398|430.9MB|https://huggingface.co/monologg/koelectra-base-v3-discriminator|
+|LSTM|0.72|||
+
+* Pretrained Language Model을 fine-tuning하여 고객 발화문의 감성 분류 모델 구축
+* RAG, 모델 학습 코드는 아래 github 참고
+* https://github.com/leeht0113/rag_sentiment_analysis
+
 ## 8. 참고 링크
 
 
