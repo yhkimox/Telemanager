@@ -10,15 +10,17 @@ KT Aivle School Big Project
 |**AI Researcher**, Web Back-End|**AI Researcher**, Web Back-End|AI Researcher, **Web Front-End**|AI Researcher, **Web Back-End**|AI Researcher, **Web Front-End**|AI Researcher, **Web Back-End**|
 
 ## 1. 선정 배경
-1. 감정노동에 시달리는 텔레마케터의 고충을 덜고자 CS 업무의 자동화 시스템 제안 
-2. AICC를 통한 상담원 업무 보완 및 확대되는 AICC 시장의 기술 고도화
+1. 감정노동에 시달리는 텔레마케터의 고충을 덜고자 CS 업무의 자동화 시스템 제안   
+2. AICC를 통한 상담원 업무 보완 및 확대되는 AICC 시장의 기술 고도화  
+
 <img src="/readme_files/1_1.png" style="width:48%;"> <img src="/readme_files/1_2.png" style="width:48%;">
 
 
 ## 2. 주요 내용
-1. 고객에게 맞춤화된 아웃바운드 문구 생성으로 개인화 마케팅 
-2. 지속적인 발화자의 감정 분석을 통한 고객과 상호작용
-3. 자동화하여 시간 절감 및 업무 효율성 증대
+1. 고객에게 맞춤화된 아웃바운드 문구 생성으로 개인화 마케팅   
+2. 지속적인 발화자의 감정 분석을 통한 고객과 상호작용  
+3. 자동화하여 시간 절감 및 업무 효율성 증대  
+
 <img src="/readme_files/2_1.png" style="width:48%;"> <img src="/readme_files/2_2.png" style="width:48%;">
 
 ## 3. 기대 효과
